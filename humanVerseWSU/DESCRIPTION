@@ -1,0 +1,15 @@
+Package: humanVerseWSU
+Type: Package
+Title: Saving Human-Life Hours with "human-verse" forms of R functions
+Version: 0.1.0
+Author: Monte J. Shaffer
+Maintainer: The package maintainer <monte.shaffer@gmail.com>
+Description: Manipulating dataframes, ...
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+  tidyverse,
+  rvest,
+  RCurl
+RoxygenNote: 7.1.1

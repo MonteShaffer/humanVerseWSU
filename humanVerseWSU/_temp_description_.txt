@@ -1,0 +1,53 @@
+Package: humanVerseWSU
+Type: Package
+Title: Saving Human-Life Hours with "human-verse" forms of R functions
+Version: 0.1.0
+Author: Monte J. Shaffer
+Maintainer: The package maintainer <monte.shaffer@gmail.com>
+Description: "-- If you can save 5 seconds for 1 million users, that is 50 lifetimes per day. 
+    You are saving lives! -Andy Hertzfeld, Apple [ https://youtu.be/WpdhFAKPsT4?t=1060 ] 
+    
+    Okay, if you do the math of the above quote, it is way off.  But the principle is true!
+    
+    I spend way too much time manipulating data, reconsidering "how to do that in R again",
+and I teach others: undergrad students, grad students, Ph.D.s with a research question various
+tricks to speed things up.  To get out of the minutia, so we can focus on the research.
+
+    Manipulating dataframes, doing basic statistics, organizing datasets, performing normalization
+procedures on data, dealing with "is-close" issues related to floating-point precision issues.
+
+    My functions are long in name, but readable to most (including managers who may see the function
+calls in a succint RMarkdown Latex report).  I listen to those I work with and add functions to
+this humanVerse from time to time.  I use hunchBackNotation and Whitesmith indentation.
+
+    I write functions based on a C-based background, and I like to utilize R's vector default
+to execute the functions.  Many of my functions on procedural or task based, and merely wrappers 
+of common functions for the seasoned R community.  
+
+    Enjoy!
+
+
+    monte
+
+    {x:
+License: MIT
+Encoding: UTF-8
+LazyData: true
+
+
+
+
+
+graphics,
+  jsonlite,
+  readr,
+  ggplot2,
+  digest,
+  plyr,
+  pracma,
+  pastecs,
+  tractor.base,
+  IDPmisc,
+  corrplot
+  
+  
