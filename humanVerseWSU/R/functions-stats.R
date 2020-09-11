@@ -24,10 +24,14 @@ doStatsSummary = function(x)
 	result$mean.trim.20 = mean(xx, trim=0.20);
 
 	result$median = stats::median(xx);
+	result$MAD = stats::MAD(xx);
 	result$IQR = stats::IQR(xx);
 	result$quartiles = stats::quantile(xx, prob=c(.25,.5,.75));
 	result$deciles = stats::quantile(xx, prob=seq(0.1,0.9,by=0.1) );
 	result$centiles = stats::quantile(xx, prob=seq(0.01,0.99,by=0.01) );
+
+	result$median.weighted = matrixStats::weightedMad(xx);
+	result$MAD.weighted = matrixStats::weightedMedian(xx);
 
 	result$max = max(xx);
 	result$min = min(xx);
