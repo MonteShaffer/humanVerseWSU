@@ -34,3 +34,10 @@ if(FALSE)
 
 	# I could create a moveTo (df, colnames, "before/after", anchorcolname) ... # general data.frame object ...  moveTo(df, "year", "after", "dollar") ... after/before would be one single anchorcolnam but those being moved could be more than one column ...
 	}
+
+
+
+importFrom("stats", "IQR", "median", "quantile", "sd", "shapiro.test",
+               "var")
+    importFrom("utils", "read.csv", "write.table")
+
