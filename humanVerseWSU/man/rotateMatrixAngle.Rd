@@ -4,7 +4,7 @@
 \alias{rotateMatrixAngle}
 \title{rotateMatrixAngle}
 \usage{
-rotateMatrixAngle(x, a = 0, clockwise = T)
+rotateMatrixAngle(x, a = 0, clockwise = TRUE)
 }
 \arguments{
 \item{x}{matrix}
@@ -28,10 +28,10 @@ rotateMatrixAngle(m,180);
 rotateMatrixAngle(m,270);
 rotateMatrixAngle(m,-90); # we reverse the direction of clockwise if negative
 
-rotateMatrixAngle(m,270,F);
-rotateMatrixAngle(m,-90,F); # we reverse the direction of clockwise if negative
+rotateMatrixAngle(m,270,FALSE);
+rotateMatrixAngle(m,-90,FALSE); # we reverse the direction of clockwise if negative
 
-rotateMatrixAngle(m,33);
+#rotateMatrixAngle(m,33);
 rotateMatrixAngle(m,630);
 
 }

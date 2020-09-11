@@ -1,0 +1,63 @@
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' df = iris[1:10,];
+#' df$date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
+#' "7/3/2015 11:16","11/18/2010 1:29","4/23/2011 0:08","10/6/2010 11:13",
+#' "7/26/2009 13:23","4/9/2008 13:40","8/20/2008 11:32");
+#' years = convertDateStringToFormat(df$date.strings,"%Y","%m/%d/%Y %H:%M");
+#' weeks = convertDateStringToFormat(df$date.strings,"%W","%m/%d/%Y %H:%M");
+#' days = convertDateStringToFormat(df$date.strings,"%j","%m/%d/%Y %H:%M");
+#'
+#' newcols = cbind(years,weeks,days);
+#'       colnames(newcols) = c("year","week","day");
+#'
+#' replaceDateStringWithDateColumns(df,"date.strings",newcols);
+#'
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(FALSE)
+{
+# let's take our personality-cleanup functions, abstracted for general dataframe-manipulation functions, and place in one location.
+# at this iteration, I will use oxygen style notation to document the functions
+# I have written the functions, so I will use RStudio to help with documenting ...
+# copy/paste doesn't play nice, but drag n' drop does ... my tabs are maintained.
+}
+
+
+if(FALSE)
+  {
+  df = read.csv("datasets/personality/personality-raw.txt",header=T,sep="|");
+  df = removeColumnsFromDataFrame(df, "V00");
+
+	date.formats = c("year","week","day");
+	    vec = df$date_test;
+	year = convertDateStringToFormat(vec,"%Y","%m/%d/%Y %H:%M");
+	week = convertDateStringToFormat(vec,"%W","%m/%d/%Y %H:%M");
+	day  = convertDateStringToFormat(vec,"%j","%m/%d/%Y %H:%M");
+	    newcols = cbind(year,week,day);
+		      colnames(newcols) = date.formats;
+
+	ndf = replaceDateStringWithDateColumns(df,"date_test",newcols);
+	ndf = sortDataFrameByNumericColumns(ndf, date.formats, "DESC");
+	ndf = removeDuplicatesFromDataFrame(ndf, "md5_email");
+
+	ndf;
+
+	write.table(ndf, file="datasets/personality/personality-clean.txt", sep="|", col.names=T, row.names=F);
+
+	dim(df);  # 838
+	dim(ndf); # 678
+
+  }

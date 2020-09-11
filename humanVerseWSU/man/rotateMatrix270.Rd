@@ -4,7 +4,7 @@
 \alias{rotateMatrix270}
 \title{rotateMatrix270}
 \usage{
-rotateMatrix270(x, clockwise = T)
+rotateMatrix270(x, clockwise = TRUE)
 }
 \arguments{
 \item{x}{matrix}
@@ -21,7 +21,7 @@ rotateMatrix270
 m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 rotateMatrix270(m);
 
-rotateMatrix270(m,F);
+rotateMatrix270(m,FALSE);
 rotateMatrix90(m); # equivalent
-	
+
 }

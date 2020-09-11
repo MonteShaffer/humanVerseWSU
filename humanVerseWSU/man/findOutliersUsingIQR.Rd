@@ -17,16 +17,25 @@ findOutliersUsingIQR(x, innerFenceFactor = 1.5, outerFenceFactor = 3)
 dataframe, with possibly zero rows
 }
 \description{
-findOutliersUsingIQR
+[assuming nothing about the data]
+\url{https://statisticsbyjim.com/basics/outliers/}
 }
 \examples{
 findOutliersUsingIQR( c(-5, rep(1:3,9), 9) );
 findOutliersUsingIQR( c(-5,-4, rep(1:3,9), 8,9) );
-findOutliersUsingIQR( c(-5, rep(1:3,9), 9), 1, 2);  # unchanging 
-findOutliersUsingIQR( c(-5,-4, rep(1:3,9), 8,9), 1, 2 );  # unchanging 
-findOutliersUsingIQR( c(-5, rep(1:3,9), 9), 2, 4);  # unchanging 
-findOutliersUsingIQR( c(-5,-4, rep(1:3,9), 8,9), 2, 4 );  # unchanging 
+findOutliersUsingIQR( c(-5, rep(1:3,9), 9), 1, 2);  # unchanging
+findOutliersUsingIQR( c(-5,-4, rep(1:3,9), 8,9), 1, 2 );  # unchanging
+findOutliersUsingIQR( c(-5, rep(1:3,9), 9), 2, 4);  # unchanging
+findOutliersUsingIQR( c(-5,-4, rep(1:3,9), 8,9), 2, 4 );  # unchanging
 
-# https://statisticsbyjim.com/basics/outliers/	
-# assuming nothing about the data 	
 }
+\seealso{
+Other Stats: 
+\code{\link{calculateZscores}()},
+\code{\link{doModeOpposite}()},
+\code{\link{doMode}()},
+\code{\link{doSampleVariance}()},
+\code{\link{doStatsSummary}()},
+\code{\link{findOutliersUsingZscores}()}
+}
+\concept{Stats}

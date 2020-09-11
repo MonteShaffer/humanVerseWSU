@@ -15,8 +15,8 @@ removeColumnsFromDataFrame(df, mycols)
 dataframe, updated
 }
 \description{
-\code(removeColumnsFromDataFrame) removes one or more columns 
-from a dataframe \code(df) based on the names \code(mycols)
+\code{removeColumnsFromDataFrame} removes one or more columns
+from a dataframe \code{df} based on the names \code{mycols}
 of said columns.
 }
 \examples{
@@ -26,3 +26,12 @@ head(iris);
 df = removeColumnsFromDataFrame(iris,"Species");
 head(df);
 }
+\seealso{
+Other DataFrame: 
+\code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{moveColumnsInDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrame}()},
+\code{\link{replaceDateStringWithDateColumns}()},
+\code{\link{sortDataFrameByNumericColumns}()}
+}
+\concept{DataFrame}

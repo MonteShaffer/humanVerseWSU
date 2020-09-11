@@ -4,10 +4,14 @@
 \alias{calculateZscores}
 \title{calculateZscores}
 \usage{
-calculateZscores(x)
+calculateZscores(x, x.bar = NULL, s.hat = NULL)
 }
 \arguments{
 \item{x}{numeric vector}
+
+\item{x.bar}{default NULL, you can pass in the parameter}
+
+\item{s.hat}{default NULL, you can pass in the parameter}
 }
 \value{
 z (numeric vector)
@@ -19,4 +23,17 @@ Calculate z-scores using formula:  (x - x.bar) / s.hat;
 calculateZscores( 1:5 );
 calculateZscores( 1:9 );
 
+calculateZscores( 1:5, x.bar=3, s.hat=1 );
+calculateZscores( 1:9, x.bar=3, s.hat=1 );
+
 }
+\seealso{
+Other Stats: 
+\code{\link{doModeOpposite}()},
+\code{\link{doMode}()},
+\code{\link{doSampleVariance}()},
+\code{\link{doStatsSummary}()},
+\code{\link{findOutliersUsingIQR}()},
+\code{\link{findOutliersUsingZscores}()}
+}
+\concept{Stats}

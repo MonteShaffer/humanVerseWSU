@@ -23,7 +23,7 @@ sortDataFrameByNumericColumns
 library(datasets);
 data(iris);
 df = iris[1:10,];
-df$date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40", 
+df$date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
 "7/3/2015 11:16","11/18/2010 1:29","4/23/2011 0:08","10/6/2010 11:13",
 "7/26/2009 13:23","4/9/2008 13:40","8/20/2008 11:32");
 df$year = convertDateStringToFormat(df$date.strings,"\%Y","\%m/\%d/\%Y \%H:\%M");
@@ -41,3 +41,12 @@ sortDataFrameByNumericColumns(df, mycols, mydirs );
 sortDataFrameByNumericColumns(df,sample(mycols),sample(mydirs) );
 
 }
+\seealso{
+Other DataFrame: 
+\code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{moveColumnsInDataFrame}()},
+\code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrame}()},
+\code{\link{replaceDateStringWithDateColumns}()}
+}
+\concept{DataFrame}

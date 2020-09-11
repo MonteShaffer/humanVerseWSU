@@ -25,3 +25,12 @@ head(iris);
 df = removeDuplicatesFromDataFrame(iris,"Species");
 head(df);
 }
+\seealso{
+Other DataFrame: 
+\code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{moveColumnsInDataFrame}()},
+\code{\link{removeColumnsFromDataFrame}()},
+\code{\link{replaceDateStringWithDateColumns}()},
+\code{\link{sortDataFrameByNumericColumns}()}
+}
+\concept{DataFrame}

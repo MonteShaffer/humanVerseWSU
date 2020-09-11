@@ -1,38 +1,21 @@
 
-# these functions address some system-issues with R ...
-
-# isClose ... isTRUE (all.equal) to deal with tolerance issues of comparing two numbers
-# https://stackoverflow.com/questions/63787649/
-
-# isClose is like isEqual, but with a tolerance in case we have problems...
-# .Machine
-
-# a is length 1 or b is length 1 or both ...
-# if both are not length 1, they have to be the same length ...
-# we will return vector of logical (bool) that is the longest length ...
-# this will allow it to be natively used in subset notation ... if of vector structure
-
-# this was a bug that came up in the simulations research project with jillian
-# took about 4 hours to figure out that this was the problem
-# isClose will fix this issue ...
-
-
-
-
 #' isClose
 #'
 #' Due to issues regarding float-point precision, this function
 #' assesses if two numerics are equal "almost".
 #'
-#' See:  https://stackoverflow.com/questions/63787649/
+#' See:  \url{https://stackoverflow.com/questions/63787649/}
 #'
-#' The structure of \code(isClose) allows it to be used in traditional subsetting
+#' The structure of this function allows it to be used in traditional subsetting
 #'  notation.
+#'
+#'
+#' @family System
 #'
 #' @param a number(s) ... numeric vector of length 1+
 #' @param b number(s) ... numeric vector of length 1+
 #' @param tol what is the tolerance level of "equalish" ...
-#'  defaults to what is used in the function \code(all.equal)
+#'  defaults to what is used in the function \code{\link{all.equal}}
 #'
 #' @return vector of logical (bool) with the maximum length of (a,b)
 #' @export
@@ -53,23 +36,23 @@
 #' isClose(n2,n3, myTol);
 #' isClose(n1,n3, myTol);
 #'
-#' a = sample(N, 5, replace=T);
+#' a = sample(N, 5, replace=TRUE);
 #' isClose( a, n2, myTol);
-#' b = sample(N, 5, replace=T);
+#' b = sample(N, 5, replace=TRUE);
 #' isClose( n1, b, myTol);
 #'
-#' a = sample(N, 5, replace=T);
-#' b = sample(N, 5, replace=T);
+#' a = sample(N, 5, replace=TRUE);
+#' b = sample(N, 5, replace=TRUE);
 #' isClose( a, b, myTol);
 #'
-#' a = sample(N, 9, replace=T);
-#' b = sample(N, 5, replace=T);
+#' a = sample(N, 9, replace=TRUE);
+#' b = sample(N, 5, replace=TRUE);
 #' isClose( a, b, myTol);  # prints warning, returns matrix
 #'
 #'
 isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
   {
-  # we assume no issues with na.omit
+  # we assume no issues with stats::na.omit
   a.n = length(a);
   b.n = length(b);
 
@@ -90,7 +73,7 @@ isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
   # could be unequal vectors, not one
   if(a.n != 1 && b.n !=1)
     {
-    warning("Not of Equal length ... Computing Matrix");  # could do cross-product [combinatorics a.n*b.n and store in matrix] of comparisons
+    warning("Not of Equal length ... Computing Matrix");  # cross-product [combinatorics a.n*b.n and store in matrix] of comparisons
 
     m = matrix(NA, nrow=a.n, ncol=b.n);
     for(i in 1:a.n)

@@ -1,0 +1,102 @@
+
+if(FALSE)
+	{
+
+
+
+
+
+
+  # x = iris[,2];  # stats functions are more vector functions
+
+
+
+
+
+  #  x
+  #  z = (x-xc)/oc ... xc = mean ... oc = sd ... linear ... ...
+  # x,y ... plot ( cbind(x,y) ) ;  .... # corr(x,y); # 1
+  # abline(v=0);
+  # ... one big vector ... hist(everything) ...
+
+
+
+  # function isClose to wrap isTRUE and all.equal
+  # remove lastElementFromVector ... return = T
+  # x = x[-c(length(x))]
+  # standardize to min
+  # standarize to max
+  # standardize to n ("row-normalization");
+  # standarize to [0,1] for min/max
+  # standarize from [a,b] to [c,d] ... [0,1] above is a special case ...
+  # z-scores
+  # nested z-scores (byrow, then bycol)
+  #					bycol, then by row
+
+  # do scatterplot of all z-score / standarize with x ...
+  #
+  # Using Z-scores to Detect Outliers
+  # Using Quantiles to Detect Outliers ...  1.5/3*IQR ... inner/outfence ... https://statisticsbyjim.com/basics/outliers/
+  # make 1.5 and 3 options of the function ... they are based on distance of the IQR ...
+
+
+
+	# have separate function diagnosticGraphs(x)
+	# stem(xx);
+	# hist(xx);
+	# hist(log(xx));
+	result$boxplot = boxplot(xx); # str of outliers
+	## let's build outliers via z-scores  and IQR ...
+
+	library(car);
+		qqPlot(xx);
+	library(ggpubr)
+		ggqqplot(xx);
+		ggdensity(xx);
+	library(KernSmooth);
+		bin.count = dpih(xx);
+		#mybreaks = ( max(xx)-min(xx) ) * bin.count;
+		mybreaks = 100 * bin.count;
+
+		mxlim = c(mean(xx)-3.5*sd(xx) , mean(xx)+3.5*sd(xx) );
+
+
+
+
+
+		hist(xx,breaks=mybreaks, xlim=mxlim, ylim=c(0,result$ylim[2]), xlab="", xaxt='n',  );
+		par(new=T); # overlay
+			# theoretical normal gaussian
+			xt = seq(-3.5,3.5, length=100);
+			yt = dnorm(xt);
+
+		plot( xt, yt, type="l", lwd=2, axes=F, xlab="",ylab="");
+		axis(1, at = -3:3, labels = c( expression("-3"~hat(sigma) ), expression("-2"~sigma ), expression("-1"~hat(s) ), expression(bar(x)), expression("1"~hat(s) ), "2s", c( expression("3"~hat(sigma) ))) );
+		#axis(1, at = -3:3, labels = c("-3s", "-2s", "-1s", "hat(mu)", "1s", "2s", "3s"))
+
+
+
+		par(new=T);
+		plot( density(xx, kernel="epanechnikov") , xlim=mxlim, main="", xlab="", ylab="", xaxt='n', yaxt='n'  );
+			abline(v=mean(xx));
+			abline(v=mean(xx)-sd(xx), col="green");
+			abline(v=mean(xx)+sd(xx), col="green");
+			abline(v=mean(xx)-2*sd(xx), col="blue");
+			abline(v=mean(xx)+2*sd(xx), col="blue");
+			abline(v=mean(xx)-3*sd(xx), col="red");
+			abline(v=mean(xx)+3*sd(xx), col="red");
+
+		# https://astrostatistics.psu.edu/su07/R/html/grDevices/html/plotmath.html
+
+		## plotmeans ... p = 0.95 (from alpha)
+
+
+		## legend ...
+
+
+
+
+		## dput ...
+		## ?par
+
+	}

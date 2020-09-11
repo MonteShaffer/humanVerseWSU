@@ -11,8 +11,9 @@ moveColumnsInDataFrame(ndf, mycols, where, anchor)
 
 \item{mycols}{names of cols to move ... string or vector of strings will work}
 
-\item{where}{"after" places after anchor; "before" places before anchor
-@param anchor anchor to which we are moving ... either name or numeric idx}
+\item{where}{"after" places after anchor; "before" places before anchor}
+
+\item{anchor}{anchor to which we are moving ... either name or numeric idx}
 }
 \value{
 dataframe, updated
@@ -31,3 +32,12 @@ df = moveColumnsInDataFrame(iris,c("Sepal.Length","Sepal.Width"),"after","Specie
 head(df);  # might be a bug if all are moved?
 
 }
+\seealso{
+Other DataFrame: 
+\code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrame}()},
+\code{\link{replaceDateStringWithDateColumns}()},
+\code{\link{sortDataFrameByNumericColumns}()}
+}
+\concept{DataFrame}

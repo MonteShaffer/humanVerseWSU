@@ -7,20 +7,30 @@
 doModeOpposite(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{numeric vector}
 }
 \value{
-numeric vector that contains *all* values that are least modal
+numeric vector that contains _all_ values that are least modal
 }
 \description{
-Returns *!mode* of a numeric vector x
+Returns \code{!mode} of a numeric vector x
 }
 \details{
-*!mode* is the least frequent value(s) in a set of data
+\code{!mode} is the least frequent value(s) in a set of data
 }
 \examples{
 doModeOpposite( c(1:9) );
 doModeOpposite( c(1, 1:9, 9) );
 doModeOpposite( c(1, 1:9, 9, 9) );
-	
+
 }
+\seealso{
+Other Stats: 
+\code{\link{calculateZscores}()},
+\code{\link{doMode}()},
+\code{\link{doSampleVariance}()},
+\code{\link{doStatsSummary}()},
+\code{\link{findOutliersUsingIQR}()},
+\code{\link{findOutliersUsingZscores}()}
+}
+\concept{Stats}

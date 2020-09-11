@@ -17,7 +17,8 @@ findOutliersUsingZscores(x, zmin = -3, zmax = 3)
 dataframe, with possibly zero rows
 }
 \description{
-findOutliersUsingZscores
+[assuming normality.  Is that a good assumption?]
+\url{https://statisticsbyjim.com/basics/outliers/}
 }
 \examples{
 findOutliersUsingZscores( c(-5, rep(1:3,9), 9) );
@@ -25,6 +26,14 @@ findOutliersUsingZscores( c(-5,-4, rep(1:3,9), 8,9) );
 findOutliersUsingZscores( c(-5, rep(1:3,9), 9), -2, 2);
 findOutliersUsingZscores( c(-5,-4, rep(1:3,9), 8,9), -2, 2 );
 
-# https://statisticsbyjim.com/basics/outliers/	
-# assuming normality.  Is that a good assumption?
 }
+\seealso{
+Other Stats: 
+\code{\link{calculateZscores}()},
+\code{\link{doModeOpposite}()},
+\code{\link{doMode}()},
+\code{\link{doSampleVariance}()},
+\code{\link{doStatsSummary}()},
+\code{\link{findOutliersUsingIQR}()}
+}
+\concept{Stats}

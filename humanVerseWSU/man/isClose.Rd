@@ -11,7 +11,8 @@ isClose(a, b, tol = sqrt(.Machine$double.eps))
 
 \item{b}{number(s) ... numeric vector of length 1+}
 
-\item{tol}{what is the tolerance level of "equalish" ... defaults to what is used in the function \code(all.equal)}
+\item{tol}{what is the tolerance level of "equalish" ...
+defaults to what is used in the function \code{\link{all.equal}}}
 }
 \value{
 vector of logical (bool) with the maximum length of (a,b)
@@ -21,9 +22,10 @@ Due to issues regarding float-point precision, this function
 assesses if two numerics are equal "almost".
 }
 \details{
-See:  https://stackoverflow.com/questions/63787649/
+See:  \url{https://stackoverflow.com/questions/63787649/}
 
-The structure of \code(isClose) allows it to be used in traditional subsetting notation.
+The structure of this function allows it to be used in traditional subsetting
+ notation.
 }
 \examples{
 options(digits=22);
@@ -41,18 +43,19 @@ isClose(n1,n2, myTol);
 isClose(n2,n3, myTol);
 isClose(n1,n3, myTol);
 
-a = sample(N, 5, replace=T);
+a = sample(N, 5, replace=TRUE);
 isClose( a, n2, myTol);
-b = sample(N, 5, replace=T);
+b = sample(N, 5, replace=TRUE);
 isClose( n1, b, myTol);
 
-a = sample(N, 5, replace=T);
-b = sample(N, 5, replace=T); 
+a = sample(N, 5, replace=TRUE);
+b = sample(N, 5, replace=TRUE);
 isClose( a, b, myTol);
 
-a = sample(N, 9, replace=T);
-b = sample(N, 5, replace=T); 
+a = sample(N, 9, replace=TRUE);
+b = sample(N, 5, replace=TRUE);
 isClose( a, b, myTol);  # prints warning, returns matrix
 
 
 }
+\concept{System}

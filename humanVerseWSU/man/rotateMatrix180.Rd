@@ -4,7 +4,7 @@
 \alias{rotateMatrix180}
 \title{rotateMatrix180}
 \usage{
-rotateMatrix180(x, clockwise = T)
+rotateMatrix180(x, clockwise = TRUE)
 }
 \arguments{
 \item{x}{matrix}
@@ -20,6 +20,6 @@ rotateMatrix180
 \examples{
 m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 rotateMatrix180(m);
-rotateMatrix180(m,F);  # equivalent
-	
+rotateMatrix180(m,FALSE);  # equivalent
+
 }

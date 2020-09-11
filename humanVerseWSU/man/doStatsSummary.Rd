@@ -18,4 +18,15 @@ doStatsSummary
 \examples{
 x.norm = doStatsSummary ( rnorm(100,0,1) );
 x.unif = doStatsSummary ( runif(100,0,1) );
+
 }
+\seealso{
+Other Stats: 
+\code{\link{calculateZscores}()},
+\code{\link{doModeOpposite}()},
+\code{\link{doMode}()},
+\code{\link{doSampleVariance}()},
+\code{\link{findOutliersUsingIQR}()},
+\code{\link{findOutliersUsingZscores}()}
+}
+\concept{Stats}

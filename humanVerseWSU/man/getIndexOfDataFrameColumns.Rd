@@ -28,3 +28,12 @@ mycols = c("Petal.Length","Sepal.Length");
 getIndexOfDataFrameColumns(iris,mycols);
 
 }
+\seealso{
+Other DataFrame: 
+\code{\link{moveColumnsInDataFrame}()},
+\code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrame}()},
+\code{\link{replaceDateStringWithDateColumns}()},
+\code{\link{sortDataFrameByNumericColumns}()}
+}
+\concept{DataFrame}

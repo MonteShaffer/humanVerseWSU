@@ -1,0 +1,36 @@
+# we can include libraries in a functions header
+# duplicate calls to libraries won't break anything
+
+#library(RCurl); # rvest may be using this, but rvest doesn't let me directly just save the .html file
+				# readLines is another solution
+				# https://www.programmingr.com/content/webscraping-using-readlines-and-rcurl/
+				
+library(rvest);
+inflation.url = "https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000";
+
+# we should get this from a govt source ...
+
+library(RCurl);
+
+# we will store the most recent file in the "code-base" on the C:\ drive 
+# the other code/html will be stored in the R:\ data path ...
+
+
+
+if(FALSE)
+	{
+	# usage
+	inflation.data = grabInflationTable();
+	dollar.1921 = lookupInflationDollar(1921,inflation.data);
+	dollar.2000 = lookupInflationDollar(2000,inflation.data);
+
+	# $1 in 1921 is how many dollars in 2000?
+	adjustForInflation(1,1921,2000,inflation.data);
+
+	# can I write a data.frame vector form of this?  I think it has to be "apply" or a for loop ...
+
+	will$movies.50$newmillions = standardizeDollars(will$movies.50, 2000, "millions", "year", inflation.data);
+
+
+	# I could create a moveTo (df, colnames, "before/after", anchorcolname) ... # general data.frame object ...  moveTo(df, "year", "after", "dollar") ... after/before would be one single anchorcolnam but those being moved could be more than one column ...
+	}

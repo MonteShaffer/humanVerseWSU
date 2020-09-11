@@ -19,6 +19,16 @@ Computes the sample variance with (n-1) ...
 }
 \examples{
 doSampleVariance( c(1) ); # returns null
-doSampleVariance( 1:2 ); 
+doSampleVariance( 1:2 );
 
 }
+\seealso{
+Other Stats: 
+\code{\link{calculateZscores}()},
+\code{\link{doModeOpposite}()},
+\code{\link{doMode}()},
+\code{\link{doStatsSummary}()},
+\code{\link{findOutliersUsingIQR}()},
+\code{\link{findOutliersUsingZscores}()}
+}
+\concept{Stats}

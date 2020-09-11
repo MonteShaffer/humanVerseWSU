@@ -7,16 +7,16 @@
 doMode(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{numeric vector}
 }
 \value{
-numeric vector that contains *all* values that are modal (could be bimodal)
+numeric vector that contains _all_ values that are modal (could be bimodal)
 }
 \description{
-Returns *mode* of a numeric vector x
+Returns \code{mode} of a numeric vector x
 }
 \details{
-*mode* is the most frequent value(s) in a set of data
+\code{mode} is the most frequent value(s) in a set of data
 }
 \examples{
 doMode( c(1:9) );
@@ -24,3 +24,13 @@ doMode( c(1, 1:9, 9) );
 doMode( c(1, 1:9, 9, 9) );
 
 }
+\seealso{
+Other Stats: 
+\code{\link{calculateZscores}()},
+\code{\link{doModeOpposite}()},
+\code{\link{doSampleVariance}()},
+\code{\link{doStatsSummary}()},
+\code{\link{findOutliersUsingIQR}()},
+\code{\link{findOutliersUsingZscores}()}
+}
+\concept{Stats}
