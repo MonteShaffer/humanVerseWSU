@@ -49,7 +49,8 @@
 #' b = sample(N, 5, replace=TRUE);
 #' isClose( a, b, myTol);  # prints warning, returns matrix
 #'
-#'
+#' sin(pi) == 0;  # Ben's example
+#' isClose( sin(pi), 0 );
 isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
   {
   # we assume no issues with stats::na.omit

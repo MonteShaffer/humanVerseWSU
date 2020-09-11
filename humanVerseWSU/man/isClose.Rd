@@ -56,6 +56,7 @@ a = sample(N, 9, replace=TRUE);
 b = sample(N, 5, replace=TRUE);
 isClose( a, b, myTol);  # prints warning, returns matrix
 
-
+sin(pi) == 0;  # Ben's example
+isClose( sin(pi), 0 );
 }
 \concept{System}
