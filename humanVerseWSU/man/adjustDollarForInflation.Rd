@@ -9,9 +9,9 @@ adjustDollarForInflation(mydollar, myyear, newyear, idf = inflation.df)
 \arguments{
 \item{mydollar}{current dollar value}
 
-\item{myyear}{current year value (4-digit format)}
+\item{myyear}{current year value (4-digit format, 1920 to 2020)}
 
-\item{newyear}{new year value (4-digit format)}
+\item{newyear}{new year value (4-digit format, 1920 to 2020)}
 
 \item{idf}{inflation data frame}
 }

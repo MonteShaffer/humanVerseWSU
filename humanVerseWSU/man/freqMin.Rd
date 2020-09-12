@@ -25,8 +25,10 @@ freqMin( f.min ); # 1, from the 9
 }
 \seealso{
 Other Vectors: 
+\code{\link{doUnique}()},
 \code{\link{findAllIndexesWithValueInVector}()},
 \code{\link{freqMax}()},
+\code{\link{notDuplicated}()},
 \code{\link{whichMaxFreq}()},
 \code{\link{whichMax}()},
 \code{\link{whichMinFreq}()},

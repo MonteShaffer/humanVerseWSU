@@ -181,3 +181,86 @@ freqMin = function(x)
 		freq.min = min( x.table$Freq );
 	freq.min;
 	}
+
+
+#' notDuplicated
+#'
+#' demonstrate !duplicated() syntax using set notation
+#'
+#' @family Vectors
+#'
+#' @param x vector (numeric or character)
+#'
+#' @return vector, integers of indexes of "unique" or "distinct" values
+#' @export
+#'
+#' @examples
+#' notDuplicated( c(1, rep(2:8,5), 9) );
+#' notDuplicated( c( rep(1,3), rep(2:8,5), rep(9,7)  ) );
+#'
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' notDuplicated( as.character(iris$Species) );
+#'
+#'
+#' notDuplicated( iris$Sepal.Length );
+#' notDuplicated( as.numeric(unlist(iris["Sepal.Length"])) );
+#'
+notDuplicated = function(x)
+  {
+  new.x = c();  # new vector
+  new.idx = c();
+  nx = length(x);
+  for(i in 1: nx)
+    {
+    #if(!(x[i] %in% new.x))  # set notation
+    if(!is.element(x[i],new.x))
+      {
+      new.x = c(new.x, x[i]);
+      new.idx = c(new.idx,i);
+      }
+    }
+  new.idx;
+  }
+
+
+
+#' areUnique
+#'
+#' demonstrate unique() syntax using set notation
+#'
+#' @family Vectors
+#'
+#' @param x vector (numeric or character)
+#'
+#' @return vector, integers of indexes of "unique" or "distinct" values
+#' @export
+#'
+#' @examples
+#' doUnique( c(1, rep(2:8,5), 9) );
+#' doUnique( c( rep(1,3), rep(2:8,5), rep(9,7)  ) );
+#'
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' doUnique( as.character(iris$Species) );
+#'
+#'
+#' doUnique( iris$Sepal.Length );
+#' doUnique( as.numeric(unlist(iris["Sepal.Length"])) );
+#'
+doUnique = function(x)
+  {
+  new.x = c();  # new vector
+  nx = length(x);
+  for(i in 1: nx)
+    {
+    #if(!(x[i] %in% new.x))  # set notation
+    if(!is.element(x[i],new.x))
+      {
+      new.x = c(new.x, x[i]);
+      }
+    }
+  new.x;
+  }

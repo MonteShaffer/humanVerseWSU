@@ -16,6 +16,10 @@
 #'
 
 
+ywd = convertDateStringToFormat( date.strings,
+                              c("%Y","%W","%j"), c("year","week","day"),
+                                                            "%m/%d/%Y %H:%M");
+
 
 
 

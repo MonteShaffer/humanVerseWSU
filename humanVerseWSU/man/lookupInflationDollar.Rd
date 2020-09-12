@@ -7,7 +7,7 @@
 lookupInflationDollar(year, idf = inflation.df)
 }
 \arguments{
-\item{year}{numeric, 4-digit year}
+\item{year}{numeric, 4-digit year   (1920 - 2020)}
 
 \item{idf}{inflation data frame}
 }

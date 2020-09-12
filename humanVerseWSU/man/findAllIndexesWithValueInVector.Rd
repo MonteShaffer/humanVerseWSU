@@ -24,8 +24,10 @@ findAllIndexesWithValueInVector( sample( rep(1:9, 5) ), 5);
 }
 \seealso{
 Other Vectors: 
+\code{\link{doUnique}()},
 \code{\link{freqMax}()},
 \code{\link{freqMin}()},
+\code{\link{notDuplicated}()},
 \code{\link{whichMaxFreq}()},
 \code{\link{whichMax}()},
 \code{\link{whichMinFreq}()},

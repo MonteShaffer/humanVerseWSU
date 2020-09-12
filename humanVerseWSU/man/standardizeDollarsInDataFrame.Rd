@@ -20,7 +20,7 @@ standardizeDollarsInDataFrame(
 
 \item{dollar.source}{column name (in df) with raw dollars}
 
-\item{year.source}{column name (in df) with 4-digit years}
+\item{year.source}{column name (in df) with 4-digit years (1920 - 2020)}
 
 \item{dollar.out}{new column name (in df) to be created}
 

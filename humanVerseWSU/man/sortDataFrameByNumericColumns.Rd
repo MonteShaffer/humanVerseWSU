@@ -20,25 +20,42 @@ dataframe, updated
 sortDataFrameByNumericColumns
 }
 \examples{
+
 library(datasets);
 data(iris);
 df = iris[1:10,];
-df$date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
-"7/3/2015 11:16","11/18/2010 1:29","4/23/2011 0:08","10/6/2010 11:13",
-"7/26/2009 13:23","4/9/2008 13:40","8/20/2008 11:32");
-df$year = convertDateStringToFormat(df$date.strings,"\%Y","\%m/\%d/\%Y \%H:\%M");
-df$week = convertDateStringToFormat(df$date.strings,"\%W","\%m/\%d/\%Y \%H:\%M");
-df$day = convertDateStringToFormat(df$date.strings,"\%j","\%m/\%d/\%Y \%H:\%M");
+sortDataFrameByNumericColumns(df,"Petal.Length","ASC");
+sortDataFrameByNumericColumns(df,"Petal.Length","DESC");
+sortDataFrameByNumericColumns(df, c("Petal.Length","Petal.Width") , "DESC");
+sortDataFrameByNumericColumns(df, c("Petal.Length","Petal.Width") , c("ASC","DESC"));
 
-df = removeColumnsFromDataFrame(df,"date.strings");
+
+date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
+                 "7/3/2015 11:16", "11/18/2010 1:29", "4/23/2011 0:08",
+                 "10/6/2010 11:13", "7/26/2009 13:23","4/9/2008 13:40",
+                 "8/20/2008 11:32");
+
+df$date.strings = date.strings;
+df;
+df = moveColumnsInDataFrame(df, "date.strings", "after", "Sepal.Width");
+df;
+
+
+
+ywd = convertDateStringToFormat( date.strings,
+                             c("\%Y","\%W","\%j"), c("year","week","day"),
+                                                           "\%m/\%d/\%Y \%H:\%M");
+
+udf = replaceDateStringWithDateColumns(df,"date.strings",ywd);
+
     mycols = c("year","week", "day");
-sortDataFrameByNumericColumns(df,mycols,"ASC");
-sortDataFrameByNumericColumns(df,mycols,"DESC");
+sortDataFrameByNumericColumns(udf,mycols,"ASC");
+sortDataFrameByNumericColumns(udf,mycols,"DESC");
 
-    mydirs = c("ASC","DESC","ASC");
-sortDataFrameByNumericColumns(df, mycols, mydirs );
+    mydirections = c("ASC","DESC","ASC");
+sortDataFrameByNumericColumns(udf, mycols, mydirections );
 
-sortDataFrameByNumericColumns(df,sample(mycols),sample(mydirs) );
+sortDataFrameByNumericColumns(udf,sample(mycols),sample(mydirections) );
 
 }
 \seealso{
@@ -46,6 +63,7 @@ Other DataFrame:
 \code{\link{getIndexOfDataFrameColumns}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{replaceDateStringWithDateColumns}()}
 }

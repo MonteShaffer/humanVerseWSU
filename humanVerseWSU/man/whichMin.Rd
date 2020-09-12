@@ -22,9 +22,11 @@ whichMin( c(23, presidents[1:30], 23) );
 }
 \seealso{
 Other Vectors: 
+\code{\link{doUnique}()},
 \code{\link{findAllIndexesWithValueInVector}()},
 \code{\link{freqMax}()},
 \code{\link{freqMin}()},
+\code{\link{notDuplicated}()},
 \code{\link{whichMaxFreq}()},
 \code{\link{whichMax}()},
 \code{\link{whichMinFreq}()}

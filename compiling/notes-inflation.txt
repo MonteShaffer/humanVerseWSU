@@ -1,3 +1,15 @@
+#' parseInflationTableHTML
+#'
+#' @family Inflation-Raw
+#'
+#' @param infl.html \code{rvest} object of HTML with inflation data
+#'
+#' @return inflation data frame (idf)
+#' @export
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
+
+
 # we can include libraries in a functions header
 # duplicate calls to libraries won't break anything
 

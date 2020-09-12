@@ -54,7 +54,54 @@ removeDuplicatesFromDataFrame	= function(df,mycolumn)
 	{
 	# one column at a time
 	ndf = df[!duplicated(df[mycolumn]), ];
-	}
+  }
+
+
+
+#' removeDuplicatesFromDataFrameUnique
+#'
+#' Based on the current (sort) order of the dataframe, it will remove
+#' duplicate values in the column.
+#'
+#' @family DataFrame
+#'
+#' @param df dataframe
+#' @param mycolumn name of column to look for unique/distinct values ... string
+#'
+#' @return dataframe, updated
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#'
+#' df = removeDuplicatesFromDataFrameUnique(iris,"Species");
+#' head(df);
+#'
+#' df = removeDuplicatesFromDataFrameUnique(iris,"Petal.Width");
+#' head(df);
+removeDuplicatesFromDataFrameUnique = function(df, mycolumn)
+  {
+  ncols = dim(df)[2];
+  ndf = as.data.frame( matrix(NA, nrow=0,ncol=ncols) );
+    colnames(ndf) = colnames(df); # empty new data frame
+
+  # could be factors
+  u = unique( df[,mycolumn]); # str(u); # class(u);
+  nu = length(u);
+  for(i in 1:nu)
+    {
+    mykey = u[i];
+    # get all rows with unique key
+    rows = df[df[,mycolumn]==mykey,];
+    row = rows[1,]; # first row
+    ndf = rbind(ndf,row);
+    }
+  ndf;
+  }
+
+
 
 #' getIndexOfDataFrameColumns
 #'
@@ -143,6 +190,7 @@ moveColumnsInDataFrame = function(ndf, mycols, where, anchor)
 	last.one = dim(ndf)[2];
 		order.start = 1:last.one;
 	to.move = mycols.idx;
+	  # set notation
 		order.remaining = setdiff(order.start,to.move);
 
 	# moving 5,8,2 to after 7 ...
@@ -181,14 +229,37 @@ moveColumnsInDataFrame = function(ndf, mycols, where, anchor)
 #'
 #' @return dataframe, updated
 #' @export
+#' @examples
+#' date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
+#'                  "7/3/2015 11:16", "11/18/2010 1:29", "4/23/2011 0:08",
+#'                  "10/6/2010 11:13", "7/26/2009 13:23","4/9/2008 13:40",
+#'                  "8/20/2008 11:32");
+#'
+#' library(datasets);
+#' data(iris);
+#' df = iris[1:10,];
+#' df$date.strings = date.strings;
+#' df;
+#' df = moveColumnsInDataFrame(df, "date.strings", "after", "Sepal.Width");
+#' df;
+#'
+#'
+#'
+#' ywd = convertDateStringToFormat( date.strings,
+#'                              c("%Y","%W","%j"), c("year","week","day"),
+#'                                                            "%m/%d/%Y %H:%M");
+#'
+#' udf = replaceDateStringWithDateColumns(df,"date.strings",ywd);
+#'
 #'
 replaceDateStringWithDateColumns = function(df, mycolumn, newcols)
 		{
-
-		date.idx = getIndexOfDataFrameColumns(df,mycolumn);	# we have the anchor ...
+    # we have the anchor ...
+		date.idx = getIndexOfDataFrameColumns(df,mycolumn);
 			ndf = cbind(df,newcols);
-				mycols = colnames(newcols); # they must already be named ...
-		ndf = moveColumnsInDataFrame(ndf, mycols, date.idx, "after"); # could be "before", we are going to kill it on the next line ...
+			  # they must already be named ...
+				mycolnames = colnames(newcols);
+		ndf = moveColumnsInDataFrame(ndf, mycolnames, "after", date.idx);
 		ndf = removeColumnsFromDataFrame(ndf,mycolumn);
 		ndf;
 		}
@@ -215,25 +286,42 @@ replaceDateStringWithDateColumns = function(df, mycolumn, newcols)
 #' @export
 #'
 #' @examples
+#'
 #' library(datasets);
 #' data(iris);
 #' df = iris[1:10,];
-#' df$date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
-#' "7/3/2015 11:16","11/18/2010 1:29","4/23/2011 0:08","10/6/2010 11:13",
-#' "7/26/2009 13:23","4/9/2008 13:40","8/20/2008 11:32");
-#' df$year = convertDateStringToFormat(df$date.strings,"%Y","%m/%d/%Y %H:%M");
-#' df$week = convertDateStringToFormat(df$date.strings,"%W","%m/%d/%Y %H:%M");
-#' df$day = convertDateStringToFormat(df$date.strings,"%j","%m/%d/%Y %H:%M");
+#' sortDataFrameByNumericColumns(df,"Petal.Length","ASC");
+#' sortDataFrameByNumericColumns(df,"Petal.Length","DESC");
+#' sortDataFrameByNumericColumns(df, c("Petal.Length","Petal.Width") , "DESC");
+#' sortDataFrameByNumericColumns(df, c("Petal.Length","Petal.Width") , c("ASC","DESC"));
 #'
-#' df = removeColumnsFromDataFrame(df,"date.strings");
+#'
+#' date.strings = c("3/24/2010 18:33", "9/3/2009 17:28", "10/14/2009 11:40",
+#'                  "7/3/2015 11:16", "11/18/2010 1:29", "4/23/2011 0:08",
+#'                  "10/6/2010 11:13", "7/26/2009 13:23","4/9/2008 13:40",
+#'                  "8/20/2008 11:32");
+#'
+#' df$date.strings = date.strings;
+#' df;
+#' df = moveColumnsInDataFrame(df, "date.strings", "after", "Sepal.Width");
+#' df;
+#'
+#'
+#'
+#' ywd = convertDateStringToFormat( date.strings,
+#'                              c("%Y","%W","%j"), c("year","week","day"),
+#'                                                            "%m/%d/%Y %H:%M");
+#'
+#' udf = replaceDateStringWithDateColumns(df,"date.strings",ywd);
+#'
 #'     mycols = c("year","week", "day");
-#' sortDataFrameByNumericColumns(df,mycols,"ASC");
-#' sortDataFrameByNumericColumns(df,mycols,"DESC");
+#' sortDataFrameByNumericColumns(udf,mycols,"ASC");
+#' sortDataFrameByNumericColumns(udf,mycols,"DESC");
 #'
-#'     mydirs = c("ASC","DESC","ASC");
-#' sortDataFrameByNumericColumns(df, mycols, mydirs );
+#'     mydirections = c("ASC","DESC","ASC");
+#' sortDataFrameByNumericColumns(udf, mycols, mydirections );
 #'
-#' sortDataFrameByNumericColumns(df,sample(mycols),sample(mydirs) );
+#' sortDataFrameByNumericColumns(udf,sample(mycols),sample(mydirections) );
 #'
 sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 	{

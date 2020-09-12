@@ -25,8 +25,10 @@ freqMax( f.max );  # 5, from the 2:8 (ties)
 }
 \seealso{
 Other Vectors: 
+\code{\link{doUnique}()},
 \code{\link{findAllIndexesWithValueInVector}()},
 \code{\link{freqMin}()},
+\code{\link{notDuplicated}()},
 \code{\link{whichMaxFreq}()},
 \code{\link{whichMax}()},
 \code{\link{whichMinFreq}()},

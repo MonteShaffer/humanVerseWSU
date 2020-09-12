@@ -2,9 +2,18 @@
 
 #' loadInflationData
 #'
+#' This data was pulled from
+#' \url{https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000}
+#' in September 2020.
+#'
+#' It contains dollar information from 1920 to 2020, 101 observations.
+#'
+#' Likely with throw an error if you specify a value not in that range.
+#'
 #' @family Inflation
 #'
-#' inflation.df global gets assigned to the inflation.rds (equivalent to inflation.txt)
+#'   inflation.df global gets assigned to the inflation.rds (equivalent to
+#'   inflation.txt)
 #' @export
 
 loadInflationData = function()
@@ -20,8 +29,8 @@ loadInflationData = function()
 #' @family Inflation
 #'
 #' @param mydollar current dollar value
-#' @param myyear current year value (4-digit format)
-#' @param newyear new year value (4-digit format)
+#' @param myyear current year value (4-digit format, 1920 to 2020)
+#' @param newyear new year value (4-digit format, 1920 to 2020)
 #' @param idf inflation data frame
 #'
 #' @return dollar, updated (adjusted from myyear to newyear)
@@ -53,7 +62,7 @@ adjustDollarForInflation = function(mydollar,myyear,newyear,idf=inflation.df)
 #' @param df dataframe containing dollar.source and year.source
 #' @param anchor.year base year to convert all dollars to
 #' @param dollar.source column name (in df) with raw dollars
-#' @param year.source column name (in df) with 4-digit years
+#' @param year.source column name (in df) with 4-digit years (1920 - 2020)
 #' @param dollar.out new column name (in df) to be created
 #' @param idf inflation data frame
 #'
@@ -91,7 +100,7 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 #'
 #' @family Inflation
 #'
-#' @param year numeric, 4-digit year
+#' @param year numeric, 4-digit year   (1920 - 2020)
 #' @param idf inflation data frame
 #'
 #' @return numeric dollar from idf table for that year
@@ -240,7 +249,6 @@ parseStoreReturnInflationData = function (raw,myfile=NULL,mytxt=NULL)
 #'
 #' @return inflation data frame (idf)
 #' @export
-#' @importFrom rlang .data
 #' @importFrom magrittr %>%
 parseInflationTableHTML = function (infl.html)
 	{

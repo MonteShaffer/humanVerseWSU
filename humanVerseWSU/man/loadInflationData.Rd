@@ -7,8 +7,16 @@
 loadInflationData()
 }
 \description{
-loadInflationData
+This data was pulled from
+\url{https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000}
+in September 2020.
+}
+\details{
+It contains dollar information from 1920 to 2020, 101 observations.
+
+Likely with throw an error if you specify a value not in that range.
 }
 \concept{Inflation
 
-inflation.df global gets assigned to the inflation.rds (equivalent to inflation.txt)}
+  inflation.df global gets assigned to the inflation.rds (equivalent to
+  inflation.txt)}
