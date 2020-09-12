@@ -226,7 +226,7 @@ notDuplicated = function(x)
 
 
 
-#' areUnique
+#' doUnique
 #'
 #' demonstrate unique() syntax using set notation
 #'

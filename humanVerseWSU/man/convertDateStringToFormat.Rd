@@ -19,7 +19,7 @@ convertDateStringToFormat(
 
 \item{to.name}{name(s) given to the \code{to} column(s)}
 
-\item{from}{how the input is formatted, default is \code{"\%Y-\%m-\%d \%H:\%M:\%S"}}
+\item{from}{format of input, default \code{"\%Y-\%m-\%d \%H:\%M:\%S"}}
 
 \item{num}{if TRUE (default), will return numeric form.}
 }

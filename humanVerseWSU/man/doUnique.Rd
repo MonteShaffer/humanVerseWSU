@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions-vector.R
 \name{doUnique}
 \alias{doUnique}
-\title{areUnique}
+\title{doUnique}
 \usage{
 doUnique(x)
 }

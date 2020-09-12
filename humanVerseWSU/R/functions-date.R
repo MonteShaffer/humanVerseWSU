@@ -1,4 +1,3 @@
-
 #' convertDateStringToFormat
 #'
 #' basically wraps strptime and strftime into this single call
@@ -12,7 +11,7 @@
 #' @param strvec one or more strings, such as \code{"3/24/2010 18:33"}
 #' @param to how you want to return the date \code{"\%Y"} is just Year
 #' @param to.name name(s) given to the \code{to} column(s)
-#' @param from how the input is formatted, default is \code{"\%Y-\%m-\%d \%H:\%M:\%S"}
+#' @param from format of input, default \code{"\%Y-\%m-\%d \%H:\%M:\%S"}
 #' @param num if TRUE (default), will return numeric form.
 #'
 #' @return dataframe same length as strvec, with one or more columns
