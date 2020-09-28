@@ -14,9 +14,11 @@ Imports:
   magrittr,
   matrixStats,
   RCurl,
+  readtext,
   rlang,
   rvest,
   stats,
+  stringr,
   utils,
   xml2
 RoxygenNote: 7.1.1

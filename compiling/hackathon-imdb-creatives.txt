@@ -1,0 +1,43 @@
+mypath.search = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search";
+
+
+movie.nmids.u = dget("R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/creatives.movies.nmids.u.txt");
+
+nctu = length(movie.nmids.u);  # 26899
+
+source('C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-imdb.R', encoding = 'UTF-8', echo=FALSE);
+source('C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-file.R', encoding = 'UTF-8', echo=FALSE);
+
+imdb.urls = getUrlTemplatesIMDB();
+
+
+
+library(magrittr);
+library(matrixStats);
+library(RCurl);
+library(readtext);
+library(rlang);
+library(rvest);
+library(stats); 
+library(stringr);
+library(utils);
+library(xml2);
+
+
+movie.nmids.u = sample(movie.nmids.u);
+
+	for(i in 1:nctu)
+    {
+    nmid = movie.nmids.u[i];
+    print("####################################");
+    percent = sprintf("%.2f",100*i/nctu);
+    print(paste0(percent,"%         :: ",i," of ",nctu," ---> ",nmid)); flush.console();
+    print("####################################");
+    mymovies = doActorSearch( nmid, mypath.search );
+ 
+
+
+
+	  }
+	  
+	  

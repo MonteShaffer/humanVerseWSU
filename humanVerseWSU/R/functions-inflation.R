@@ -191,6 +191,8 @@ grabInflationDataFrame = function()
 			} else 	{
 					htmlfile = gsub(".txt",".html", mytxt, fixed=TRUE);
 
+
+					# this can be a generic function ...
 					rawHTML = RCurl::getURL( inflation.url );
 
 					storeToFile(rawHTML,htmlfile);

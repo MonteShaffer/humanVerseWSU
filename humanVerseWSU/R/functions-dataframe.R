@@ -28,7 +28,147 @@ removeColumnsFromDataFrame = function(df,mycols)
 	df;
 	}
 
+# removeAllColumnsBut  = function(df, mycols)
 
+# mycols = c("ttid","year","millions");
+# ndf = removeAllColumnsBut(df,mycols);
+removeAllColumnsBut = function(df,mycols)
+	{
+  ndf = NULL;
+	for(mycol in mycols)  # mycols could be just a single string, which is automatically treated as a vector of length 1.
+		{
+		ndf[mycol] = df[mycol];
+		}
+	as.data.frame(ndf);
+  }
+
+
+removeNAsFromDataFrame = function(df,mycols=NULL)
+  {
+  # if the given column is NA, we remove the row
+  # this enables us to build a balanced df
+  # if NULL, it will loop over all columsn and do a full cleanse by column ... very conservative approach
+  # imdb ... has-millions?
+  # nrows = dim(df)[1];
+  # ncols = dim(df)[2];
+  # https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
+  # complete.cases?
+  na.omit(df);
+}
+
+# myrow.unpopular = updateDataFrameWithUniqueNewElementsIndicated(row, "ttid",  toadd, "source.unpopular", "rank");
+
+#updateDataFrameWithUniqueNewElementsIndicated = function(row,  stack.gem$movies, "source.gem");
+updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, df.new, indicator, replace=TRUE)
+  {
+  # assume elements in df.existing are unique
+  ndf = df.existing;
+      n.existing = dim(ndf)[1];
+  # mycolumn = "ttid";
+  toadd = df.new;
+      n.toadd = dim(toadd)[1];
+
+      # indicator = "source.gem";
+  cidx = getIndexOfDataFrameColumns(ndf, indicator);
+  # update the key of the indictor to true for that element [DEFAULT]
+  # or update to another value, such as "rank" of toadd dataframe ..
+  replace.cidx = NULL;
+  if(!isTRUE(replace))
+    {
+    replace.cidx = getIndexOfDataFrameColumns(toadd, replace);
+    }
+
+
+
+  for(i in 1:n.toadd)
+    {
+    r = toadd[i,];
+    k = as.character(r[mycolumn]);  # tt0270321
+
+    idx = findAllIndexesWithValueInVector( as.vector(unlist(ndf[mycolumn])), k);
+
+    #print( paste("i= ",i, " idx info") );     print(idx);
+
+    idx.length = length(idx); # this should be zero or one ...
+    if(idx.length == 0)
+      {
+      # not found, let's just add the row to the dataframe, as-is
+      ndf = rbind(ndf,r);
+      #print( paste0("key not found, added: ",k) );
+      }
+      else
+        {
+        for(j in 1:idx.length) # should be one
+          {
+          myidx = idx[j];
+
+
+          ndf[myidx,cidx] = if(is.null(replace.cidx)) { TRUE; } else { toadd[i,replace.cidx]; }
+
+
+         # print( paste0("key found at myidx: ",myidx," true to cidx: ",cidx) );
+          }
+        }
+
+    }
+  ndf;
+
+  }
+
+
+
+
+#' removeDuplicatesFromDataFrameAllColumns
+#'
+#' Based on the current order of the dataframe, it will remove
+#' duplicate values in ALL columns.
+#'
+#' @family DataFrame
+#'
+#' @param df dataframe
+#' @return dataframe, updated
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' dim(iris);
+#' iris[c(102,143),]; # is this a duplicate or replicate?
+#' #if a different plant, NO (generally)
+#' #if an error in data collection (double-submission), YES
+#'
+#' df = removeDuplicatesFromDataFrameAllColumns(iris); # personality raw
+#' head(df);
+#' dim(df);
+removeDuplicatesFromDataFrameAllColumns	= function(df)
+	{
+  nrows = dim(df)[1];
+  ncols = dim(df)[2];
+
+  df.str = c();
+  for(i in 1:nrows)
+    {
+    row = df[i,];
+    row.str = paste(as.character( unlist(row) ) ,collapse="-");
+    df.str = c(df.str,row.str);
+    }
+
+  #duplicated(df.str);
+  ndf = df[!duplicated(df.str), ];
+
+  ## below was a truth table by cols with sum ...
+#   truth.table = matrix(0, nrow=nrows, ncol=(ncols+2));
+#     colnames(truth.table) = c( names(df), "Sum", "Result");
+# 	# one column at a time
+#   for(j in 1:ncols)
+#     {
+#     mycolumn = names(df)[j];
+#     truth.table[,j] = duplicated(df[mycolumn]);
+#     }
+#   truth.table[,(ncols+1)] = rowSums(truth.table[,1:ncols]);
+# 	#ndf = df[!duplicated(df[mycolumn]), ];
+  }
 
 
 #' removeDuplicatesFromDataFrame

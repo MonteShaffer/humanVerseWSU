@@ -1,0 +1,88 @@
+] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm0271763/page_001.html"
+[1] "grabHTML() ... from RCurl ..."
+[1] "Grabbed from RCurl ... stored"
+Error in UseMethod("xml_find_all") : 
+  no applicable method for 'xml_find_all' applied to an object of class "xml_document"
+In addition: There were 39 warnings (use warnings() to see them)
+
+
+###################  503 error #############
+<body>\n<h1>D'oh!</h1>\r\n\r\n    <p><b>Error 503</b></p>\r\n\r\n    <p>We're sorry, something went wrong.</p>\r\n
+
+
+# 
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm0191899/"
+[1] "grabHTML() ... from RCurl ..."
+[1] "Grabbed from RCurl ... stored"
+[1] "grabHTML() ... from RCurl ..."
+[1] "Grabbed from RCurl ... stored"
+Error in UseMethod("xml_find_all") : 
+  no applicable method for 'xml_find_all' applied to an object of class "xml_document"
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+>   
+>   
+> 
+
+1] "2.68%         :: 1714 of 64041 ---> nm6925197"
+[1] "####################################"
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm6925197/"
+[1] "grabHTML() ... from cache ..."
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm6925197/page_001.html"
+Error in result$rank[i] <- rank : replacement has length zero
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+>   
+>   
+
+# I believe rank error is because: I found the nmid in a movie (ttid) cast parsing, but IMDB does not have that person in the "search" component of their database.
+
+# Search page has all of the roles ... under job types
+fieldset ... job_type
+
+<label class="unbold">
+        <input type="checkbox" data-count="2" name="miscellaneous" checked="checked" ref-marker="filmo_ref_job_typ">
+        <span class="faceter-facet-text">Miscellaneous</span>
+    </label>
+	
+# gems ... popular ... duds ... 
+# starmeter ... numer "top 1000" ... 
+# roles ... roles (1,2,3) ... separate table NF for roles ... nmid -> role -> count ...	
+
+## location finder (stores with radius r)...
+## build bounding box, grab data from SQL
+## From that dataset, loop over results ... inscribing a circle in a square ...
+## do I have that data somewhere I can show them with SQL connnections using R.  [organicGirl]
+
+1] "3.40%         :: 2179 of 64041 ---> nm6925196"
+[1] "####################################"
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm6925196/"
+[1] "grabHTML() ... from cache ..."
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm6925196/page_001.html"
+Error in result$rank[i] <- rank : replacement has length zero
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+>   
+>   
+
+[1] "0.98%         :: 628 of 64041 ---> nm0373806"
+[1] "####################################"
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm0373806/"
+[1] "grabHTML() ... from RCurl ..."
+[1] "Grabbed from RCurl ... stored"
+Error in result$rank[i] <- rank : replacement has length zero
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+>   
+>   
+
+
+
+1] "0.69%         :: 442 of 64041 ---> nm4503959"
+[1] "####################################"
+[1] "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search/actor/nm4503959/"
+[1] "grabHTML() ... from RCurl ..."
+[1] "Grabbed from RCurl ... stored"
+Error in temp[[1]] : subscript out of bounds
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+>   
+>   
+> 
+
+

@@ -1,0 +1,38 @@
+mypath.search = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/search";
+file.temp.actors.top50 = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/temp.actors.top50.unique.txt";
+
+df = read.csv(file.temp.actors.top50, header=T, sep="|");
+actors.top50.u = unlist(df$actors);
+
+na50 = length(actors.top50.u); 
+actors.top50.u = sample(actors.top50.u);
+
+source('C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-imdb.R', encoding = 'UTF-8', echo=FALSE);
+source('C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-file.R', encoding = 'UTF-8', echo=FALSE);
+
+imdb.urls = getUrlTemplatesIMDB();
+
+
+
+library(magrittr);
+library(matrixStats);
+library(RCurl);
+library(readtext);
+library(rlang);
+library(rvest);
+library(stats); 
+library(stringr);
+library(utils);
+library(xml2);
+
+for(i in 1:na50)
+    {
+    nmid = actors.top50.u[i];
+    print("####################################");
+    percent = sprintf("%.2f",100*i/na50);
+    print(paste0(percent,"%         :: ",i," of ",na50," ---> ",nmid)); flush.console();
+    print("####################################");
+    mymovies = doActorSearch( nmid, mypath.search );
+	}
+	  
+	  

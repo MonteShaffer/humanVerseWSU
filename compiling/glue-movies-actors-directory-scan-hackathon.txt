@@ -1,0 +1,67 @@
+
+df.path = "R:\\WSU_STATS419_FALL2020\\modules\\imdb\\2020-09\\dataframes";
+setwd(df.path);
+df.file = "movies.actors.gluetable.folder.txt";
+
+df.out = paste0(df.path,"/",df.file);
+writeLine = function(str, file=file, append=TRUE, end="\n")
+  {
+  # wrapper for cat
+  cat( paste(str,end,sep=""), file=file, sep="", append=append );
+  }
+  
+ movie.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/movies"; 
+ myttids = list.dirs(path=movie.path, full.names=FALSE, recursive=FALSE);
+
+
+
+
+
+
+######################################
+# header
+writeLine("ttid|nmid", file=df.out, append=FALSE);
+
+
+n=length(myttids);
+
+for(i in 1:n)
+	{
+	ttid = myttids[i];
+	# no actors .... DANGLING ... dangling NODE ...
+	# get nmids ...
+	
+	actor.file = paste0(movie.path,"/",ttid,"/actors.txt");
+	
+	percent = sprintf("%.2f",100*i/n);
+    print(paste0(percent,"%         :: ",i," of ",n," ---> ",ttid)); flush.console();
+ 
+	
+	
+	
+	if(file.exists(actor.file))
+		{
+		actor.df = read.csv(actor.file, sep="|", header=T);
+		
+		myactors = unlist(actor.df$actors);
+		na = length(myactors); 
+		
+		if(na == 0) { writeLine( paste0(ttid,"|","DANGLING"), file=df.out, append=TRUE); } else {
+							for(j in 1:na)
+								{
+								nmid = myactors[j];
+								writeLine( paste0(ttid,"|",nmid), file=df.out, append=TRUE);
+								}
+							}
+		
+		} else {
+				writeLine( paste0(ttid,"|","DANGLING"), file=df.out, append=TRUE);
+				}
+	
+	
+	
+	}
+ 
+
+
+

@@ -1,0 +1,45 @@
+file.temp.movies = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/temp.movies.txt";
+df = read.csv(file.temp.movies , header=T, sep="|");
+
+mymovies = unlist(df$x);
+
+nt50 = length(mymovies); 
+
+source('C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-imdb.R', encoding = 'UTF-8', echo=FALSE);
+source('C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-file.R', encoding = 'UTF-8', echo=FALSE);
+
+imdb.urls = getUrlTemplatesIMDB();
+
+
+
+library(magrittr);
+library(matrixStats);
+library(RCurl);
+library(readtext);
+library(rlang);
+library(rvest);
+library(stats); 
+library(stringr);
+library(utils);
+library(xml2);
+
+local.data.path = "R:/WSU_STATS419_FALL2020/"; 
+mypath.ttid = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/movies";
+
+mydata= sample(mymovies);
+
+ 
+  for(i in 1:nt50)
+    {
+    ttid = mydata[i];
+      mypath.ttid2 = paste0(mypath.ttid,"/",ttid);
+      createDir(mypath.ttid2);
+    myhtml.ttid = paste0(mypath.ttid2,"/","filmInfo.html");
+    myurl.ttid = gsub("{ttid}",ttid, imdb.urls$filmInfo, fixed=T);
+    percent = sprintf("%.2f",100*i/nt50);
+		print(myhtml.ttid);
+    print(paste0(percent,"%         :: ",i," of ",nt50," ---> ",ttid)); flush.console();
+    do.nothing = grabHTML(myhtml.ttid,myurl.ttid,FALSE);  # slow ...
+	
+	}
+	  
