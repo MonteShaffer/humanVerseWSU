@@ -1,3 +1,18 @@
+#' traceMatrix
+#'
+#' @param square a square matrix (n x n)
+#'
+#' @return numeric value for tr(matrix)
+#' @export
+#'
+#' @examples
+#' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
+#' traceMatrix(m);
+#'
+traceMatrix = function(square)
+  {
+  sum(diag(square));
+  }
 
 
 #' transposeMatrix

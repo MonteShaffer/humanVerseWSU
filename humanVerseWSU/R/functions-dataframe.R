@@ -32,10 +32,32 @@ removeColumnsFromDataFrame = function(df,mycols)
 
 # mycols = c("ttid","year","millions");
 # ndf = removeAllColumnsBut(df,mycols);
+#' removeAllColumnsBut
+#'
+#' Remove all columns in the data frame but (except for)
+#'  those columns listed.
+#'
+#' Useful when you have a df with lots of columns.
+#'
+#' @param df dataframe
+#' @param mycols names of cols to keep
+#'
+#' @return dataframe, updated
+#' @export
+#'
+#' @aliases removeAllColumnsExcept
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' dim(iris);
 removeAllColumnsBut = function(df,mycols)
 	{
   ndf = NULL;
-	for(mycol in mycols)  # mycols could be just a single string, which is automatically treated as a vector of length 1.
+  # mycols could be just a single string,
+  # which is automatically treated as a vector of length 1.
+	for(mycol in mycols)
 		{
 		ndf[mycol] = df[mycol];
 		}
@@ -56,6 +78,70 @@ removeNAsFromDataFrame = function(df,mycols=NULL)
   na.omit(df);
 }
 
+
+getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
+      {
+      if(lower.case) { str = tolower(str);}
+      vals = str_split(str,sep);
+      f.vals = c();
+      for(val in vals)
+        {
+        val = str_trim(val);
+        f.vals = c(f.vals,val);
+        }
+      f.vals;
+      }
+
+replaceFactorColumnWithIndicatorVariables = function(df, source.column, sep=",", new.column=source.column, remove.original = FALSE, lower.case=TRUE)
+    {
+    # "genre" becomes genre_comedy as indicator ...
+    # grab all unique indicators, alphabetize, and add to dataframe
+    sidx = getIndexOfDataFrameColumns(df, source.column);
+    u.df = unlist( unique(df[source.column]) );
+    u.keys = c();
+    u.df.length = length(u.df);
+
+    for(i in 1: u.df.length)
+      {
+      u.row = as.character(u.df[i]);
+      u.vals = getKeysFromStringWithSeparator(u.row,sep=sep,lower.case=lower.case);
+      u.keys = c(u.keys,u.vals);
+      }
+
+    mykeys = sort( na.omit( unique(u.keys) ) );  # 26 keys
+    mycols = c();
+    for(mykey in mykeys)
+      {
+      mycol = paste0(new.column,".",mykey);
+      mycols = c(mycols,mycol);
+      df[mycol] = FALSE;
+      }
+    # loop over dataframe adding values
+    df.n = dim(df)[1];
+    for(i in 1:df.n)
+      {
+      #print(i); flush.console();
+      r.val = df[i,sidx];
+      u.vals = getKeysFromStringWithSeparator(r.val,sep=sep,lower.case=lower.case);
+      for(u.val in u.vals)
+        {
+        if(!is.na(u.val))
+          {
+          mycol = paste0(new.column,".",u.val);
+          cidx = getIndexOfDataFrameColumns(df, mycol);
+          df[i,cidx] = TRUE;
+          }
+        }
+      }
+
+    df = moveColumnsInDataFrame(df, mycols, "after", source.column);
+
+    if(remove.original)
+      {
+      df = removeColumnsFromDataFrame(df, source.column);
+      }
+    df;
+    }
 # myrow.unpopular = updateDataFrameWithUniqueNewElementsIndicated(row, "ttid",  toadd, "source.unpopular", "rank");
 
 #updateDataFrameWithUniqueNewElementsIndicated = function(row,  stack.gem$movies, "source.gem");
@@ -77,8 +163,6 @@ updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, 
     {
     replace.cidx = getIndexOfDataFrameColumns(toadd, replace);
     }
-
-
 
   for(i in 1:n.toadd)
     {

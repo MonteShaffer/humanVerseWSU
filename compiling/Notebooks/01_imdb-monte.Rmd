@@ -1,0 +1,241 @@
+---
+title: "IMDB 'Top 250' dataset"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, chunk-setup, include=FALSE}
+# include=FALSE means it is running, but invisible ...
+knitr::opts_chunk$set(echo = TRUE);
+knitr::opts_chunk$set(warning = FALSE);
+knitr::opts_chunk$set(message = FALSE);
+
+data.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+```
+
+# Motivation
+From Wikipedia: "IMDb is an online database of information related to films, television programs, home videos, video games, and streaming content online – including cast, production crew and personal biographies, plot summaries, trivia, ratings, and fan and critical reviews." (October 3, 2020)
+
+This dataset utilizes **only films**. [Underline would be nice here, wouldn't it!?!]
+
+## Official IMDB datasets
+IMDB does make some of its data available for direct download <https://www.imdb.com/interfaces/>.  However, the data fields are a bit wanting.
+
+## September 2020 Custom dataset
+
+### Seed Top 250 (September 2020)
+
+Using this URL as a seed <https://www.imdb.com/chart/top>, I collected the top 250 movies. 
+
+```{r, chunck-top250, include=TRUE}
+
+movies.seed.file = paste0(data.path, "movies.sourced.by.top250.txt");
+movies.seed.df   = utils::read.csv(movies.seed.file, 
+                                      header=TRUE, quote="", sep="|");
+
+dim(movies.seed.df);
+
+movies.seed.vector = as.character( unlist(movies.seed.df) );
+
+head( movies.seed.vector );
+
+# saveRDS(movies.seed.vector,
+#           file= paste0(imdb.path, "imdb/top250.seed.movies.rds") );
+
+
+```
+
+For each movie, I collected and cached the summary `filmInfo` page: e.g.,  <https://www.imdb.com/title/tt0111161>
+
+A movie has a unique id which I call ``ttid`.  Of note on this page:
+
+* The "oneliner":    A paragraph describing the movie.
+
+* The "creatives":  Directors, Writers, and generally Top-3 actors.  Each person has a "name id" or `nmid` that links them to other projects (I focus on films).
+
+* Top-15 actors:  Actor name (with `nmid`) and character name(s) in the film `ttid`.
+
+* Primary facts:  Rated ("R"), Minutes, Genre(s), Votes, Gross (Millions), Metascore, Stars ("9.3/10"), and so on.
+
+* Other Info:  See Details, Box Office, Company Credits, Technical Specs (only available on the summary `filmInfo` page.
+
+### Top Actors in Top 250 (September 2020)
+
+For each of these 250 films, I collected the 15 top actors.  At most, that would give me 3750 actors, but there are duplicates.
+
+```{r, chunck-top250-actors-list, include=TRUE}
+
+actors.seed.file = paste0(data.path, "actors.top250.txt");
+actors.seed.df   = utils::read.csv(actors.seed.file, 
+                                      header=TRUE, quote="", sep="|");
+
+dim(actors.seed.df);
+
+actors.seed.vector = as.character( unlist(actors.seed.df) );
+
+head( actors.seed.vector );
+
+# saveRDS(actors.seed.vector,
+#           file= paste0(imdb.path, "imdb/top250.seed.actors.rds") );
+
+
+```
+
+From the 250 top movies, we have 3,092 actors.  For each actor, we grab the actor information page based on the name id `nmid`; e.g., <https://www.imdb.com/name/nm0000209/> for Tim Robbins.
+
+From the `personInfo` page:
+
+* Name
+
+* Starmeter rank (e.g., 5000) and delta (57 means up 57, -57 means down 57).
+
+* Top-3 Roles:  Actor,Producer,Director
+
+* Bio
+
+* Birth info
+
+* Death info
+
+```{r, chunck-top250-actors, include=TRUE}
+library(humanVerseWSU);
+  ##' TOO INSTALL:  
+  ##'   Requires Rtools ... https://cran.r-project.org/bin/windows/Rtools/
+  # library(devtools);
+  # detach(package:humanVerseWSU);
+  # install_github("MonteShaffer/humanVerseWSU/humanVerseWSU");
+  # library(humanVerseWSU);
+
+actors.info.file = paste0(data.path, "actors.info.by.top250.txt");
+actors.info.df   = utils::read.csv(actors.info.file, 
+                                          header=TRUE, quote="", sep="|");
+
+
+
+
+actors.info.df = moveColumnsInDataFrame(actors.info.df, 
+                                              "bio", "after", "starmeter.delta");
+  
+
+dim(actors.info.df);
+
+head(actors.info.df, n=10);
+
+
+# saveRDS(actors.info.df,
+#           file= paste0(imdb.path, "imdb/top250.actors.info.rds") );
+
+
+```
+
+### All movies from all actors from Top 250 Movies (September 2020)
+
+For these 3,092 unique actors, a search is performed:
+`https://www.imdb.com/filmosearch/?explore=title_type&role={nmid}&ref_=filmo_ref_typ&sort=num_votes,desc&mode=detail&page={page}&title_type=movie`
+
+Where the `{nmid}` is replaced with the actor's unique `nmid` and all relevant pages are harvested.  For the given actor `nmid`, the relevant `ttid` and `rank` is recorded (this search is sorted by popularity, number of votes).  We merge this with the `name` and `character` information to build `top250.gluetable.
+
+```{r, chunck-top250-actors-to-movies, include=TRUE}
+
+glue.file = paste0(imdb.path, "imdb/top250.actors.movies.rds");
+
+if(!file.exists(glue.file))
+{
+  
+actors.movies.file = paste0(data.path, "actors.movies.top250.txt");
+actors.movies.df   = utils::read.csv(actors.movies.file, 
+                                          header=TRUE, quote="", sep="|");
+
+character.info.file = paste0(data.path, "movies.actors.characters.txt");
+character.info.df   = utils::read.csv(character.info.file, 
+                                          header=TRUE, quote="", sep="|");
+
+
+
+
+actors.movies.df = moveColumnsInDataFrame(actors.movies.df, 
+                                              "ttid", "after", "nmid");
+
+actors.movies.df$name = "NA";
+actors.movies.df$character = "NA";
+
+na = dim(actors.movies.df)[1];  # 129,300    
+
+# expensive loop
+for(i in 1:na)
+  {
+  row = actors.movies.df[i,];
+  my.ttid = row$ttid;
+  my.nmid = row$nmid;
+  
+  percent = sprintf("%.2f",100*i/na);
+    print(paste0(percent,"%         :: ",i," of ",na," --->  ttid: ",my.ttid," nmid: ",my.nmid)); flush.console();
+
+  my.match = character.info.df[ character.info.df$ttid==my.ttid &
+                                character.info.df$nmid==my.nmid, ];
+  if(dim(my.match)[1] > 0)
+    {
+    actors.movies.df$name[i] = my.match$name;
+    actors.movies.df$character[i] = my.match$character;
+    }
+  }
+
+###############################################
+
+
+
+# saveRDS(actors.movies.df,
+#           file= paste0(imdb.path, "imdb/top250.actors.movies.rds") );
+
+
+
+
+
+}
+  
+
+dim(actors.movies.df);
+
+head(actors.movies.df, n=10);
+
+
+
+
+```
+
+
+
+```{r, chunck-top250-dataframes, include=TRUE}
+
+actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
+actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
+                                          header=TRUE, quote="", sep="|");
+
+movies.info.top250.file = paste0(data.path, "movies.info.top250.final.txt");
+movies.info.top250.df   = utils::read.csv(movies.info.top250.file, 
+                                          header=TRUE, quote="", sep="|");
+
+actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
+actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
+                                          header=TRUE, quote="", sep="|");
+
+
+
+```
+
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

@@ -15,6 +15,7 @@
 #'   inflation.df global gets assigned to the inflation.rds (equivalent to
 #'   inflation.txt)
 #' @export
+#' @aliases loadDataInflation
 
 loadInflationData = function()
   {

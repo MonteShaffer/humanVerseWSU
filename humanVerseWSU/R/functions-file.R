@@ -1,19 +1,34 @@
 
 
 
+#' createDirRecursive
+#'
+#' dir.create has a recursive option, so you may want to use that
+#' THIS version was written years ago in another C language and ported to R.
+#'
+#' @param folder
+#' @param verbose if true details will be printed
+#' @param skip how many base levels to skip, we can't createDir("C:\")
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' createDirRecursive("R:/monte/says/hi/", verbose=TRUE);
+#' createDirRecursive("R:/monte/says/hi/", verbose=TRUE);
 createDirRecursive = function(folder, verbose=TRUE, skip=1)
   {
   # # skip is the level of subfolders to not createDir,
   # e.g., $skip=1 on Windows will not do createDir("C:\");
   # skip must be 1 or greater ...
-  temp = strsplit(folder,"/",fixed=T);
+  temp = base::strsplit(folder,"/",fixed=T);
   stems = temp[[1]];
   ns = length(stems);
 
-  #msgs = c();
-  #paths = c();
+  if(skip < 1) { stop("skip must be 1 or greater ..."); }
 
   path = "";
+  msg = c();
   for(i in 1:skip)
     {
     path = paste0(path,stems[i],"/");
@@ -21,23 +36,30 @@ createDirRecursive = function(folder, verbose=TRUE, skip=1)
   for(j in (i+1):ns)
     {
     path = paste0(path,stems[j],"/");
-    #print(path);
-    msg = createDir(path, verbose=verbose);
-    #print(msg);
-
-    #msgs = c(msgs,msg);
-    #paths = c(paths,path);
+    msg = c(msg, createDir(path, verbose=verbose));
     }
   if(verbose)
     {
-    #out = paste0("createDirRecursive for \n\t\t\t",folder,"\n");
-    #out = paste0(paths);
     out = folder;
-    print(out);
+    print( paste0("Creating folder: ",out) );
+    print( msg );
     }
   }
 
-# this is "not" recursive at the moment ...
+#' createDir
+#'
+#' dir.create has a recursive option, so you may want to use that
+#' THIS version was written years ago in another C language and ported to R.
+#'
+#' @param folder
+#' @param verbose if true details will be printed
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' createDir("R:/monte/says/hi/again/", verbose=TRUE);
+#' createDir("R:/monte/says/hi/again/", verbose=TRUE);
 createDir = function (folder,verbose=TRUE)
   {
   if(verbose)
@@ -52,13 +74,41 @@ createDir = function (folder,verbose=TRUE)
 # logging functions ... functions-log.R
 
 
+#' writeLine
+#'
+#' This function writes a single character string to a file.
+#' Very useful for simulations and building data one line at a time.
+#'
+#' @param str The character string to be written
+#' @param file The file to write the line to
+#' @param append If TRUE, will append to the end of the file, otherwise it will overwrite an existing file
+#' @param end EOL character to finish the line; the line separator
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
+#' writeLine("hi again", file="R:/monte/says/hi/again/my.log");
 writeLine = function(str, file=file, append=TRUE, end="\n")
   {
   # wrapper for cat
   cat( paste(str,end,sep=""), file=file, sep="", append=append );
-}
+  }
 
 
+#' storeToFile
+#'
+#' Store a string to a file (e.g., an HTML page downloaded).
+#'
+#' @param str The string to store
+#' @param myfile The file to store the string (it will override).
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' storeToFile(
 storeToFile = function (str,myfile)
 	{
 	cat(str, file=myfile,append=FALSE);
@@ -97,7 +147,51 @@ grabHTML = function(htmlfile,htmlurl,return.raw=TRUE)
   }
 
 
+#' numberPadLeft
+#'
+#' When caching pages of content, useful for organization.
+#'  (e.g., page1.html becomes page_001.html)
+#'
+#' @param n The 'n'umber
+#' @param w How long the final number is to be
+#' @param c Fill digit, default is 0
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' numberPadLeft(33,1);
+#' numberPadLeft(33,2);
+#' numberPadLeft(33,3);
+#' numberPadLeft(33,4);
 numberPadLeft = function(n, w, c="0")
   {
-  str_pad(n,w,"left",c);
+  stringr::str_pad(n,w,"left",c);
+  }
+
+
+# read triangular correlation table ...
+#' readTriangularCorrelationTable
+#'
+#' @param file file with triangular correlation table
+#'
+#' @return correlation matrix
+#' @export
+#'
+#' @examples
+#' d.cor   = readTriangularCorrelationTable("http://md5.mshaffer.com/WSU_STATS419/DRUG_USE.txt");
+#' d.names = c( "Cigarette", "Beer", "Wine", "Liquor", "Cocaine",
+#'              "Tranquilizer", "Medication", "Heroin", "Marijuana",
+#'              "Hashish", "Inhalant", "Hallucinogen", "Amphetamine");
+#' colnames(d.cor) = d.names;
+#' rownames(d.cor) = d.names;
+readTriangularCorrelationTable = function(file)
+  {
+  x = scan(file);
+  lx = length(x);
+  d = (sqrt(8*lx+1)-1)/2;
+  m = matrix(0, d, d);
+  m[upper.tri(m, T)] = x;
+  m = m + t(m) - diag(diag(m));
+  return(m);
   }
