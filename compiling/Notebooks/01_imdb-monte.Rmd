@@ -61,7 +61,7 @@ A movie has a unique id which I call ``ttid`.  Of note on this page:
 
 * Other Info:  See Details, Box Office, Company Credits, Technical Specs (only available on the summary `filmInfo` page.
 
-### Top Actors in Top 250 (September 2020)
+#### Top Actors in Top 250 (September 2020)
 
 For each of these 250 films, I collected the 15 top actors.  At most, that would give me 3750 actors, but there are duplicates.
 
@@ -119,7 +119,7 @@ actors.info.df = moveColumnsInDataFrame(actors.info.df,
                                               "bio", "after", "starmeter.delta");
   
 
-dim(actors.info.df);
+dim(actors.info.df);  # 3092   10
 
 head(actors.info.df, n=10);
 
@@ -130,7 +130,7 @@ head(actors.info.df, n=10);
 
 ```
 
-### All movies from all actors from Top 250 Movies (September 2020)
+#### All movies from all actors from Top 250 Movies (September 2020)
 
 For these 3,092 unique actors, a search is performed:
 `https://www.imdb.com/filmosearch/?explore=title_type&role={nmid}&ref_=filmo_ref_typ&sort=num_votes,desc&mode=detail&page={page}&title_type=movie`
@@ -161,7 +161,7 @@ actors.movies.df = moveColumnsInDataFrame(actors.movies.df,
 actors.movies.df$name = "NA";
 actors.movies.df$character = "NA";
 
-na = dim(actors.movies.df)[1];  # 129,300    
+na = dim(actors.movies.df)[1];  # 129300    
 
 # expensive loop
 for(i in 1:na)
@@ -184,8 +184,6 @@ for(i in 1:na)
 
 ###############################################
 
-
-
 # saveRDS(actors.movies.df,
 #           file= paste0(imdb.path, "imdb/top250.actors.movies.rds") );
 
@@ -196,15 +194,27 @@ for(i in 1:na)
 }
   
 
-dim(actors.movies.df);
+
+
+dim(actors.movies.df);  # 129300      5
+
+length( unique( actors.movies.df$ttid ) ); # 68784
+
 
 head(actors.movies.df, n=10);
 
 
+actors.table = as.data.frame( table(actors.movies.df$nmid) );
+actors.table = sortDataFrameByNumericColumns(actors.table, "Freq");
+colnames(actors.table) = c("nmid","freq");
 
+# saveRDS(actors.table,
+#           file= paste0(imdb.path, "imdb/top250.actors.freq.rds") );
+
+head(actors.table, n=10);
 
 ```
-
+There are 129,300 movies linked to these actors of which 68,784 movies are unique.
 
 
 ```{r, chunck-top250-dataframes, include=TRUE}
