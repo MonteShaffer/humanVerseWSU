@@ -16,7 +16,7 @@
 #' @examples
 #' createDirRecursive("R:/monte/says/hi/", verbose=TRUE);
 #' createDirRecursive("R:/monte/says/hi/", verbose=TRUE);
-createDirRecursive = function(folder, verbose=TRUE, skip=1)
+createDirRecursive = function(folder, verbose=FALSE, skip=1)
   {
   # # skip is the level of subfolders to not createDir,
   # e.g., $skip=1 on Windows will not do createDir("C:\");

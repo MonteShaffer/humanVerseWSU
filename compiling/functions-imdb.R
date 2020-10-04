@@ -152,6 +152,61 @@ df.actors.top250 = as.data.frame(actors);
     file.actor.top250 = paste0(mypath.dataframes,"/actors.info.by.top250.txt");
     utils::write.table(actors.info, file=file.actor.top250, quote=FALSE, col.names=TRUE, row.names=FALSE, sep="|");
 
+    # we now have 
+    
+    
+    # from loadDataIMDB();
+    my.unique.movies = unique( imdb.data$top250.actors.movies$ttid );
+    
+    mumc = length(my.unique.movies);
+    ## monte adds 10/3/2020 ...
+    more.actors = NULL;
+    
+    
+    for(i in 1:mumc)
+      {
+      ttid = my.unique.movies[i];
+      percent = sprintf("%.2f",100*i/mumc);
+      print(paste0(percent,"%         :: ",i," of ",mumc," ---> ",ttid, " :: ", length(more.actors))); flush.console();
+    
+      mypath.ttid2 = paste0(mypath.ttid,"/",ttid);
+      createDir(mypath.ttid2);
+      myhtml.ttid = paste0(mypath.ttid2,"/","filmInfo.html");
+      myurl.ttid = gsub("{ttid}",ttid, imdb.urls$filmInfo, fixed=T);
+      print(i); flush.console();
+      do.nothing = grabHTML(myhtml.ttid,myurl.ttid,FALSE);  # slow ...
+  
+      new.actors = na.omit( grabbingActorsFromFilm(myhtml.ttid) );
+      
+      
+      more.actors = c(more.actors, new.actors);
+      more.actors = unique(more.actors);
+      
+      }
+    
+    
+    ####### 
+    more.actors = unique(more.actors);
+    
+    length(more.actors);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   ## save again, once we get the top50 indicator ...
 
 
@@ -1211,6 +1266,7 @@ parseSearchFromTop = function(raw)
 
 doActorSearch = function(nmid, mypath.search)
   {
+  print(paste0("doActorSearch( ",nmid));
   path = paste0(mypath.search,"/actor/",nmid,"/");
     createDirRecursive(path);
   myurl.nmid = gsub("{nmid}",nmid, imdb.urls$actorMovieList, fixed=TRUE);

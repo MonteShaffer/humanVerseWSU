@@ -1,0 +1,298 @@
+my.actors = unique(imdb.data$top250.actors.movies$nmid);
+
+nma = length(my.actors);
+
+my.df = as.data.frame(my.actors);
+my.df$count = 0;
+str(my.df);
+
+
+for(i in 1:nma)
+	{
+	nmid = my.df$`my.actors`[i];
+	me = IMDB.getUniqueNamesForPerson(nmid);
+	my.df$count[i] = length(  me[me!="NA"]  );	
+	}
+
+str(my.df);
+
+my.df = sortDataFrameByNumericColumns(my.df, "count");
+
+str(my.df);
+
+df.delete = removeColumnsFromDataFrame(imdb.data$top250.actors.movies,"name");
+
+str(df.delete);
+
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+
+ saveRDS(df.delete,
+          file= paste0(imdb.path, "imdb/top250.actors.movies.rds") );
+
+
+
+
+#####################
+
+compile.path = "C:/_git_/MonteShaffer/humanVerseWSU/compiling/";
+source(paste0(compile.path, "functions-imdb.R")); 
+
+functions.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/";
+source(paste0(functions.path, "functions-file.R")); 
+source(paste0(functions.path, "functions-dataframe.R")); 
+
+#####################
+imdb.urls = getUrlTemplatesIMDB();
+
+
+local.data.path = "R:/WSU_STATS419_FALL2020/";
+
+  	mypath = paste0(local.data.path,"modules");
+		mypath = paste0(mypath,"/imdb");
+    # let's update every month ...
+		#mycache = format(Sys.Date(), "%Y-%m");
+		mycache = "2020-09";  # hard-coded for now
+    mypath = paste0(mypath,"/",mycache);
+			  createDirRecursive(mypath);
+
+  	mypath.dataframes = paste0(mypath,"/dataframes");
+      createDirRecursive(mypath.dataframes);
+
+    mypath.250 = paste0(mypath,"/top250");
+      createDirRecursive(mypath.250);
+
+  	mypath.ttid = paste0(mypath,"/movies");
+    createDirRecursive(mypath.ttid);
+
+  		mypath.nmid = paste0(mypath,"/actors");
+      createDirRecursive(mypath.nmid);
+
+  	mypath.search = paste0(mypath,"/search");
+    createDirRecursive(mypath.search);
+	
+	
+#####################
+
+
+library(stringr);
+library(rvest);
+
+
+numberPadLeft = function(n, w, c="0")
+  {
+  stringr::str_pad(n,w,"left",c);
+  }
+
+# nm5000
+# nm0000003
+
+nm5000 = 1:5000;
+nm5000 = nm5000[-c(831,2176,2241,3019,2896,2865,2549,3565,4337,3746,2740,2778,4261,3240,4027,4617,4565,3908,3520,3598,4593,4580,4970,4136,4783,3019,3290,3236,4176,3429,4633,3752,4339)];
+
+#	imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+# saveRDS(nm5000,
+#          file= paste0(imdb.path, "imdb/actors.nm5000.rds") );
+
+
+
+
+actors.info = NULL;
+movies = NULL; 
+
+
+nm5000 = sample(nm5000);
+#nm5000 = rev(nm5000);
+
+
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+
+creatives.a = readRDS(file = paste0(imdb.path, "imdb/headliners.actors.rds") );
+creatives.d = readRDS(file = paste0(imdb.path, "imdb/headliners.directors.rds") );	
+creatives.w = readRDS(file = paste0(imdb.path, "imdb/headliners.writers.rds") );
+  
+creatives = c(  creatives.a , creatives.d , creatives.w );  
+creatives = unique(creatives);  # 3584
+
+
+
+
+
+
+
+creatives = sample(creatives);
+creatives = rev(creatives);
+
+n.creatives = length(creatives);
+j = 0;
+
+
+#for(nm in nm5000)
+for(nmid in creatives)
+	{	
+	j = j + 1;
+	#nmid = paste0("nm",numberPadLeft(nm,7) );
+	# print(nmid);
+		mypath.nmid2 = paste0(mypath.nmid,"/",nmid);
+      createDir(mypath.nmid2);
+
+
+      myhtml.nmid = paste0(mypath.nmid2,"/","actorInfo.html");
+      myurl.nmid = gsub("{nmid}", nmid, imdb.urls$actorInfo, fixed=TRUE);
+      print(paste(j," of ", n.creatives)); flush.console();
+      do.nothing = grabHTML(myhtml.nmid,myurl.nmid, FALSE);  # slow ...
+
+      print( paste( paste0("      ", "nmid='",nmid,"';"), paste0("raw='",myhtml.nmid,"';"),"      ",myurl.nmid, sep="      "));
+      myactor = parseActorInfo(nmid,myhtml.nmid);  # parse the info
+      
+	  mymovies = doActorSearch( nmid, mypath.search );
+	  movies = c(movies,mymovies$ttid);
+	  
+	  movies = unique(movies);
+      
+      actors.info = rbind(actors.info, myactor);
+	  
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+	
+	
+	# no 
+	# nm0000831
+	
+	
+	# https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
+	# merge
+	# dplyr ... left join 
+	
+	
+	
+	
+compile.path = "C:/_git_/MonteShaffer/humanVerseWSU/compiling/";
+source(paste0(compile.path, "functions-imdb.R")); 
+
+functions.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/";
+source(paste0(functions.path, "functions-file.R")); 
+source(paste0(functions.path, "functions-dataframe.R")); 
+source(paste0(functions.path, "functions-sort.R")); 
+
+	
+	df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+	
+	
+	moviecount.file = paste0(df.path,"moviecount.byyear.txt");	
+	moviecount.df =  utils::read.csv(moviecount.file, header=TRUE, quote="", sep="|");
+	head(moviecount.df);
+	
+	new.moviecount.df = removeAllColumnsBut(moviecount.df, c("year","count.popular"));
+		colnames(new.moviecount.df) = c("year","count");
+	head(new.moviecount.df);	
+
+#	imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+# saveRDS(new.moviecount.df,
+#          file= paste0(imdb.path, "imdb/moviecount.byyear.rds") );
+		
+	
+	
+	
+	creatives.file = paste0(df.path,"movies.creatives.gluetable.stars.txt");
+	
+	creatives.df =  utils::read.csv(creatives.file, header=TRUE, quote="", sep="|");
+	
+	
+#	imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+# saveRDS(creatives.df,
+#          file= paste0(imdb.path, "imdb/movies.headliners.rds") );
+		  
+		  
+      
+	head(creatives.df);  
+	dim(creatives.df);  # 361,077
+	
+	length(unique(creatives.df$nmid));  # 109,392
+	length(unique(creatives.df$ttid));  #  64,272
+	
+	creatives.stars = creatives.df[creatives.df$role == "star", ];  # star > 14, director > 14, writer > 14
+	head(creatives.stars);
+	
+	creatives.table = as.data.frame( table(creatives.stars$nmid) );
+		colnames(creatives.table) = c("nmid","count");
+	creatives.table = sortDataFrameByNumericColumns(creatives.table,"count");
+	dim(creatives.table);
+	
+head(creatives.table);
+
+	creatives.top = creatives.table[creatives.table$count > 14, ];
+	dim(creatives.top);  # 2407 , # 606 
+	
+	creatives = as.character( unlist(creatives.top$nmid) );
+	
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+ saveRDS(creatives,
+          file= paste0(imdb.path, "imdb/headliners.writers.rds") );
+		  
+		  
+
+
+###################
+
+
+	df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+	
+	companies.file = paste0(df.path,"movies.companies.gluetable.stars.txt");
+	
+	companies.df =  utils::read.csv(companies.file, header=TRUE, quote="", sep="|");
+      
+	head(companies.df);  
+	
+	companies.table = as.data.frame( table(companies.df$coid) );
+		colnames(companies.table) = c("coid","count");
+	companies.table = sortDataFrameByNumericColumns(companies.table,"count");
+	dim(companies.table);
+
+	
+head(companies.table);
+
+	companies.top = companies.table[companies.table$count > 14, ];
+	dim(companies.top);  # 770
+	
+	head(companies.top);
+	
+	
+	companies = as.character( unlist(companies.top$coid) );
+	
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+ saveRDS(companies[-c(1)],
+          file= paste0(imdb.path, "imdb/headliners.companies.rds") );
+		  
+		  
+#####################
+# R:\WSU_STATS419_FALL2020\modules\imdb\2020-09\dataframes
+# 
+df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes.second/";
+	
+	movies50.file = paste0(df.path,"movies.sourced.by.top50.txt");	
+	movies50.df =  utils::read.csv(movies50.file, header=TRUE, quote="", sep="|");
+	head(movies50.df);
+	
+	movies50.ndf = removeAllColumnsBut(movies50.df, c("ttid","year","rank.popular"));
+	dim(movies50.ndf);
+	movies50.ndf = movies50.ndf[!is.na(movies50.ndf$`rank.popular`), ];
+	movies50.ndf = movies50.ndf[movies50.ndf$`rank.popular` > 0, ];
+	dim(movies50.ndf);
+	head(movies50.ndf);
+
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+ saveRDS(movies50.ndf,
+          file= paste0(imdb.path, "imdb/movies.popular50.byyear.rds") );		  
+		  

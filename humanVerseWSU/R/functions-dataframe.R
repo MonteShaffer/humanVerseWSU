@@ -1,4 +1,13 @@
 
+mergeDataFrames = function(df1,df2,merge.col,extra="")
+  {
+  # https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
+  # extra == "cross-join"
+
+
+
+  }
+
 #' removeColumnsFromDataFrame
 #'
 #' \code{removeColumnsFromDataFrame} removes one or more columns
@@ -77,127 +86,6 @@ removeNAsFromDataFrame = function(df,mycols=NULL)
   # complete.cases?
   na.omit(df);
 }
-
-
-getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
-      {
-      if(lower.case) { str = tolower(str);}
-      vals = str_split(str,sep);
-      f.vals = c();
-      for(val in vals)
-        {
-        val = str_trim(val);
-        f.vals = c(f.vals,val);
-        }
-      f.vals;
-      }
-
-replaceFactorColumnWithIndicatorVariables = function(df, source.column, sep=",", new.column=source.column, remove.original = FALSE, lower.case=TRUE)
-    {
-    # "genre" becomes genre_comedy as indicator ...
-    # grab all unique indicators, alphabetize, and add to dataframe
-    sidx = getIndexOfDataFrameColumns(df, source.column);
-    u.df = unlist( unique(df[source.column]) );
-    u.keys = c();
-    u.df.length = length(u.df);
-
-    for(i in 1: u.df.length)
-      {
-      u.row = as.character(u.df[i]);
-      u.vals = getKeysFromStringWithSeparator(u.row,sep=sep,lower.case=lower.case);
-      u.keys = c(u.keys,u.vals);
-      }
-
-    mykeys = sort( na.omit( unique(u.keys) ) );  # 26 keys
-    mycols = c();
-    for(mykey in mykeys)
-      {
-      mycol = paste0(new.column,".",mykey);
-      mycols = c(mycols,mycol);
-      df[mycol] = FALSE;
-      }
-    # loop over dataframe adding values
-    df.n = dim(df)[1];
-    for(i in 1:df.n)
-      {
-      #print(i); flush.console();
-      r.val = df[i,sidx];
-      u.vals = getKeysFromStringWithSeparator(r.val,sep=sep,lower.case=lower.case);
-      for(u.val in u.vals)
-        {
-        if(!is.na(u.val))
-          {
-          mycol = paste0(new.column,".",u.val);
-          cidx = getIndexOfDataFrameColumns(df, mycol);
-          df[i,cidx] = TRUE;
-          }
-        }
-      }
-
-    df = moveColumnsInDataFrame(df, mycols, "after", source.column);
-
-    if(remove.original)
-      {
-      df = removeColumnsFromDataFrame(df, source.column);
-      }
-    df;
-    }
-# myrow.unpopular = updateDataFrameWithUniqueNewElementsIndicated(row, "ttid",  toadd, "source.unpopular", "rank");
-
-#updateDataFrameWithUniqueNewElementsIndicated = function(row,  stack.gem$movies, "source.gem");
-updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, df.new, indicator, replace=TRUE)
-  {
-  # assume elements in df.existing are unique
-  ndf = df.existing;
-      n.existing = dim(ndf)[1];
-  # mycolumn = "ttid";
-  toadd = df.new;
-      n.toadd = dim(toadd)[1];
-
-      # indicator = "source.gem";
-  cidx = getIndexOfDataFrameColumns(ndf, indicator);
-  # update the key of the indictor to true for that element [DEFAULT]
-  # or update to another value, such as "rank" of toadd dataframe ..
-  replace.cidx = NULL;
-  if(!isTRUE(replace))
-    {
-    replace.cidx = getIndexOfDataFrameColumns(toadd, replace);
-    }
-
-  for(i in 1:n.toadd)
-    {
-    r = toadd[i,];
-    k = as.character(r[mycolumn]);  # tt0270321
-
-    idx = findAllIndexesWithValueInVector( as.vector(unlist(ndf[mycolumn])), k);
-
-    #print( paste("i= ",i, " idx info") );     print(idx);
-
-    idx.length = length(idx); # this should be zero or one ...
-    if(idx.length == 0)
-      {
-      # not found, let's just add the row to the dataframe, as-is
-      ndf = rbind(ndf,r);
-      #print( paste0("key not found, added: ",k) );
-      }
-      else
-        {
-        for(j in 1:idx.length) # should be one
-          {
-          myidx = idx[j];
-
-
-          ndf[myidx,cidx] = if(is.null(replace.cidx)) { TRUE; } else { toadd[i,replace.cidx]; }
-
-
-         # print( paste0("key found at myidx: ",myidx," true to cidx: ",cidx) );
-          }
-        }
-
-    }
-  ndf;
-
-  }
 
 
 
@@ -575,4 +463,153 @@ sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 	# df[order( vecs[,1],vecs[,2],vecs[,3] ), ]; # hacked
 	df[callOrderFunctionWithMatrixInput(vecs),]; # Thanks Allan
 	}
+
+
+
+
+
+##############################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
+      {
+      if(lower.case) { str = tolower(str);}
+      vals = str_split(str,sep);
+      f.vals = c();
+      for(val in vals)
+        {
+        val = str_trim(val);
+        f.vals = c(f.vals,val);
+        }
+      f.vals;
+      }
+
+replaceFactorColumnWithIndicatorVariables = function(df, source.column, sep=",", new.column=source.column, use.boolean=TRUE, remove.original = FALSE, lower.case=TRUE)
+    {
+    # "genre" becomes genre_comedy as indicator ...
+    # grab all unique indicators, alphabetize, and add to dataframe
+    sidx = getIndexOfDataFrameColumns(df, source.column);
+    u.df = unlist( unique(df[source.column]) );
+    u.keys = c();
+    u.df.length = length(u.df);
+
+    my.false = 0;
+    my.true = 1;
+
+    if(use.boolean) { my.false = FALSE; }
+    if(use.boolean) { my.true = TRUE; }
+
+    for(i in 1: u.df.length)
+      {
+      u.row = as.character(u.df[i]);
+      u.vals = getKeysFromStringWithSeparator(u.row,sep=sep,lower.case=lower.case);
+      u.keys = c(u.keys,u.vals);
+      }
+
+    mykeys = sort( na.omit( unique(u.keys) ) );  # 26 keys
+    mycols = c();
+    for(mykey in mykeys)
+      {
+      mycol = paste0(new.column,".",mykey);
+      mycols = c(mycols,mycol);
+      df[mycol] = my.false;
+      }
+    # loop over dataframe adding values
+    df.n = dim(df)[1];
+    for(i in 1:df.n)
+      {
+      #print(i); flush.console();
+      r.val = df[i,sidx];
+      u.vals = getKeysFromStringWithSeparator(r.val,sep=sep,lower.case=lower.case);
+      for(u.val in u.vals)
+        {
+        if(!is.na(u.val))
+          {
+          mycol = paste0(new.column,".",u.val);
+          cidx = getIndexOfDataFrameColumns(df, mycol);
+          df[i,cidx] = my.true;
+          }
+        }
+      }
+
+    df = moveColumnsInDataFrame(df, mycols, "after", source.column);
+
+    if(remove.original)
+      {
+      df = removeColumnsFromDataFrame(df, source.column);
+      }
+    df;
+    }
+# myrow.unpopular = updateDataFrameWithUniqueNewElementsIndicated(row, "ttid",  toadd, "source.unpopular", "rank");
+
+#updateDataFrameWithUniqueNewElementsIndicated = function(row,  stack.gem$movies, "source.gem");
+updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, df.new, indicator, replace=TRUE)
+  {
+  # assume elements in df.existing are unique
+  ndf = df.existing;
+      n.existing = dim(ndf)[1];
+  # mycolumn = "ttid";
+  toadd = df.new;
+      n.toadd = dim(toadd)[1];
+
+      # indicator = "source.gem";
+  cidx = getIndexOfDataFrameColumns(ndf, indicator);
+  # update the key of the indictor to true for that element [DEFAULT]
+  # or update to another value, such as "rank" of toadd dataframe ..
+  replace.cidx = NULL;
+  if(!isTRUE(replace))
+    {
+    replace.cidx = getIndexOfDataFrameColumns(toadd, replace);
+    }
+
+  for(i in 1:n.toadd)
+    {
+    r = toadd[i,];
+    k = as.character(r[mycolumn]);  # tt0270321
+
+    idx = findAllIndexesWithValueInVector( as.vector(unlist(ndf[mycolumn])), k);
+
+    #print( paste("i= ",i, " idx info") );     print(idx);
+
+    idx.length = length(idx); # this should be zero or one ...
+    if(idx.length == 0)
+      {
+      # not found, let's just add the row to the dataframe, as-is
+      ndf = rbind(ndf,r);
+      #print( paste0("key not found, added: ",k) );
+      }
+      else
+        {
+        for(j in 1:idx.length) # should be one
+          {
+          myidx = idx[j];
+
+
+          ndf[myidx,cidx] = if(is.null(replace.cidx)) { TRUE; } else { toadd[i,replace.cidx]; }
+
+
+         # print( paste0("key found at myidx: ",myidx," true to cidx: ",cidx) );
+          }
+        }
+
+    }
+  ndf;
+
+  }
+
+
 

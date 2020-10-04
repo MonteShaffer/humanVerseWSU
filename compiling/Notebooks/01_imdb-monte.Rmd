@@ -212,9 +212,27 @@ colnames(actors.table) = c("nmid","freq");
 #           file= paste0(imdb.path, "imdb/top250.actors.freq.rds") );
 
 head(actors.table, n=10);
+# $name is not any different ever ... 
 
 ```
 There are 129,300 movies linked to these actors of which 68,784 movies are unique.
+
+### Seed nm5000 (September 2020)
+
+Grab the first 5000 `nmid` values, and run through the same ringer (will be lots of overlap).
+
+### Seed movieCount5000 (September 2020)
+
+From 68,784 movies above, find the actors that have the most movies.  Grab the top 5000 `nmid` of the most prolific worker.
+
+### Seed boxOfficeMoney5000 (September 2020)
+
+From 68,784 movies above, find the actors that have the most money.  Grab the top 5000 `nmid` of the most prolific blockbuster participants.
+
+### Seed movieAvgRating5000 (September 2020)
+
+From 68,784 movies above, find the actors that highest movie rating (average, minimum of 25 movies).  Grab the top 5000 `nmid` of the most prolific winner participants.
+
 
 
 ```{r, chunck-top250-dataframes, include=TRUE}

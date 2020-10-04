@@ -1,6 +1,6 @@
 
 
-#' loadInflationData
+#' loadDataIMDB
 #'
 #' This data was pulled from \url{https://www.imdb.com} in September 2020.
 #'
@@ -72,33 +72,51 @@ IMDB.getMoviesForPerson = function(nmid, return.full=FALSE, imdb=imdb.data)
 # IMDB.searchPersonName("*obin*");
 # IMDB.searchPersonName("*st*");
 # IMDB.searchPersonName("Sean*");
-# IMDB.searchPersonName("Sean*", return.full=TRUE);
+# IMDB.searchPersonName("Sean*", return.full=1:5);
+# table(IMDB.searchPersonName("Fran*O*", imdb=imdb.data$top250.actors.movies, ignore.case=FALSE)$name);
+# IMDB.searchPersonName("Frank Oz");
 
-IMDB.searchPersonName = function(str, ignore.case=TRUE, perl=FALSE, return.full=FALSE,  imdb=imdb.data$top250.actors.info)
+IMDB.searchPersonName = function(str, ignore.case=TRUE, perl=FALSE, return.full=NULL,  imdb=imdb.data$top250.actors.info)
   {
   grx = utils::glob2rx(str);  # https://stackoverflow.com/questions/5823503/
   grx.grep = grep(grx,imdb$name, ignore.case=ignore.case, perl=perl);
   rows = imdb[grx.grep, ];
-  if(return.full) { rows; } else { rows[, 1:4]; }
+  if(is.null(return.full)) { rows; } else { rows[, return.full]; }
   }
 
-
-IMDB.genericSearch = function(str, col.name, ignore.case=TRUE, perl=FALSE, return.full=FALSE,  imdb=imdb.data$top250.actors.info)
+# IMDB.genericSearch("*Kentucky*", "bio");
+# IMDB.genericSearch("*Kentucky*", "bio", return.full=1:5);
+# IMDB.genericSearch("*Kentucky*", "born.where", return.full=1:5);
+# IMDB.genericSearch("*Monte*", "name", return.full=1:5);
+# IMDB.genericSearch("*Monte*", "bio", return.full=1:5);
+# IMDB.genericSearch("*Montana*", "bio", return.full=1:5);
+# IMDB.genericSearch("*Montana*", "born.where", return.full=1:5);
+IMDB.genericSearch = function(str, col.name, ignore.case=TRUE, perl=FALSE, return.full=NULL,  imdb=imdb.data$top250.actors.info)
   {
   grx = utils::glob2rx(str);  # https://stackoverflow.com/questions/5823503/
-  grx.grep = grep(grx,imdb[col.name], ignore.case=ignore.case, perl=perl);
-
-
-  }
-
-IMDB.getUniqueNamesForPerson = function(nmid, imdb=imdb.data)
-  {
+  grx.grep = grep(grx,imdb[col.name][[1]], ignore.case=ignore.case, perl=perl);
+  rows = imdb[grx.grep, ];
+  if(is.null(return.full)) { rows; } else { rows[, return.full]; }
 
   }
 
-IMDB.getUniqueCharactersForPerson = function(nmid, imdb=imdb.data)
-  {
+# IMDB.getUniqueNamesForPerson("nm0000136"); # Johnny Depp
+# IMDB.getUniqueNamesForPerson(IMDB.searchPersonName("Frank Oz")$nmid[1]);
 
+
+IMDB.getUniqueNamesForPerson = function(nmid, imdb=imdb.data$top250.actors.movies)
+  {
+  rows = imdb[imdb$nmid==nmid, ];
+  na.omit( unique(rows$name) );
+  }
+
+# IMDB.getUniqueCharactersForPerson("nm0000136"); # Johnny Depp
+# IMDB.getUniqueCharactersForPerson(IMDB.searchPersonName("Frank Oz")$nmid[1]);
+
+IMDB.getUniqueCharactersForPerson = function(nmid, imdb=imdb.data$top250.actors.movies )
+  {
+  rows = imdb[imdb$nmid==nmid, ];
+  na.omit( unique(rows$character) );
   }
 
 
