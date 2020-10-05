@@ -303,8 +303,44 @@ Looping over this `all.movies` list, four data frames are built:
 * `all.movies.actors.characters` contains a link between a movie `ttid` and actor `nmid` and the name of the character played by the actor `character`.  (e.g., `ttid|nmid|character` as `tt0000679|nm0000875|The Wizard of Oz Man` or `tt0000679|nm0933446|Nick Chopper - Tin Woodman /                The White Rabbit` ... notice the `/` which means the actor had multiple characters in the film.  This data needs a bit of cleansing. **Note:** This character information comes from the movies, not directly from the actors.  As a result, some movies returned from ActorSearch will not have the characters.  I do have that information available on the ActorInfo page, just haven't parsed it from there (as it is a potpourri of different types of roles, and I just want films).
 
 
+### Movie count by year (September 2020)
+To build the `top50` lists, I also was able to grab total movie count by year.  This is a small dataframe `moviecount.byyear.rds`.
 
-```{r, chunck-top250-dataframes, include=TRUE}
+### Final moves (September 2020)
+
+I added another movies list `movies.tt5000` analogous to `actors.nm5000`.  Since movies can list actors, this also resulted in another `actors.tt5000`.  There were lots of bad movies in this list, so we ended up with 4,942 ... how many are new to the world, at this moment I don't know.  Most `bad.ones` are redirects (301 Moved) or something.
+
+```{r, chunck-tt5000-nm5000, include=TRUE}
+
+bad.ones = c("nm2893280", "nm11424970", "nm0361959",
+				"nm1476618", "nm0209637", "nm2559854", 
+				"nm0950967", "nm8939460", "nm0579465",
+				"nm0562771", "nm0465355", "nm3299108",
+				"nm0805389" );
+
+
+bad.ones = c("tt0003976", "tt0000937", "tt0004183",
+			"tt0002957", "tt0004462", "tt0004680",
+			"tt0004122", "tt0000600", "tt0001651",
+			"tt0000735", "tt0004697", "tt0000702",
+			"tt0000311", "tt0003882", "tt0001991",
+			"tt0004464", "tt0001433", "tt0000973",
+			"tt0000600", "tt0004148", "tt0004203",
+			"tt0004388", "tt0003295", "tt0003023",
+			"tt0000710", "tt0004113", "tt0003826",
+			"tt0000297", "tt0003415", "tt0003769",
+			"tt0003383", "tt0004082", "tt0000021",
+			"tt0004430", "tt0000136", "tt0004506",
+			"tt0004705", "tt0003435", "tt0002784",
+			"tt0001958", "tt0004220", "tt0000635",
+			"tt0003858", "tt0004014", "tt0003604",
+			"tt0003290", "tt0001938", "tt0002032",
+			"tt0003430", "tt0004206", "tt0003352",
+			"tt0001745", "tt0001953", "tt0002371",
+			"tt0002101", "tt0003857", "tt0002275",
+			"tt0004556", "tt0004689"
+			);
+
 # 
 # actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
 # actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 

@@ -401,9 +401,9 @@ for(ttid in all.movies)
 ### update all movies ...
 	
 	all.movies = readRDS( paste0(imdb.path, "imdb/all.movies.rds") );
-	more.movies = my.movies[!is.element(my.movies,all.movies)];
-	length(more.movies); #4686
-	saveRDS(more.movies, file = paste0(imdb.path, "imdb/movies.todo.rds") );
+	#more.movies = my.movies[!is.element(my.movies,all.movies)];
+	#length(more.movies); #4686
+	#saveRDS(more.movies, file = paste0(imdb.path, "imdb/movies.todo.rds") );
 	
 	all.movies = c(all.movies, my.movies);
 	length(all.movies);
@@ -440,10 +440,10 @@ tail(all.movies);
 	all.actors = readRDS( paste0(imdb.path, "imdb/all.actors.rds") );	# already saved, not going to work ...
 	#more.actors = my.actors[!is.element(my.actors,all.actors)];
 	
-	saveRDS(more.actors, file = paste0(imdb.path, "imdb/actors.todo.rds") );
+	#saveRDS(more.actors, file = paste0(imdb.path, "imdb/actors.todo.rds") );
 	
-	more.actors = readRDS(paste0(imdb.path, "imdb/actors.todo.rds") );
-	length(more.actors);
+	#more.actors = readRDS(paste0(imdb.path, "imdb/actors.todo.rds") );
+	#length(more.actors);
 	
 	all.actors = c(all.actors, my.actors);
 	length(all.actors); # 73,756
@@ -459,4 +459,96 @@ tail(all.movies);
 head(all.actors);
 tail(all.actors);	
 	
-# saveRDS(all.actors, file = paste0(imdb.path, "imdb/all.actors.rds") );	
+# saveRDS(all.actors, file = paste0(imdb.path, "imdb/all.actors.rds") );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	movies.top250 = readRDS(paste0(imdb.path, "imdb/movies.top250.rds") );
+	
+	movies.top250 = sort(movies.top250, decreasing=FALSE);
+	length(movies.top250);	# 5452 of which 2415 are new ...
+	
+	saveRDS(movies.top250, file = paste0(imdb.path, "imdb/movies.top250.rds") );
+	
+	
+
+	
+	
+	data.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+	##################### cleanup all.actors
+	info.file = paste0(data.path, "all.actors.info.txt") ;
+	
+	info = read.csv(info.file, header=TRUE, quote="", sep="|");
+	
+	info$id = as.numeric( gsub("nm","",info$nmid,fixed=TRUE) );
+	info = sortDataFrameByNumericColumns(info, "id","ASC");
+	info = removeColumnsFromDataFrame(info, "id"); # we sorted, now let's get rid of it ...
+	info = moveColumnsInDataFrame(info, "bio", "after", "starmeter.delta");
+	# 71332 obs. of  10 variables:
+	saveRDS(info, file = paste0(imdb.path, "imdb/all.actors.info.rds") );
+	
+	info = removeDuplicatesFromDataFrame(info,"nmid");
+	str(info);
+	
+	# sort on nmid ...
+	
+	
+	
+	
+	rank.file = paste0(data.path, "all.actors.rank.txt") ;
+	
+	rank = read.csv(rank.file, header=TRUE, quote="", sep="|");
+	rank$tid = as.numeric( gsub("tt","",rank$ttid,fixed=TRUE) );
+	rank$nid = as.numeric( gsub("nm","",rank$nmid,fixed=TRUE) );
+	
+	rank = sortDataFrameByNumericColumns(rank, c("nid","rank"),"ASC");
+	# 'data.frame':   1842305 obs. of  5 variables:
+
+	rank = moveColumnsInDataFrame(rank, "nmid", "before", "ttid");
+	rank = removeColumnsFromDataFrame(rank, c("nid","tid")); # we sorted, now let's get rid of it ...
+	saveRDS(rank, file = paste0(imdb.path, "imdb/all.actors.rank.rds") );
+	
+	
+	# 'data.frame':   1842305 obs. of  11 variables:
+
+	movies.file = paste0(data.path, "all.actors.movies.txt") ;
+	
+	movies = read.csv(movies.file, header=TRUE, quote="", sep="|");
+	movies$tid = as.numeric( gsub("tt","",movies$ttid,fixed=TRUE) );
+	# 'data.frame':   282062 obs. of  12 variables:  # 84% smaller ...
+	movies = removeDuplicatesFromDataFrame(movies,"ttid");
+	movies = sortDataFrameByNumericColumns(movies, c("year","tid"),"ASC");
+	movies = removeColumnsFromDataFrame(movies, "tid"); # we sorted, now let's get rid of it ...
+	movies = moveColumnsInDataFrame(movies, c("title","genre"), "after", "year");
+	
+	saveRDS(movies, file = paste0(imdb.path, "imdb/all.actors.movies.rds") );
+	
+	
+	
+	test.file = paste0(data.path, "movies.info.top250.final.txt") ;
+	
+	test = read.csv(test.file, header=TRUE, quote="", sep="|");
+	
+	test$id = as.numeric( gsub("tt","",test$ttid,fixed=TRUE) );
+	
+	test = sortDataFrameByNumericColumns(test, c("year","id"),"ASC");
+	
+	test = removeColumnsFromDataFrame(test, "id"); # we sorted, now let's get rid of it ...
+	
+	test = test[order(test$ttid), ];
+	
+	
+	

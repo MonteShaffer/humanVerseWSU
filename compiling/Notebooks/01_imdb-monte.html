@@ -1895,7 +1895,44 @@ head(actors.table, n=10);</code></pre>
 <li><p><code>all.movies.extra</code> contains an at-the-moment unprocessed collection of key-value pairs. Should be of a panel form: <code>ttid|key.name|key.href|key.txt</code> . This collects the <strong>Details</strong> from the movie’s <code>filmInfo</code> landing page. Currently, <code>ttid|keys|href|txt</code></p></li>
 <li><p><code>all.movies.actors.characters</code> contains a link between a movie <code>ttid</code> and actor <code>nmid</code> and the name of the character played by the actor <code>character</code>. (e.g., <code>ttid|nmid|character</code> as <code>tt0000679|nm0000875|The Wizard of Oz Man</code> or <code>tt0000679|nm0933446|Nick Chopper - Tin Woodman /                The White Rabbit</code> … notice the <code>/</code> which means the actor had multiple characters in the film. This data needs a bit of cleansing. <strong>Note:</strong> This character information comes from the movies, not directly from the actors. As a result, some movies returned from ActorSearch will not have the characters. I do have that information available on the ActorInfo page, just haven’t parsed it from there (as it is a potpourri of different types of roles, and I just want films).</p></li>
 </ul>
-<pre class="r"><code># 
+</div>
+<div id="movie-count-by-year-september-2020" class="section level3">
+<h3>Movie count by year (September 2020)</h3>
+<p>To build the <code>top50</code> lists, I also was able to grab total movie count by year. This is a small dataframe <code>moviecount.byyear.rds</code>.</p>
+</div>
+<div id="final-moves-september-2020" class="section level3">
+<h3>Final moves (September 2020)</h3>
+<p>I added another movies list <code>movies.tt5000</code> analogous to <code>actors.nm5000</code>. Since movies can list actors, this also resulted in another <code>actors.tt5000</code>. There were lots of bad movies in this list, so we ended up with 4,942 … how many are new to the world, at this moment I don’t know. Most <code>bad.ones</code> are redirects (301 Moved) or something.</p>
+<pre class="r"><code>bad.ones = c(&quot;nm2893280&quot;, &quot;nm11424970&quot;, &quot;nm0361959&quot;,
+                &quot;nm1476618&quot;, &quot;nm0209637&quot;, &quot;nm2559854&quot;, 
+                &quot;nm0950967&quot;, &quot;nm8939460&quot;, &quot;nm0579465&quot;,
+                &quot;nm0562771&quot;, &quot;nm0465355&quot;, &quot;nm3299108&quot;,
+                &quot;nm0805389&quot; );
+
+
+bad.ones = c(&quot;tt0003976&quot;, &quot;tt0000937&quot;, &quot;tt0004183&quot;,
+            &quot;tt0002957&quot;, &quot;tt0004462&quot;, &quot;tt0004680&quot;,
+            &quot;tt0004122&quot;, &quot;tt0000600&quot;, &quot;tt0001651&quot;,
+            &quot;tt0000735&quot;, &quot;tt0004697&quot;, &quot;tt0000702&quot;,
+            &quot;tt0000311&quot;, &quot;tt0003882&quot;, &quot;tt0001991&quot;,
+            &quot;tt0004464&quot;, &quot;tt0001433&quot;, &quot;tt0000973&quot;,
+            &quot;tt0000600&quot;, &quot;tt0004148&quot;, &quot;tt0004203&quot;,
+            &quot;tt0004388&quot;, &quot;tt0003295&quot;, &quot;tt0003023&quot;,
+            &quot;tt0000710&quot;, &quot;tt0004113&quot;, &quot;tt0003826&quot;,
+            &quot;tt0000297&quot;, &quot;tt0003415&quot;, &quot;tt0003769&quot;,
+            &quot;tt0003383&quot;, &quot;tt0004082&quot;, &quot;tt0000021&quot;,
+            &quot;tt0004430&quot;, &quot;tt0000136&quot;, &quot;tt0004506&quot;,
+            &quot;tt0004705&quot;, &quot;tt0003435&quot;, &quot;tt0002784&quot;,
+            &quot;tt0001958&quot;, &quot;tt0004220&quot;, &quot;tt0000635&quot;,
+            &quot;tt0003858&quot;, &quot;tt0004014&quot;, &quot;tt0003604&quot;,
+            &quot;tt0003290&quot;, &quot;tt0001938&quot;, &quot;tt0002032&quot;,
+            &quot;tt0003430&quot;, &quot;tt0004206&quot;, &quot;tt0003352&quot;,
+            &quot;tt0001745&quot;, &quot;tt0001953&quot;, &quot;tt0002371&quot;,
+            &quot;tt0002101&quot;, &quot;tt0003857&quot;, &quot;tt0002275&quot;,
+            &quot;tt0004556&quot;, &quot;tt0004689&quot;
+            );
+
+# 
 # actors.movies.top250.file = paste0(data.path, &quot;actors.movies.top250.txt&quot;);
 # actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
 #                                           header=TRUE, quote=&quot;&quot;, sep=&quot;|&quot;);
