@@ -284,15 +284,606 @@ df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes.second/";
 	movies50.file = paste0(df.path,"movies.sourced.by.top50.txt");	
 	movies50.df =  utils::read.csv(movies50.file, header=TRUE, quote="", sep="|");
 	head(movies50.df);
-	
-	movies50.ndf = removeAllColumnsBut(movies50.df, c("ttid","year","rank.popular"));
+#######################  popular ###################	
+	movies50.ndf = removeAllColumnsBut(movies50.df, c("ttid","year","rank.popular"));  # rank.popular , # rank.gem
 	dim(movies50.ndf);
 	movies50.ndf = movies50.ndf[!is.na(movies50.ndf$`rank.popular`), ];
 	movies50.ndf = movies50.ndf[movies50.ndf$`rank.popular` > 0, ];
 	dim(movies50.ndf);
 	head(movies50.ndf);
+	
+	
+	
+	
+	
+	popular50 = as.character( unlist (movies50.ndf$ttid) );
+	
+n.popular50 = length(popular50);
+j = 0;
+actors.info = NULL;
+
+popular50 = rev(popular50);
+popular50 = sample(popular50);
+
+for(ttid in popular50)
+	{	
+	j = j + 1;
+	
+	mypath.ttid2 = paste0(mypath.ttid,"/",ttid);
+      createDir(mypath.ttid2);
+    myhtml.ttid = paste0(mypath.ttid2,"/","filmInfo.html");
+    myurl.ttid = gsub("{ttid}",ttid, imdb.urls$filmInfo, fixed=T);
+    percent = sprintf("%.2f",100*j/n.popular50);
+    print(paste0(percent,"%         :: ",j," of ",n.popular50," ---> ",ttid)); flush.console();
+    do.nothing = grabHTML(myhtml.ttid,myurl.ttid,FALSE);  # slow ...
+
+    myactor = as.character( na.omit( grabbingActorsFromFilm(myhtml.ttid) ) );
+      
+    actors.info = c(actors.info, myactor);
+	actors.info = unique(actors.info);
+	print(length(actors.info));
+	  
+	}
+	
+	
+	head(actors.info);
+	
+	
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+ saveRDS(actors.info,
+          file= paste0(imdb.path, "imdb/actors.byyear.popular50.rds") );	
+	
+	
 
 imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
  saveRDS(movies50.ndf,
-          file= paste0(imdb.path, "imdb/movies.popular50.byyear.rds") );		  
+          file= paste0(imdb.path, "imdb/movies.byyear.popular50.rds") );
+
 		  
+#######################  gems  ###################
+movies50.ndf = removeAllColumnsBut(movies50.df, c("ttid","year","rank.gem"));  # rank.popular , # rank.gem
+	dim(movies50.ndf);
+	movies50.ndf = movies50.ndf[!is.na(movies50.ndf$`rank.gem`), ];
+	movies50.ndf = movies50.ndf[movies50.ndf$`rank.gem` > 0, ];
+	dim(movies50.ndf);
+	
+	movies50.ndf = sortDataFrameByNumericColumns(movies50.ndf, c("year","rank.gem"), "ASC" );
+	head(movies50.ndf);
+
+
+
+
+	gem50 = as.character( unlist (movies50.ndf$ttid) );
+	
+n.gem50 = length(gem50);
+j = 0;
+actors.info = NULL;
+
+#gem50 = rev(gem50);
+#gem50 = sample(gem50);
+
+for(ttid in gem50)
+	{	
+	j = j + 1;
+	
+	mypath.ttid2 = paste0(mypath.ttid,"/",ttid);
+      createDir(mypath.ttid2);
+    myhtml.ttid = paste0(mypath.ttid2,"/","filmInfo.html");
+    myurl.ttid = gsub("{ttid}",ttid, imdb.urls$filmInfo, fixed=T);
+    percent = sprintf("%.2f",100*j/n.gem50);
+    print(paste0(percent,"%         :: ",j," of ",n.gem50," ---> ",ttid)); flush.console();
+    do.nothing = grabHTML(myhtml.ttid,myurl.ttid,FALSE);  # slow ...
+
+    myactor = as.character( na.omit( grabbingActorsFromFilm(myhtml.ttid) ) );
+      
+    actors.info = c(actors.info, myactor);
+	actors.info = unique(actors.info);
+	print(length(actors.info));
+	  
+	}
+	
+	
+	head(actors.info);
+	
+	
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+ saveRDS(actors.info,
+          file= paste0(imdb.path, "imdb/actors.byyear.gem50.rds") );	
+	
+	
+	
+	
+	
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+ saveRDS(movies50.ndf,
+          file= paste0(imdb.path, "imdb/movies.byyear.gem50.rds") );		 
+
+
+
+
+all.actors = NULL;
+
+
+length(all.actors);
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.byyear.popular50.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.byyear.gem50.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.headliners.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);	
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.nm5000.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);	
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.top250.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);	
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/headliners.directors.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);
+################
+	my.actors = readRDS(file = paste0(imdb.path, "imdb/headliners.writers.rds") );
+all.actors = c(all.actors,my.actors);
+	length(all.actors);
+all.actors = unique(all.actors);
+	length(all.actors);	  # 68,304
+
+# saveRDS(all.actors, file = paste0(imdb.path, "imdb/all.actors.rds") );
+
+
+df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+append.first = FALSE;
+
+all.actors.movies.file = paste0(df.path,"all.actors.movies.txt");	
+all.actors.info.file = paste0(df.path,"all.actors.info.txt");
+all.actors.rank.file = paste0(df.path,"all.actors.rank.txt");
+
+# just write to a file, later remove duplicates
+
+n.all.actors = length(all.actors);
+
+##############################
+# for a restart
+nj = 2221; # we need to start here ...
+old.actors.2221 = all.actors;
+new.actors = NULL;
+j = 0;
+for(nmid in all.actors)
+	{
+	j=1+j;
+	if(j >= nj) { new.actors = c(new.actors,nmid); }	
+	}
+new.actors.2221 = new.actors;
+##############################
+
+# all.actors = new.actors;
+# n.all.actors = length(all.actors);	
+# nm2559854
+
+##############################
+# for a restart
+nj = 2; # we need to start here ...
+old.actors.2 = all.actors;
+new.actors = NULL;
+j = 0;
+for(nmid in all.actors)
+	{
+	j=1+j;
+	if(j >= nj) { new.actors = c(new.actors,nmid); }	
+	}
+new.actors.2 = new.actors;
+
+
+
+
+
+# all.actors = new.actors;
+# n.all.actors = length(all.actors);
+##############################
+
+
+
+
+
+
+all.actors = readRDS(paste0(imdb.path, "imdb/all.actors.rds") );
+
+df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+append.first = FALSE;
+
+all.actors.movies.file = paste0(df.path,"all.actors.movies.txt");	
+all.actors.info.file = paste0(df.path,"all.actors.info.txt");
+all.actors.rank.file = paste0(df.path,"all.actors.rank.txt");
+
+# just write to a file, later remove duplicates
+
+n.all.actors = length(all.actors);
+
+	
+
+all.actors = sort(all.actors, decreasing=FALSE);
+head(all.actors, n=50);
+
+# nm3299108 is a redirect to nm1597822
+
+
+
+
+bad.ones = c("nm2893280", "nm11424970", "nm0361959",
+				"nm1476618", "nm0209637", "nm2559854", 
+				"nm0950967", "nm8939460", "nm0579465",
+				"nm0562771", "nm0465355", "nm3299108",
+				"nm0805389" );
+
+skip.me = 31770;  # we can skip to restart the loop without having to restart the writing to tables ...
+
+
+skip.me = 0;
+
+
+# all.actors = new.actors = readRDS(paste0(imdb.path, "imdb/actors.todo.rds") );  # 3,037  # > 71341-68304 # [1] 3037
+n.all.actors = length(all.actors);
+all.actors = sort(all.actors, decreasing=FALSE);
+	
+j=0;
+for(nmid in all.actors)
+	{
+	# nm5000 seems to have been store wrong ...
+	nm = substr(nmid,1,2);
+	if(nm != "nm") { nmid = paste0("nm",numberPadLeft(nmid,7) );}
+	
+	j=1+j;
+		percent = sprintf("%.2f",100*j/n.all.actors);      
+    
+		print("####################################");
+		#print(paste(j," of ",n.all.actors, " => ",nmid)); flush.console();
+		print(paste0(percent,"%         :: ",j," of ",n.all.actors," ---> ",nmid)); flush.console();
+		print("####################################");
+		
+	if( !is.element(nmid,bad.ones) )
+		{
+		if(j > skip.me)
+			{
+			mymovies = doActorSearch( nmid, mypath.search );
+			mymovies$nmid = nmid;
+			
+				mymovies.actors = removeAllColumnsBut(mymovies,c("rank","ttid","nmid"));
+				mymovies.actors = moveColumnsInDataFrame(mymovies.actors,"nmid","before","rank");
+				
+			utils::write.table(mymovies.actors, file=all.actors.rank.file, append=append.first, quote=FALSE, col.names=!append.first, row.names=FALSE, sep="|");
+			
+				mymovies.info = removeColumnsFromDataFrame(mymovies,c("rank","nmid"));
+				mymovies.info = moveColumnsInDataFrame(mymovies.info,"ttid","before","title");
+				mymovies.info = moveColumnsInDataFrame(mymovies.info,c("title","genre","paragraph"),"after","millions");
+			
+			utils::write.table(mymovies.info, file=all.actors.movies.file, append=append.first, quote=FALSE, col.names=!append.first, row.names=FALSE, sep="|");
+			
+			
+			mypath.nmid2 = paste0(mypath.nmid,"/",nmid);
+			  createDir(mypath.nmid2);
+			myhtml.nmid = paste0(mypath.nmid2,"/","actorInfo.html");
+			myurl.nmid = gsub("{nmid}", nmid, imdb.urls$actorInfo, fixed=TRUE);
+			do.nothing = grabHTML(myhtml.nmid,myurl.nmid, FALSE);  # slow ...
+			
+			myinfo = parseActorInfo(nmid,myhtml.nmid);
+			
+			utils::write.table(myinfo, file=all.actors.info.file, append=append.first, quote=FALSE, col.names=!append.first, row.names=FALSE, sep="|");
+			
+			append.first = TRUE;
+			}
+		}
+	}
+
+	
+## 	
+#all.actors.movies
+#all.actors.info 	
+	
+	
+	
+	
+	
+all.movies = NULL;
+
+length(all.movies);
+################
+	my.movies = readRDS(file = paste0(imdb.path, "imdb/movies.byyear.popular50.rds") );
+all.movies = c(all.movies,my.movies$ttid);
+	length(all.movies);
+all.movies = unique(all.movies);
+	length(all.movies);
+################
+	my.movies = readRDS(file = paste0(imdb.path, "imdb/movies.byyear.gem50.rds") );
+all.movies = c(all.movies,my.movies$ttid);
+	length(all.movies);
+all.movies = unique(all.movies);
+	length(all.movies);	
+################
+	my.movies = readRDS(file = paste0(imdb.path, "imdb/movies.top250.rds") );
+all.movies = c(all.movies,my.movies);
+	length(all.movies);
+all.movies = unique(all.movies);
+	length(all.movies);	
+################
+	my.movies = readRDS(file = paste0(imdb.path, "imdb/glue.movies.headliners.rds") );
+all.movies = c(all.movies,my.movies$ttid);
+	length(all.movies);
+all.movies = unique(all.movies);
+	length(all.movies);		
+
+all.movies = na.omit(all.movies);	
+all.movies = all.movies[all.movies !=""];
+	length(all.movies); #69,834
+	
+	
+all.movies = sort(all.movies, decreasing=FALSE);
+
+head(all.movies);
+tail(all.movies);	
+	
+# saveRDS(all.movies, file = paste0(imdb.path, "imdb/all.movies.rds") );	
+	
+
+
+
+#################
+all.movies = readRDS( paste0(imdb.path, "imdb/all.movies.rds") );	
+
+
+	
+df.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
+append.first = FALSE;
+
+all.movies.creatives.file = paste0(df.path,"all.movies.creatives.txt");	
+	writeLine("ttid|nmid|rank|role", file=all.movies.creatives.file, append=FALSE);
+all.movies.companies.file = paste0(df.path,"all.movies.companies.txt");
+	writeLine("ttid|coid|rank|name", file=all.movies.companies.file, append=FALSE);
+all.movies.actors.characters.file = paste0(df.path,"all.movies.actors.characters.txt");
+	writeLine("ttid|nmid|rank|character", file=all.movies.actors.characters.file, append=FALSE);
+all.movies.extra.file = paste0(df.path,"all.movies.extra.txt");
+	writeLine("ttid|key.name|key.href|key.txt", file=all.movies.extra.file, append=FALSE);
+	
+	
+# just write to a file, later remove duplicates
+
+n.all.movies = length(all.movies);
+j=0;
+# tt0070239  ... just happened to be Jesus Christ Superstar ...
+totally.new.actors = NULL;
+
+
+# all.movies = new.movies = readRDS(paste0(imdb.path, "imdb/movies.todo.rds") );  # 4686 
+n.all.movies = length(all.movies);
+all.movies = sort(all.movies, decreasing=FALSE);
+
+
+
+for(ttid in all.movies)
+	{
+	j=1+j;
+	
+		percent = sprintf("%.2f",100*j/n.all.movies);      
+    
+		print("####################################");
+		#print(paste(j," of ",n.all.movies, " => ",ttid)); flush.console();
+		print(paste0(percent,"%         :: ",j," of ",n.all.movies," ---> ",ttid)); flush.console();
+		print("####################################");
+		
+	mypath.ttid2 = paste0(mypath.ttid,"/",ttid);
+      createDir(mypath.ttid2);
+    myhtml.ttid = paste0(mypath.ttid2,"/","filmInfo.html");
+    myurl.ttid = gsub("{ttid}",ttid, imdb.urls$filmInfo, fixed=T);
+    do.nothing = grabHTML(myhtml.ttid,myurl.ttid,FALSE);  # slow ...
+
+	
+	info = grabbingProductionFromFilm(myhtml.ttid);
+	
+	extra = info$extra;
+	
+	# we will assume the keys are the same length ...
+	
+	my.keys = extra$keys;
+	my.href = extra$href;
+	my.txt  = extra$txt;
+	
+	n.extra = length(my.keys);
+	for(eee in 1:n.extra)
+		{
+		writeLine(paste0(ttid,"|", my.keys[eee],"|", my.href[eee],"|", my.txt[eee] ), file=all.movies.extra.file, append=TRUE);
+		
+	#writeLine(paste0(ttid,"|", paste0(extra$keys,collapse="^!^"),"|", paste0(extra$href,collapse="^!^"),"|", paste0(extra$txt,collapse="^!^") ), file=all.movies.extra.file, append=TRUE);
+		}
+	
+	
+	my.nmids = na.omit(unlist(info$persons$nmid));     n.nmids = length(my.nmids);
+        my.nmids.roles = na.omit(unlist(info$persons$role));
+		
+		for(jjj in 1:n.nmids)
+			{
+			if(n.nmids == 0) { writeLine( paste0(ttid,"|","NO-INFO","|","NO-INFO"), file=all.movies.creatives.file, append=TRUE);
+							  } else {
+									   my.nmid = my.nmids[jjj];
+										if(my.nmid !="a>")
+										  {
+										  my.nmrole = my.nmids.roles[jjj];
+										  if(my.nmrole == "directors") { my.nmrole = "director"; }
+										  if(my.nmrole == "writers") { my.nmrole = "writer"; }
+										  if(my.nmrole == "stars") { my.nmrole = "star"; }
+										  #if(my.nmrole != "star")
+											#{
+											# we already have stars ... elsewhere???
+											writeLine( paste0(ttid,"|",my.nmid,"|",jjj,"|",my.nmrole), file=all.movies.creatives.file, append=TRUE);
+											#}
+										  }
+							  }
+
+
+			}
+		
+		
+		
+    my.coids = na.omit(unlist(info$extra$co));         n.coids = length(my.coids);
+        my.coids.names = na.omit(unlist(info$extra$cona));
+
+	
+		for(kkk in 1:n.coids)
+			{
+			if(n.coids == 0) { writeLine( paste0(ttid,"|","NO-INFO","|","NO-INFO"), file=all.movies.companies.file, append=TRUE);
+							  } else {
+									  my.coid = my.coids[kkk];
+									  if(my.coid !="a>")
+										{
+										writeLine( paste0(ttid,"|",my.coid,"|",kkk,"|",my.coids.names[kkk]), file=all.movies.companies.file, append=TRUE);
+										}
+									  }
+			}
+	
+	new.actors.film = as.character( na.omit ( grabbingActorsFromFilm(myhtml.ttid) ) );
+	totally.new.actors = c(totally.new.actors,new.actors.film);
+	totally.new.actors = unique(totally.new.actors);
+	
+	# this is built by function "grabbingActorsFromFilm("
+    actors.played.file = gsub("filmInfo.html", "actors-played.txt", myhtml.ttid, fixed=TRUE);
+    
+	if(file.exists(actors.played.file))
+      {
+      actors.played.df = utils::read.csv(actors.played.file, header=TRUE, quote="", sep="|");
+      actors.played.n = dim(actors.played.df)[1];
+
+      for(apn in 1:actors.played.n)
+        {
+        actors.played.row = actors.played.df[apn,];
+        if(!is.na(str_trim(actors.played.row[1])))
+          {
+          writeLine(paste0( ttid,"|",
+                          actors.played.row[1],"|",
+						  apn,"|",
+                          actors.played.row[3]),
+                  file=all.movies.actors.characters.file, append=TRUE);
+          }
+        }
+
+      }
+	  
+	
+		
+	append.first = TRUE;
+	}
+	
+
+
+#################
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.nm5000.rds") );
+#new.actors = paste0("nm",numberPadLeft(my.actors,7) );
+#saveRDS(new.actors, file = paste0(imdb.path, "imdb/actors.nm5000.rds") );	
+
+head(my.actors); tail(my.actors); length(my.actors);  # 4968
+
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.byyear.gem50.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors); # 37997
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/actors.byyear.gem50.rds") );	
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.byyear.popular50.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors);  # 35245
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/actors.byyear.popular50.rds") );	
+
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.headliners.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors);  # 2407
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/actors.headliners.rds") );	
+
+
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.nm5000.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors);  # 4968
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/actors.nm5000.rds") );	
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/actors.top250.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors);  # 3092
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/actors.top250.rds") );
+
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/headliners.directors.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors);  # 606
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/headliners.directors.rds") );
+
+#####################
+
+my.actors = readRDS(file = paste0(imdb.path, "imdb/headliners.writers.rds") );
+my.actors = sort(my.actors, decreasing=FALSE);
+head(my.actors); tail(my.actors); length(my.actors);  # 670
+
+
+saveRDS(my.actors, file = paste0(imdb.path, "imdb/headliners.writers.rds") );
+
+
+
+##
+
+#my.actors = readRDS(file = paste0(imdb.path, "imdb/all.actors.rds") );
+	

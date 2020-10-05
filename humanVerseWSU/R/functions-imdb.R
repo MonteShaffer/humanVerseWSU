@@ -103,6 +103,7 @@ IMDB.genericSearch = function(str, col.name, ignore.case=TRUE, perl=FALSE, retur
 # IMDB.getUniqueNamesForPerson("nm0000136"); # Johnny Depp
 # IMDB.getUniqueNamesForPerson(IMDB.searchPersonName("Frank Oz")$nmid[1]);
 
+# IMDB.getUniqueNamesForPerson("nm0172172");
 
 IMDB.getUniqueNamesForPerson = function(nmid, imdb=imdb.data$top250.actors.movies)
   {

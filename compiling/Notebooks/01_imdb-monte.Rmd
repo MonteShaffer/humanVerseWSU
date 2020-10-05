@@ -13,6 +13,9 @@ knitr::opts_chunk$set(message = FALSE);
 
 data.path = "R:/WSU_STATS419_FALL2020/modules/imdb/2020-09/dataframes/";
 imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+
+backup.path = "C:/_git_/MonteShaffer/humanVerseWSU/compiling/raw-data/";
+
 ```
 
 # Motivation
@@ -139,7 +142,9 @@ Where the `{nmid}` is replaced with the actor's unique `nmid` and all relevant p
 
 ```{r, chunck-top250-actors-to-movies, include=TRUE}
 
-glue.file = paste0(imdb.path, "imdb/top250.actors.movies.rds");
+
+
+glue.file = paste0(backup.path, "top250.actors.movies.rds");
 
 if(!file.exists(glue.file))
 {
@@ -185,12 +190,16 @@ for(i in 1:na)
 ###############################################
 
 # saveRDS(actors.movies.df,
-#           file= paste0(imdb.path, "imdb/top250.actors.movies.rds") );
+#           file= paste0(backup.path, "top250.actors.movies.rds") );
 
 
 
 
 
+} else {
+  
+actors.movies.df = readRDS(paste0(backup.path, "top250.actors.movies.rds") );
+   
 }
   
 
@@ -219,51 +228,98 @@ There are 129,300 movies linked to these actors of which 68,784 movies are uniqu
 
 ### Seed nm5000 (September 2020)
 
-Grab the first 5000 `nmid` values, and run through the same ringer (will be lots of overlap).
+Grab the first 5000 `nmid` values: `nm5000 = 1:5000;` where through the data-collection process, the following were labeled `bad.ones` as they did not have a page (e.g., 404 error or redirect): `bad.ones = c(831, 2176, 2241, 2549, 2740, 2778, 2865, 2896, 3019, 3019, 3236, 3240, 3290, 3429, 3520, 3565, 3598, 3746, 3752, 3908, 4027, 4136, 4176, 4261, 4337, 4339, 4565, 4580, 4593, 4617, 4633, 4783, 4970);`
 
-### Seed movieCount5000 (September 2020)
+The resulting vector of `nmid`s is called `actors.nm5000.rds`.
 
-From 68,784 movies above, find the actors that have the most movies.  Grab the top 5000 `nmid` of the most prolific worker.
+### Seed Headliners (September 2020)
 
-### Seed boxOfficeMoney5000 (September 2020)
+From 68,784 movies above, find the headliners creatives: top-3 actors, writers, directors.  From those, pick the creatives that have at least 15 movies where they were that creative role.
 
-From 68,784 movies above, find the actors that have the most money.  Grab the top 5000 `nmid` of the most prolific blockbuster participants.
+* `glue.movies.headliners.rds` has the info on headliners for 68,784 movies.
 
-### Seed movieAvgRating5000 (September 2020)
+* `actors.headliners.rds` are those actors with 15+ movies where they are a headliner.actor
 
-From 68,784 movies above, find the actors that highest movie rating (average, minimum of 25 movies).  Grab the top 5000 `nmid` of the most prolific winner participants.
+* `headliners.directors.rds` are those directors with 15+ movies where they are a headliner.directors
+
+* `headliners.writers.rds` are those writers with 15+ movies where they are a headliner.writers
+
+Finally, there is a `headliners.companies.rds` with a `coid` with a similar criteria.  These were the seeds to generate an all-in dataset.
+
+### All actors (September 2020)
+
+From the various collection processes, `all.actors` is defined.  The total number appears to be 84,985 of which 68,304 are unique.  
+
+This list will be used to parseActorInfo on the actor landing page such as <https://www.imdb.com/name/nm0000243/> and perform doActorSearch on the actor-film search page(s) such as <https://www.imdb.com/filmosearch/?explore=title_type&role=nm0000243&ref_=filmo_ref_typ&sort=num_votes,desc&mode=detail&page=1&title_type=movie>.
+
+It is the merge of unique `nmid`s from the following:
+
+* `actors.byyear.popular50.rds` [35,245] (by votes)
+
+* `actors.byyear.gem50.rds` [37,997] (by ratings) ... I had `unpopular` and `dud` but chose to exclude them)
+
+* `actors.headliners.rds` [2,407]
+
+* `actors.nm5000.rds` [4,968]
+
+* `actors.top250.rds` [3,092]
+
+* `headliners.directors.rds` [606]
+
+* `headliners.writers.rds` [670]
+
+Recall that `glue.movies.headliners.rds` has the info on headliners for 68,784 movies.  
+
+Looping over this `all.actors` list, three data frames are built:
+
+* `all.actors.rank` is the ranking of the ActorSearch., showing (for that actor), which movies were highest ranked. (e.g., `nmid|rank|ttid` with `nm0675239|9|tt0329022`)
+
+* `all.actors.movies` is a 'movies-info' data frame built from parsing ActorSearch.  The raw file has lots of replicates that will be removed into a final data frame. (e.g., `ttid|year|rated|minutes|ratings|metacritic|votes|millions|title|genre|paragraph` with `tt0007617|1917|NA|80|5.7|NA|NA|NA|Aladdin and the Wonderful Lamp|Fantasy|The story of Aladdin and the Princess Badr al-badr's adventures as told through child actors.` or `tt0038650|1946|PG|130|8.6|89|388818|NA|It's a Wonderful Life|Drama, Family, Fantasy|An angel is sent from Heaven to help a desperately frustrated businessman by showing him what life would have been like if he had never existed.`
+
+* `all.actors.info` is the 'actors-info' dataframe built by parsing the actor's homepage. (e.g., `nmid|name|roles|bio|born.when|born.where|died.when|died.where|starmeter.rank|starmeter.delta` as `nm0169088|Nick Cogley|Actor,Director,Writer|Nick Cogley was born on May 4, 1869 in New York City, New York, USA as Nicholas P.J. Cogley. He was an actor and director, known for Only a Farmer's Daughter (1915), The Dramatic Life of Abraham Lincoln (1924) and Monte Cristo (1912). He died on May 20, 1936 in Santa Monica, California, USA.|1869-5-4|New York City, New York, USA|1936-5-20|Santa Monica, California, USA|NA|270644` or `nm0443857|James Keane|Director,Writer,Actor|James Keane was born on March 23, 1874. He is a director and writer, known for Richard III (1912), Money (1915) and Whispering Women (1921).|1874-3-23|NA|NA|NA|NA|-5693760` or `nm0515975|Ethel Lloyd|Actress|Ethel Lloyd was born on March 23, 1886 in Brooklyn, New York, USA. She was an actress, known for A Florida Enchantment (1914), The Ransom (1916) and Mother's Roses (1915). She was married to Lloyd Hamilton. She died on January 12, 1923 in Brooklyn.|1886-3-23|Brooklyn, New York, USA|1923-1-12|Brooklyn, New York, USA|NA|-58296`
+
+For some reason, the following `nmid`s didn't seem to work: `nm2559854`
+
+### All movies (September 2020)
+
+From the various collection processes, `all.movies` is defined.  It is the merge of unique `ttid`s from the following:
+
+* `movies.byyear.popular50.rds`  (by votes), using `my.movies$ttid` column
+
+* `movies.byyear.gem50.rds` (by ratings), using `my.movies$ttid` column ... I had `unpopular` and `dud` but chose to exclude them)
+
+* `movies.top250.rds`
+
+* `glue.movies.headliners.rds` (from headliners) , using `my.movies$ttid` column.
+
+Looping over this `all.movies` list, four data frames are built:
+
+* `all.movies.creatives` is an update of the creatives info. (e.g., `ttid|nmid|role` as `tt0149676|nm0347890|director` , `tt0149676|nm0214745|writer` , `tt0149676|nm0035250|star` , `tt0149676|nm0040310|star` , `tt0149676|nm1513229|star` ... a possible bug `tt7454890|pro.imdb.com|filmmakers` 
+
+* `all.movies.companies` is an update of the companies info (e.g., `ttid|coid|name` as `tt0884328|co0019626|Dimension Films` , `tt0884328|co0029398|Darkwoods Productions` , `tt0884328|co0150452|The Weinstein Company` 
+
+* `all.movies.extra` contains an at-the-moment unprocessed collection of key-value pairs.  Should be of a panel form:  `ttid|key.name|key.href|key.txt` .  This collects the **Details** from the movie's `filmInfo` landing page.  Currently, `ttid|keys|href|txt`
+
+* `all.movies.actors.characters` contains a link between a movie `ttid` and actor `nmid` and the name of the character played by the actor `character`.  (e.g., `ttid|nmid|character` as `tt0000679|nm0000875|The Wizard of Oz Man` or `tt0000679|nm0933446|Nick Chopper - Tin Woodman /                The White Rabbit` ... notice the `/` which means the actor had multiple characters in the film.  This data needs a bit of cleansing. **Note:** This character information comes from the movies, not directly from the actors.  As a result, some movies returned from ActorSearch will not have the characters.  I do have that information available on the ActorInfo page, just haven't parsed it from there (as it is a potpourri of different types of roles, and I just want films).
 
 
 
 ```{r, chunck-top250-dataframes, include=TRUE}
-
-actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
-actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
-                                          header=TRUE, quote="", sep="|");
-
-movies.info.top250.file = paste0(data.path, "movies.info.top250.final.txt");
-movies.info.top250.df   = utils::read.csv(movies.info.top250.file, 
-                                          header=TRUE, quote="", sep="|");
-
-actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
-actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
-                                          header=TRUE, quote="", sep="|");
+# 
+# actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
+# actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
+#                                           header=TRUE, quote="", sep="|");
+# 
+# movies.info.top250.file = paste0(data.path, "movies.info.top250.final.txt");
+# movies.info.top250.df   = utils::read.csv(movies.info.top250.file, 
+#                                           header=TRUE, quote="", sep="|");
+# 
+# actors.movies.top250.file = paste0(data.path, "actors.movies.top250.txt");
+# actors.movies.top250.df   = utils::read.csv(actors.movies.top250.file, 
+#                                           header=TRUE, quote="", sep="|");
 
 
 
 ```
 
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
-```{r}
-plot(cars)
-```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

@@ -1,0 +1,462 @@
+#####################
+
+compile.path = "C:/_git_/MonteShaffer/humanVerseWSU/compiling/";
+source(paste0(compile.path, "functions-imdb.R")); 
+
+functions.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/";
+source(paste0(functions.path, "functions-file.R")); 
+source(paste0(functions.path, "functions-dataframe.R")); 
+
+
+#####################
+imdb.urls = getUrlTemplatesIMDB();
+
+
+local.data.path = "R:/WSU_STATS419_FALL2020/";
+
+  	mypath = paste0(local.data.path,"modules");
+		mypath = paste0(mypath,"/imdb");
+    # let's update every month ...
+		#mycache = format(Sys.Date(), "%Y-%m");
+		mycache = "2020-09";  # hard-coded for now
+    mypath = paste0(mypath,"/",mycache);
+			  createDirRecursive(mypath);
+
+  	mypath.dataframes = paste0(mypath,"/dataframes");
+      createDirRecursive(mypath.dataframes);
+
+    mypath.250 = paste0(mypath,"/top250");
+      createDirRecursive(mypath.250);
+
+  	mypath.ttid = paste0(mypath,"/movies");
+    createDirRecursive(mypath.ttid);
+
+  		mypath.nmid = paste0(mypath,"/actors");
+      createDirRecursive(mypath.nmid);
+
+  	mypath.search = paste0(mypath,"/search");
+    createDirRecursive(mypath.search);
+	
+	
+#####################
+
+
+library(stringr);
+library(rvest);
+
+numberPadLeft = function(n, w, c="0")
+  {
+  stringr::str_pad(n,w,"left",c);
+  }
+
+
+
+
+
+
+
+
+imdb.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/inst/extdata/";
+all.actors = readRDS(paste0(imdb.path, "imdb/all.actors.rds") );
+
+
+
+#all.actors = my.actors = readRDS(paste0(imdb.path, "imdb/actors.tt5000.rds") );
+#length(my.actors);
+#todo.actors = readRDS(paste0(imdb.path, "imdb/actors.todo.rds") );
+#length(todo.actors);
+
+#new.actors = my.actors[!is.element(my.actors,todo.actors)];
+#length(new.actors);
+
+#saveRDS(new.actors, file = paste0(imdb.path, "imdb/actors.todo.rds") );
+
+
+
+
+all.actors = new.actors = readRDS(paste0(imdb.path, "imdb/actors.todo.rds") );  # 3,037  # > 71341-68304 # [1] 3037
+
+
+n.all.actors = length(all.actors);
+head(all.actors, n=20);
+
+all.actors = sample(all.actors);  # one is running in order, to plow the road in front of the write.table version ...
+skip.me = 10000;
+skip.me = 0;	
+	
+	
+bad.ones = c("nm2893280", "nm11424970", "nm0361959",
+				"nm1476618", "nm0209637", "nm2559854", 
+				"nm0950967", "nm8939460", "nm0579465",
+				"nm0562771", "nm0465355", "nm3299108",
+				"nm0805389" );  # nm0579465
+				
+				
+j=0;
+for(nmid in all.actors)
+	{
+	nm = substr(nmid,1,2);
+	if(nm != "nm") { nmid = paste0("nm",numberPadLeft(nmid,7) );}
+	j=1+j;
+	
+
+	if( !is.element(nmid,bad.ones) )
+		{
+		if(j > skip.me)
+			{
+			percent = sprintf("%.2f",100*j/n.all.actors);
+      
+    
+				print("####################################");
+				#print(paste(j," of ",n.all.actors, " => ",nmid)); flush.console();
+				print(paste0(percent,"%         :: ",j," of ",n.all.actors," ---> ",nmid)); flush.console();
+				print("####################################");
+			mymovies = doActorSearch( nmid, mypath.search );
+			
+			mypath.nmid2 = paste0(mypath.nmid,"/",nmid);
+			  createDir(mypath.nmid2);
+			myhtml.nmid = paste0(mypath.nmid2,"/","actorInfo.html");
+			myurl.nmid = gsub("{nmid}", nmid, imdb.urls$actorInfo, fixed=TRUE);
+			do.nothing = grabHTML(myhtml.nmid,myurl.nmid, FALSE);  # slow ...
+			
+			myinfo = parseActorInfo(nmid,myhtml.nmid);	
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####################
+
+compile.path = "C:/_git_/MonteShaffer/humanVerseWSU/compiling/";
+source(paste0(compile.path, "functions-imdb.R")); 
+
+functions.path = "C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/";
+source(paste0(functions.path, "functions-file.R")); 
+source(paste0(functions.path, "functions-dataframe.R")); 
+
+#####################
+imdb.urls = getUrlTemplatesIMDB();
+
+
+local.data.path = "R:/WSU_STATS419_FALL2020/";
+
+  	mypath = paste0(local.data.path,"modules");
+		mypath = paste0(mypath,"/imdb");
+    # let's update every month ...
+		#mycache = format(Sys.Date(), "%Y-%m");
+		mycache = "2020-09";  # hard-coded for now
+    mypath = paste0(mypath,"/",mycache);
+			  createDirRecursive(mypath);
+
+  	mypath.dataframes = paste0(mypath,"/dataframes");
+      createDirRecursive(mypath.dataframes);
+
+    mypath.250 = paste0(mypath,"/top250");
+      createDirRecursive(mypath.250);
+
+  	mypath.ttid = paste0(mypath,"/movies");
+    createDirRecursive(mypath.ttid);
+
+  		mypath.nmid = paste0(mypath,"/actors");
+      createDirRecursive(mypath.nmid);
+
+  	mypath.search = paste0(mypath,"/search");
+    createDirRecursive(mypath.search);
+	
+	
+#####################
+
+
+library(stringr);
+library(rvest);
+
+
+numberPadLeft = function(n, w, c="0")
+  {
+  stringr::str_pad(n,w,"left",c);
+  }
+
+# tt0000002
+#"tt0000002"
+ttids5000 = paste0("tt", numberPadLeft(1:5000, 7) );
+
+all.movies = ttids5000;
+
+
+
+n.all.movies = length(all.movies);
+j=0;
+# tt0070239  ... just happened to be Jesus Christ Superstar ...
+totally.new.actors = NULL;
+j=0;
+
+
+
+
+# tt0003976 => tt0003438
+# tt0000937 => tt0000936
+# tt0004183 => tt0003762
+# tt0002957 => tt0002574
+# tt0004462 => 
+# tt0004680
+# tt0004122
+# tt0000600
+# tt0003882
+
+all.movies = rev(all.movies);
+all.movies = sample(all.movies);
+
+
+
+
+
+
+
+
+
+
+
+
+bad.ones = c("tt0003976", "tt0000937", "tt0004183",
+			"tt0002957", "tt0004462", "tt0004680",
+			"tt0004122", "tt0000600", "tt0001651",
+			"tt0000735", "tt0004697", "tt0000702",
+			"tt0000311", "tt0003882", "tt0001991",
+			"tt0004464", "tt0001433", "tt0000973",
+			"tt0000600", "tt0004148", "tt0004203",
+			"tt0004388", "tt0003295", "tt0003023",
+			"tt0000710", "tt0004113", "tt0003826",
+			"tt0000297", "tt0003415", "tt0003769",
+			"tt0003383", "tt0004082", "tt0000021",
+			"tt0004430", "tt0000136", "tt0004506",
+			"tt0004705", "tt0003435", "tt0002784",
+			"tt0001958", "tt0004220", "tt0000635",
+			"tt0003858", "tt0004014", "tt0003604",
+			"tt0003290", "tt0001938", "tt0002032",
+			"tt0003430", "tt0004206", "tt0003352",
+			"tt0001745", "tt0001953", "tt0002371",
+			"tt0002101", "tt0003857", "tt0002275",
+			"tt0004556", "tt0004689"
+			);
+
+
+
+
+skip.me = 1274; #skip.me = 0;
+
+
+j=0;
+for(ttid in all.movies)
+	{
+	j=1+j;
+	
+		percent = sprintf("%.2f",100*j/n.all.movies);      
+    
+		print("####################################");
+		#print(paste(j," of ",n.all.movies, " => ",ttid)); flush.console();
+		print(paste0(percent,"%         :: ",j," of ",n.all.movies," ---> ",ttid," :: ",length(totally.new.actors))); flush.console();
+		print("####################################");
+	
+	if( !is.element(ttid,bad.ones) )
+		{	
+		if(j > skip.me)
+			{
+			mypath.ttid2 = paste0(mypath.ttid,"/",ttid);
+			  createDir(mypath.ttid2);
+			myhtml.ttid = paste0(mypath.ttid2,"/","filmInfo.html");
+			myurl.ttid = gsub("{ttid}",ttid, imdb.urls$filmInfo, fixed=T);
+			do.nothing = grabHTML(myhtml.ttid,myurl.ttid,FALSE);  # slow ...
+
+			
+			info = grabbingProductionFromFilm(myhtml.ttid);
+			
+			new.actors.film = as.character( na.omit ( grabbingActorsFromFilm(myhtml.ttid) ) );
+			totally.new.actors = c(totally.new.actors,new.actors.film);
+			totally.new.actors = unique(totally.new.actors);
+			}
+	
+		}
+	
+	}
+	
+	length(totally.new.actors); #5452
+	
+	my.movies = setdiff(all.movies,bad.ones);
+	length(my.movies);	# 4942
+	saveRDS(my.movies, file = paste0(imdb.path, "imdb/movies.tt5000.rds") );
+	
+	my.movies = readRDS(paste0(imdb.path, "imdb/movies.tt5000.rds") );
+	length(my.movies);	# 4942
+	
+### update all movies ...
+	
+	all.movies = readRDS( paste0(imdb.path, "imdb/all.movies.rds") );
+	more.movies = my.movies[!is.element(my.movies,all.movies)];
+	length(more.movies); #4686
+	saveRDS(more.movies, file = paste0(imdb.path, "imdb/movies.todo.rds") );
+	
+	all.movies = c(all.movies, my.movies);
+	length(all.movies);
+	all.movies = unique(all.movies);
+	length(all.movies); # 74,520
+	
+	all.movies = sort(all.movies, decreasing=FALSE);
+
+head(all.movies);
+tail(all.movies);	
+	
+# saveRDS(all.movies, file = paste0(imdb.path, "imdb/all.movies.rds") );	
+	
+
+
+
+#################
+
+	
+	
+	
+	
+	my.actors = sort(totally.new.actors, decreasing=FALSE);
+	length(my.actors);	# 5452 of which 2415 are new ...
+	
+	
+	
+	saveRDS(my.actors, file = paste0(imdb.path, "imdb/actors.tt5000.rds") );
+	
+	my.actors = readRDS(paste0(imdb.path, "imdb/actors.tt5000.rds") );
+	
+	
+	
+	all.actors = readRDS( paste0(imdb.path, "imdb/all.actors.rds") );	# already saved, not going to work ...
+	#more.actors = my.actors[!is.element(my.actors,all.actors)];
+	
+	saveRDS(more.actors, file = paste0(imdb.path, "imdb/actors.todo.rds") );
+	
+	more.actors = readRDS(paste0(imdb.path, "imdb/actors.todo.rds") );
+	length(more.actors);
+	
+	all.actors = c(all.actors, my.actors);
+	length(all.actors); # 73,756
+	all.actors = unique(all.actors);  # 2415 new ones ...
+	length(all.actors); # 71,341
+	
+	#more.actors = my.actors[is.element(my.actors,all.actors);
+	#length(more.actors);
+	
+	
+	all.actors = sort(all.actors, decreasing=FALSE);
+
+head(all.actors);
+tail(all.actors);	
+	
+# saveRDS(all.actors, file = paste0(imdb.path, "imdb/all.actors.rds") );	

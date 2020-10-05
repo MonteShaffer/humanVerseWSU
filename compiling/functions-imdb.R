@@ -162,8 +162,8 @@ df.actors.top250 = as.data.frame(actors);
     ## monte adds 10/3/2020 ...
     more.actors = NULL;
     
-    
-    for(i in 1:mumc)
+    # tt7572934
+    for(i in 27232:mumc)
       {
       ttid = my.unique.movies[i];
       percent = sprintf("%.2f",100*i/mumc);
