@@ -32,6 +32,7 @@ getIndexOfDataFrameColumns(iris,mycols);
 Other DataFrame: 
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{replaceDateStringWithDateColumns}()},

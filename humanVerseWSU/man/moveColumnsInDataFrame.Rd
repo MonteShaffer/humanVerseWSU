@@ -36,6 +36,7 @@ head(df);  # might be a bug if all are moved?
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
 \code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{replaceDateStringWithDateColumns}()},

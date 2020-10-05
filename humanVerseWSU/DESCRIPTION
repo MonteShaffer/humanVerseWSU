@@ -1,7 +1,7 @@
 Package: humanVerseWSU
 Type: Package
 Title: Saving Human-Life Hours with "human-verse" forms of R functions
-Version: 0.1.0
+Version: 0.1.2
 Authors@R: person( "Monte J. Shaffer", email = "monte.shaffer@gmail.com",
   role = c("aut", "cre")  )
 Description: Manipulating dataframes, ...

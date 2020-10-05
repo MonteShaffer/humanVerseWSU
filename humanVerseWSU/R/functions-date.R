@@ -29,7 +29,7 @@
 #'
 #' weeks = convertDateStringToFormat(date.strings,
 #'                              "%W","weeks",
-#'                                                             %m/%d/%Y %H:%M");
+#'                                                             "%m/%d/%Y %H:%M");
 #'
 #' days = convertDateStringToFormat(date.strings,"
 #'                               %j", "days",

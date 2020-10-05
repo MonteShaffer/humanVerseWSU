@@ -6,7 +6,7 @@
 #' dir.create has a recursive option, so you may want to use that
 #' THIS version was written years ago in another C language and ported to R.
 #'
-#' @param folder
+#' @param folder the folder to be created
 #' @param verbose if true details will be printed
 #' @param skip how many base levels to skip, we can't createDir("C:\")
 #'
@@ -51,7 +51,7 @@ createDirRecursive = function(folder, verbose=FALSE, skip=1)
 #' dir.create has a recursive option, so you may want to use that
 #' THIS version was written years ago in another C language and ported to R.
 #'
-#' @param folder
+#' @param folder the folder to be created
 #' @param verbose if true details will be printed
 #'
 #' @return
@@ -106,43 +106,79 @@ writeLine = function(str, file=file, append=TRUE, end="\n")
 #'
 #' @return
 #' @export
-#'
-#' @examples
-#' storeToFile(
 storeToFile = function (str,myfile)
 	{
 	cat(str, file=myfile,append=FALSE);
 	}
 
 
-grabHTML = function(htmlfile,htmlurl,return.raw=TRUE)
+#' grabHTML
+#'
+#' This grabs an HTML file (or any web TXT file) and caches locally.
+#' There needs to be a global variable `local.data.path` assigned so
+#' this function understands it is running in a local environment where
+#' it can actually save files.  As opposed to `github.data.path` I can't
+#' source this file in a remote repository if I can't store files there.
+#'
+#' @param htmlfile If cached, we can return this file.  If not, we can store
+#'  the url contents to a file.  (rvest doesn't collect the original data
+#'  source to possibly do offline re-parsing.  bad data provenance.)
+#'
+#' @param htmlurl Using RCurl, grab the raw contents off the web.
+#'
+#' @param return.raw If TRUE, will return the raw string
+#' @param verbose If TRUE, will provide some verbosity
+#'
+#' @return
+#' @export
+#'
+#' @examples
+grabHTML = function(htmlfile,htmlurl,verbose=TRUE,return.raw=TRUE)
   {
   if(exists("local.data.path")) # is this available from the global scope?
 		{
     if(file.exists(htmlfile))
       {
-      print("grabHTML() ... from cache ...");
-      print(htmlfile);
+      if(verbose)
+        {
+        print("grabHTML() ... from cache ...");
+        print(htmlfile);
+        }
       if(return.raw)
         {
-        #rawHTML = readtext::readtext(htmlfile);
-        rawHTML = readChar(htmlfile, nchars=9724129);  # piping string ...
+        #rawHTML = readtext::readtext(htmlfile); # buggy, throws errors
+        # would be nice if I didn't have to pass a value in for nchars ...
+        # could I use base::scan ?
+        # scan can read URLs
+        # read.csv can read URLs
+        rawHTML = base::readChar(htmlfile, nchars=9724129);  # piping string ...
         return (rawHTML);
         } else { return (TRUE); }
 
       }
     }
-  print("grabHTML() ... from RCurl ...");
+  if(verbose)
+    {
+    print("grabHTML() ... from RCurl ...");
+    }
   rawHTML = RCurl::getURL( htmlurl );
   if(exists("local.data.path")) # is this available from the global scope?
 		{
 	  storeToFile(rawHTML,htmlfile);
-    print("Grabbed from RCurl ... stored");
+    if(verbose)
+      {
+      print("Grabbed from RCurl ... stored");
+      }
     } else {
             if(return.raw)
               {
               rawHTML;
-              } else { print("Grabbed from RCurl, now what?"); }
+            } else  {
+                    if(verbose)
+                      {
+                      print("Grabbed from RCurl, now what?");
+                      }
+                    }
             }
   }
 
@@ -156,7 +192,7 @@ grabHTML = function(htmlfile,htmlurl,return.raw=TRUE)
 #' @param w How long the final number is to be
 #' @param c Fill digit, default is 0
 #'
-#' @return
+#' @return string
 #' @export
 #'
 #' @examples
@@ -185,6 +221,7 @@ numberPadLeft = function(n, w, c="0")
 #'              "Hashish", "Inhalant", "Hallucinogen", "Amphetamine");
 #' colnames(d.cor) = d.names;
 #' rownames(d.cor) = d.names;
+#' d.cor;
 readTriangularCorrelationTable = function(file)
   {
   x = scan(file);

@@ -1,6 +1,7 @@
 
 mergeDataFrames = function(df1,df2,merge.col,extra="")
   {
+  # MORE TODO HERE
   # https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
   # extra == "cross-join"
 
@@ -39,8 +40,6 @@ removeColumnsFromDataFrame = function(df,mycols)
 
 # removeAllColumnsBut  = function(df, mycols)
 
-# mycols = c("ttid","year","millions");
-# ndf = removeAllColumnsBut(df,mycols);
 #' removeAllColumnsBut
 #'
 #' Remove all columns in the data frame but (except for)
@@ -61,6 +60,9 @@ removeColumnsFromDataFrame = function(df,mycols)
 #' data(iris);
 #' head(iris);
 #' dim(iris);
+#' ndf = removeAllColumnsBut(iris, c("Petal.Length","Petal.Width"));
+#' head(ndf);
+#' dim(ndf);
 removeAllColumnsBut = function(df,mycols)
 	{
   ndf = NULL;
@@ -76,6 +78,7 @@ removeAllColumnsBut = function(df,mycols)
 
 removeNAsFromDataFrame = function(df,mycols=NULL)
   {
+  # MORE TODO HERE
   # if the given column is NA, we remove the row
   # this enables us to build a balanced df
   # if NULL, it will loop over all columsn and do a full cleanse by column ... very conservative approach
@@ -160,8 +163,10 @@ removeDuplicatesFromDataFrameAllColumns	= function(df)
 #' library(datasets);
 #' data(iris);
 #' head(iris);
+#' dim(iris);
 #' df = removeDuplicatesFromDataFrame(iris,"Species");
 #' head(df);
+#' dim(df);
 removeDuplicatesFromDataFrame	= function(df,mycolumn)
 	{
 	# one column at a time
@@ -187,12 +192,15 @@ removeDuplicatesFromDataFrame	= function(df,mycolumn)
 #' library(datasets);
 #' data(iris);
 #' head(iris);
+#' dim(iris);
 #'
 #' df = removeDuplicatesFromDataFrameUnique(iris,"Species");
 #' head(df);
+#' dim(df);
 #'
 #' df = removeDuplicatesFromDataFrameUnique(iris,"Petal.Width");
 #' head(df);
+#' dim(df);
 removeDuplicatesFromDataFrameUnique = function(df, mycolumn)
   {
   ncols = dim(df)[2];
@@ -388,6 +396,8 @@ replaceDateStringWithDateColumns = function(df, mycolumn, newcols)
 
 #' sortDataFrameByNumericColumns
 #'
+#' Does it have to be numeric?
+#'
 #' @family DataFrame
 #'
 #' @param df dataframe
@@ -459,7 +469,8 @@ sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 					# DESC
 					vecs[,i] = -df[,idx];
 					}
-		}
+	  }
+	# function callOrderFunctionWithMatrixInput is in functions-sort.R
 	# df[order( vecs[,1],vecs[,2],vecs[,3] ), ]; # hacked
 	df[callOrderFunctionWithMatrixInput(vecs),]; # Thanks Allan
 	}
@@ -485,21 +496,52 @@ sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 
 
 
-getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
-      {
-      if(lower.case) { str = tolower(str);}
-      vals = str_split(str,sep);
-      f.vals = c();
-      for(val in vals)
-        {
-        val = str_trim(val);
-        f.vals = c(f.vals,val);
-        }
-      f.vals;
-      }
 
-replaceFactorColumnWithIndicatorVariables = function(df, source.column, sep=",", new.column=source.column, use.boolean=TRUE, remove.original = FALSE, lower.case=TRUE)
+
+#' replaceFactorColumnWithIndicatorVariables
+#'
+#' I have a column with factors or string values, and I create
+#'  indicator variables to binary-ize those factors
+#'
+#' @param df Data frame
+#'
+#' @param source.column Where the factors live, it could be exhaustive
+#' or not the function deals with that.
+#'
+#' @param sep If multiple factors are in the one column, what is the separator.
+#' Useful as this will call getKeysFromStringWithSeparator (which maybe
+#'  should live in functions-str.R)
+#'
+#' @param new.column The new column name will have `.i` appended to it for each
+#'  indicator variable.
+#'
+#' @param use.boolean If TRUE, TRUE/FALSE otherwise 1/0.
+#'
+#' @param remove.original If TRUE, original column is removed
+#'
+#' @param lower.case If TRUE, indicator keys are converted to lowercase.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' dim(iris);
+#'
+#' ndf = replaceFactorColumnWithIndicatorVariables(iris, "Species", "is");
+#' head(ndf);
+#' dim(ndf);
+#'
+#' ndf = replaceFactorColumnWithIndicatorVariables(iris, "Species", "is", FALSE);
+#' head(ndf);
+#' dim(ndf);
+replaceFactorColumnWithIndicatorVariables = function(df, source.column,
+                    new.column=source.column, use.boolean=TRUE, sep=",",
+                     remove.original = FALSE, lower.case=TRUE)
     {
+
     # "genre" becomes genre_comedy as indicator ...
     # grab all unique indicators, alphabetize, and add to dataframe
     sidx = getIndexOfDataFrameColumns(df, source.column);
@@ -513,6 +555,7 @@ replaceFactorColumnWithIndicatorVariables = function(df, source.column, sep=",",
     if(use.boolean) { my.false = FALSE; }
     if(use.boolean) { my.true = TRUE; }
 
+    # get all possible keys
     for(i in 1: u.df.length)
       {
       u.row = as.character(u.df[i]);
@@ -554,11 +597,15 @@ replaceFactorColumnWithIndicatorVariables = function(df, source.column, sep=",",
       }
     df;
     }
-# myrow.unpopular = updateDataFrameWithUniqueNewElementsIndicated(row, "ttid",  toadd, "source.unpopular", "rank");
+
 
 #updateDataFrameWithUniqueNewElementsIndicated = function(row,  stack.gem$movies, "source.gem");
 updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, df.new, indicator, replace=TRUE)
   {
+  # TODO ... this is a unique case where you want to merge
+  # different sourced dataframes that are identical but
+  # add indicator variables to annotate the source ...
+
   # assume elements in df.existing are unique
   ndf = df.existing;
       n.existing = dim(ndf)[1];

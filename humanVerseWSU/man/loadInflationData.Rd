@@ -2,6 +2,7 @@
 % Please edit documentation in R/functions-inflation.R
 \name{loadInflationData}
 \alias{loadInflationData}
+\alias{loadDataInflation}
 \title{loadInflationData}
 \usage{
 loadInflationData()

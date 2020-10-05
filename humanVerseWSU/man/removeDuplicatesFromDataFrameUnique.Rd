@@ -22,18 +22,22 @@ duplicate values in the column.
 library(datasets);
 data(iris);
 head(iris);
+dim(iris);
 
 df = removeDuplicatesFromDataFrameUnique(iris,"Species");
 head(df);
+dim(df);
 
 df = removeDuplicatesFromDataFrameUnique(iris,"Petal.Width");
 head(df);
+dim(df);
 }
 \seealso{
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{replaceDateStringWithDateColumns}()},
 \code{\link{sortDataFrameByNumericColumns}()}

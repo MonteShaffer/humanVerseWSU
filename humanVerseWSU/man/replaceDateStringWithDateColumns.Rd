@@ -48,6 +48,7 @@ Other DataFrame:
 \code{\link{getIndexOfDataFrameColumns}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{sortDataFrameByNumericColumns}()}

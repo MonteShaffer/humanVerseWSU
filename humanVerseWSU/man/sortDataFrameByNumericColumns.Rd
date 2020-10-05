@@ -17,7 +17,7 @@ sortDataFrameByNumericColumns(df, mycols, direction = "DESC")
 dataframe, updated
 }
 \description{
-sortDataFrameByNumericColumns
+Does it have to be numeric?
 }
 \examples{
 
@@ -63,6 +63,7 @@ Other DataFrame:
 \code{\link{getIndexOfDataFrameColumns}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{replaceDateStringWithDateColumns}()}

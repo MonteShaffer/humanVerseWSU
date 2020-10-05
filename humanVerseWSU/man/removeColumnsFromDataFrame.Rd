@@ -30,6 +30,7 @@ head(df);
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
 \code{\link{moveColumnsInDataFrame}()},
+\code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
 \code{\link{replaceDateStringWithDateColumns}()},
