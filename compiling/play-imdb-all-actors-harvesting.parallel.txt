@@ -537,6 +537,23 @@ tail(all.actors);
 	saveRDS(movies, file = paste0(imdb.path, "imdb/all.actors.movies.rds") );
 	
 	
+#################################	
+	characters.file = paste0(data.path, "all.movies.actors.characters.txt") ;
+	
+	characters = read.csv(characters.file, header=TRUE, quote="", sep="|");
+	
+	characters$`actor.rank` = characters$rank;
+	characters$tid = as.numeric( gsub("tt","",characters$ttid,fixed=TRUE) );
+	characters = sortDataFrameByNumericColumns(characters, c("tid"),"ASC");
+	characters = removeColumnsFromDataFrame(characters, "tid"); # we sorted, now let's get rid of it ...
+	
+	characters = removeColumnsFromDataFrame(characters, "rank");
+	characters = moveColumnsInDataFrame(characters, "actor.rank", "before", "nmid");
+	#characters = removeDuplicatesFromDataFrameAllColumns(characters);  # too slow ... 901324
+	
+	saveRDS(characters, file = paste0(imdb.path, "imdb/all.movies.actors.characters.rds") );
+	
+	
 	# 
 	
 	
