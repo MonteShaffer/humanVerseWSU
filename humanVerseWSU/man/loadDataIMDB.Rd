@@ -7,9 +7,12 @@
 loadDataIMDB()
 }
 \description{
-This data was pulled from \url{https://www.imdb.com} in September 2020.
+This reads in 23 compressed files that are about 56MB.
+It will use a bit of RAM to load these data.
 }
 \details{
+This data was pulled from \url{https://www.imdb.com} in September 2020.
+
 It contains several dataframes.
 See \url{http://md5.mshaffer.com/WSU_STATS419/01_imdb-monte.html"} for details.
 }

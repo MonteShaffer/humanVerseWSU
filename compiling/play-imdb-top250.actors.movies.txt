@@ -677,7 +677,7 @@ n.all.movies = length(all.movies);
 all.movies = sort(all.movies, decreasing=FALSE);
 
 
-
+j=0;
 for(ttid in all.movies)
 	{
 	j=1+j;

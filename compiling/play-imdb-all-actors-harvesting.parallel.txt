@@ -553,6 +553,104 @@ tail(all.actors);
 	
 	saveRDS(characters, file = paste0(imdb.path, "imdb/all.movies.actors.characters.rds") );
 	
+	##########################
+	
+	companies.file = paste0(data.path, "all.movies.companies.txt") ;
+	
+	companies = read.csv(companies.file, header=TRUE, quote="", sep="|");
+	
+	companies$tid = as.numeric( gsub("tt","",companies$ttid,fixed=TRUE) );
+	companies = sortDataFrameByNumericColumns(companies, c("tid"),"ASC");
+	companies$`co.rank` = companies$rank;
+	
+	
+	companies = removeColumnsFromDataFrame(companies, "rank");
+	
+	
+	companies$`co.rank` = as.numeric( companies$`co.rank` );
+	companies = moveColumnsInDataFrame(companies, "co.rank", "before", "coid");
+	companies = removeColumnsFromDataFrame(companies, "tid"); # we sorted, now let's get rid of it ...
+	 # 'data.frame':   126648 obs. of  4 variables:
+
+	
+	companies = removeDuplicatesFromDataFrameAllColumns(companies);  # 120376 obs. of  4 variables:
+
+	saveRDS(companies, file = paste0(imdb.path, "imdb/all.movies.companies.rds") );
+	
+##############################
+	
+	creatives.file = paste0(data.path, "all.movies.creatives.txt") ;
+	
+	creatives = read.csv(creatives.file, header=TRUE, quote="", sep="|");
+	creatives$tid = as.numeric( gsub("tt","",creatives$ttid,fixed=TRUE) );
+	creatives = sortDataFrameByNumericColumns(creatives, c("tid"),"ASC");
+	creatives = removeColumnsFromDataFrame(creatives, "tid"); # we sorted, now let's get rid of it ...
+	creatives$`creative.rank` = creatives$rank;	
+	creatives = removeColumnsFromDataFrame(creatives, "rank");
+	
+	creatives$`creative.rank` = as.numeric( creatives$`creative.rank` );
+	creatives = moveColumnsInDataFrame(creatives, "creative.rank", "before", "nmid");
+	
+	# 407686 obs. of  4 variables:
+
+	creatives = removeDuplicatesFromDataFrameAllColumns(creatives);  # 120376 obs. of  4 variables:
+
+	# 'data.frame':   407481 obs. of  4 variables:
+	
+	saveRDS(creatives, file = paste0(imdb.path, "imdb/all.movies.creatives.rds") );
+	
+	
+	##################
+	extra.file = paste0(data.path, "all.movies.extra.txt") ;
+	
+	extra = read.csv(extra.file, header=TRUE, quote="", sep="|");
+	
+	extra = extra[substr(extra$ttid,1,2) == "tt", ];
+	
+	n.extra = dim(extra)[1];
+	
+	n.ttid = length(unique(extra$ttid));  # 74821
+	
+	n.extra/n.ttid;
+	
+	key.names = sort( unique(extra$`key.name`) );
+	my.names = gsub(" ",".", key.names, fixed=TRUE)[-c(1)];
+	my.keys = key.names[-c(1)];
+	
+	
+	
+	header = paste0( c("ttid",my.names), collapse="|" );
+	header = gsub("budget","est.budget",header,fixed=TRUE);
+		test.file = paste0(data.path, "header.txt") ;
+	
+	writeLine(header, file=test.file, append=FALSE);
+	ttids = sort( unique(extra$ttid) );
+	n.ttids = length(ttids);
+	for(i in 1:n.ttids)
+		{
+		ttid = ttids[i];
+		sub = extra[extra$ttid == ttid, ];
+		
+		str = paste0(ttid);
+		
+		
+		for(j in 1:length(my.keys))
+			{
+			my.key = my.keys[j];
+			rec = sub[sub$`key.name` == my.key,];
+			
+			}
+		
+		
+		
+		}
+	
+	
+	#
+	ndf = read.csv(test.file, header=TRUE, quote="", sep="|");
+	
+	ttids = sort( unique(extra$ttid) );
+	ndf$ttid = ttids;
 	
 	# 
 	

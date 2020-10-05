@@ -2,6 +2,9 @@
 
 #' loadDataIMDB
 #'
+#' This reads in 23 compressed files that are about 56MB.
+#' It will use a bit of RAM to load these data.
+#'
 #' This data was pulled from \url{https://www.imdb.com} in September 2020.
 #'
 #' It contains several dataframes.
@@ -10,7 +13,6 @@
 #' @family IMDB
 #'
 #' @export
-
 loadDataIMDB = function()
   {
   imdb = list();
@@ -62,14 +64,14 @@ loadDataIMDB = function()
     glue$movies.creatives = readRDS(
     system.file("extdata", "imdb/glue.movies.headliners.rds", package="humanVerseWSU") );
 
-    # imdb$all.movies.creatives = readRDS(
-    # system.file("extdata", "imdb/all.movies.creatives.rds", package="humanVerseWSU") );
-    # imdb$all.movies.companies = readRDS(
-    # system.file("extdata", "imdb/all.movies.companies.rds", package="humanVerseWSU") );
+    imdb$all.movies.creatives = readRDS(
+    system.file("extdata", "imdb/all.movies.creatives.rds", package="humanVerseWSU") );
+    imdb$all.movies.companies = readRDS(
+    system.file("extdata", "imdb/all.movies.companies.rds", package="humanVerseWSU") );
     # imdb$all.movies.extra = readRDS(
     # system.file("extdata", "imdb/all.movies.extra.rds", package="humanVerseWSU") );
-    # imdb$all.movies.actors.characters = readRDS(
-    # system.file("extdata", "imdb/all.movies.actors.characters.rds", package="humanVerseWSU") );
+    imdb$all.movies.actors.characters = readRDS(
+    system.file("extdata", "imdb/all.movies.actors.characters.rds", package="humanVerseWSU") );
 
     imdb$all.actors.rank = readRDS(
     system.file("extdata", "imdb/all.actors.rank.rds", package="humanVerseWSU") );
@@ -78,11 +80,8 @@ loadDataIMDB = function()
     imdb$all.actors.info = readRDS(
     system.file("extdata", "imdb/all.actors.info.rds", package="humanVerseWSU") );
 
-
-
     imdb$moviecount.byyear = readRDS(
     system.file("extdata", "imdb/moviecount.byyear.rds", package="humanVerseWSU") );
-
 
     imdb$actors = actors;
     imdb$glue = glue;
