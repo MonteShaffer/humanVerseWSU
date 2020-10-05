@@ -11,6 +11,6 @@ This data was pulled from \url{https://www.imdb.com} in September 2020.
 }
 \details{
 It contains several dataframes.
-See \url{http://md5.mshaffer.com/WSU_STATS419/imdb.html"} for details.
+See \url{http://md5.mshaffer.com/WSU_STATS419/01_imdb-monte.html"} for details.
 }
 \concept{IMDB}

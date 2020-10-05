@@ -38,8 +38,6 @@ removeColumnsFromDataFrame = function(df,mycols)
 	df;
 	}
 
-# removeAllColumnsBut  = function(df, mycols)
-
 #' removeAllColumnsBut
 #'
 #' Remove all columns in the data frame but (except for)

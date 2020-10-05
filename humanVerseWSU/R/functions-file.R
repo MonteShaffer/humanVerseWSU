@@ -131,8 +131,6 @@ storeToFile = function (str,myfile)
 #'
 #' @return
 #' @export
-#'
-#' @examples
 grabHTML = function(htmlfile,htmlurl,verbose=TRUE,return.raw=TRUE)
   {
   if(exists("local.data.path")) # is this available from the global scope?
