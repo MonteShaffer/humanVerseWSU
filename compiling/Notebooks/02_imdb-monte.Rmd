@@ -1,0 +1,151 @@
+---
+title: "IMDB functions"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, chunk-setup, include=FALSE}
+# include=FALSE means it is running, but invisible ...
+knitr::opts_chunk$set(echo = TRUE);
+knitr::opts_chunk$set(warning = FALSE);
+knitr::opts_chunk$set(message = FALSE);
+```
+
+# Documentation of functions
+
+Since `Roxygen` does not allow a wildcard in the documentation `*` as it tries to render it as *bold* or something, I am resigned to write some external documentation for the functions.
+
+```{r, chunck-humanVerseWSU, include=TRUE}
+
+library(humanVerseWSU);
+
+# library(devtools);
+# detach(package:humanVerseWSU);
+# install_github("MonteShaffer/humanVerseWSU/humanVerseWSU");
+# # Choose (3) None to minimize headaches ....
+# library(humanVerseWSU);
+
+```
+
+The dataset is large and `?loadDataIMDB` contains some of the information.  See also <http://md5.mshaffer.com/WSU_STATS419/01_imdb-monte.html>
+
+```{r, chunck-loadData, include=TRUE}
+
+loadDataIMDB();  # will populate a global list of data:  imdb.data
+
+```
+
+## IMDB.getMovieInfoFromActorSearch
+
+```{r, chunck-IMDB.getMovieInfoFromActorSearch, include=TRUE}
+
+IMDB.getMovieInfoFromActorSearch("tt2302755");  # who copied whom?
+
+IMDB.getMovieInfoFromActorSearch("tt2334879");
+
+IMDB.getMovieInfoFromActorSearch("tt0038650");  # not found ?? BUG !
+
+```
+
+
+## IMDB.searchMovieTitle
+
+```{r, chunck-IMDB.searchMovieTitle, include=TRUE}
+
+IMDB.searchMovieTitle("*Kill*", 4:1);
+
+IMDB.searchMovieTitle("*Love*", c("ttid","title","millions") );
+
+IMDB.searchMovieTitle("*monte*", 4:1, ignore.case=TRUE);
+IMDB.searchMovieTitle("*monte*", 4:1, ignore.case=FALSE);
+
+IMDB.searchMovieTitle("Romanc*", 4:1 );
+
+```
+
+
+## IMDB.getPersonInfo
+
+```{r, chunck-IMDB.getPersonInfo, include=TRUE}
+
+
+IMDB.getPersonInfo("nm0000005");
+
+IMDB.getPersonInfo("nm0000005", 1:4);
+
+IMDB.getPersonInfo("nm0000005", c("name","bio"));
+
+```
+
+## IMDB.getMoviesForPerson
+
+```{r, chunck-IMDB.getMoviesForPerson, include=TRUE}
+
+
+IMDB.getMoviesForPerson("nm0000071");
+
+IMDB.getMoviesForPerson("nm0000071", 1:5);
+
+IMDB.getMoviesForPerson("nm0000071", c("title","year","ttid","rank"));
+
+```
+
+
+## IMDB.searchPersonName
+
+```{r, chunck-IMDB.searchPersonName, include=TRUE}
+
+
+
+IMDB.searchPersonName("Frank Oz", 1:3);
+
+IMDB.searchPersonName("Sean*", c("nmid","name","born.where") );
+
+IMDB.searchPersonName("*monte*", 1:2, ignore.case=TRUE);
+
+IMDB.searchPersonName("*monte*", 1:2, ignore.case=FALSE);
+
+IMDB.searchPersonName("Denzel*", c(1,2,4) );
+
+```
+
+## IMDB.genericSearch
+
+```{r, chunck-IMDB.genericSearch, include=TRUE}
+
+
+#Wildcard `*` breaks when rendered in Roxygen
+
+IMDB.genericSearch("*Kentucky*", "bio", 1:2);
+
+IMDB.genericSearch("*Kentucky*", "born.where", 1:2);
+
+IMDB.genericSearch("*Montana*", "born.where", 1:2);
+
+IMDB.genericSearch("*Seattle*", "born.where", 1:2);
+
+# different dataframe
+
+IMDB.genericSearch("*Montana*", "paragraph", 1:3, imdb=imdb.data$all.actors.movies);
+
+merge( IMDB.genericSearch("*Montana*", "character", 1:4, imdb=imdb.data$all.movies.actors.characters), imdb.data$all.actors.movies, by="ttid" );
+
+
+merge( IMDB.genericSearch("*Jack*Sparrow*", "character", 1:4, imdb=imdb.data$all.movies.actors.characters), imdb.data$all.actors.movies, by="ttid" );
+
+
+
+```
+
+
+## IMDB.getUniqueCharactersForPerson
+
+```{r, chunck-IMDB.getUniqueCharactersForPerson, include=TRUE}
+
+IMDB.getUniqueCharactersForPerson("nm0000136"); # Johnny Depp
+
+IMDB.getUniqueCharactersForPerson(IMDB.searchPersonName("Frank Oz")$nmid[1]);
+
+```
+

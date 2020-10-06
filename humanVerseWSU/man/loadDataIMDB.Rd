@@ -11,9 +11,51 @@ This reads in 23 compressed files that are about 56MB.
 It will use a bit of RAM to load these data.
 }
 \details{
+Short notation for `imdb.data$actors$all`.
+
+`$actors$all`         # 71341
+`$actors$popular50`   # 35245
+`$actors$gem50`       # 37997
+`$actors$headliners`  #  2407
+`$actors$top250`      #  3092
+`$actors$nm5000`      #  4968
+`$actors$tt5000`      #  5452
+
+
+`$movies$all`         # 74520
+`$movies$popular50`   #  5704    3
+`$movies$gem50`       #  5704    3
+`$movies$top250`      #   250
+`$movies$tt5000`      #  4942
+
+
+`$headliners$companies`   #     770
+`$headliners$directors`   #     606
+`$headliners$writers`     #     670
+`$headliners$actors`      #    2407
+`$glue$movies.creatives`  #  361077      3   # this table was used to build headliners with 15+ rule
+
+
+`$all.movies.creatives`           #  407481      4
+`$all.movies.companies`           #  120376      4
+`$all.movies.actors.characters`   #  901324      4
+
+<https://www.imdb.com/filmosearch/?sort=num_votes&explore=title_type&role=nm0000071>
+
+`$all.actors.rank`     #  1842305       3   # rank is order of search result
+`$all.actors.movies`   #   282062      11   # this contains the data from search
+`$all.actors.info`     #    71332      10   # this contains basic actor info from <https://www.imdb.com/name/nm0000071/>
+
+
+
 This data was pulled from \url{https://www.imdb.com} in September 2020.
 
 It contains several dataframes.
-See \url{http://md5.mshaffer.com/WSU_STATS419/01_imdb-monte.html"} for details.
+See \url{http://md5.mshaffer.com/WSU_STATS419/01_imdb-monte.html} for details.
+
+Roxygen or RStudio does not allow wildcard `*` in example? Bold?
+See \url{\url{http://md5.mshaffer.com/WSU_STATS419/01_imdb-monte.html}} for examples.
+
+Once loaded, a global object `imdb.data` contains the lists of data.
 }
 \concept{IMDB}
