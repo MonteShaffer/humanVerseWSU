@@ -85,7 +85,7 @@ removeNAsFromDataFrame = function(df,mycols=NULL)
   # ncols = dim(df)[2];
   # https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
   # complete.cases?
-  na.omit(df);
+  stats::na.omit(df);
 }
 
 
@@ -561,7 +561,7 @@ replaceFactorColumnWithIndicatorVariables = function(df, source.column,
       u.keys = c(u.keys,u.vals);
       }
 
-    mykeys = sort( na.omit( unique(u.keys) ) );  # 26 keys
+    mykeys = sort( stats::na.omit( unique(u.keys) ) );  # 26 keys
     mycols = c();
     for(mykey in mykeys)
       {

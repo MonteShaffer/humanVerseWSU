@@ -149,3 +149,10 @@ IMDB.getUniqueCharactersForPerson(IMDB.searchPersonName("Frank Oz")$nmid[1]);
 
 ```
 
+## All movies @ IMDB by year
+
+```{r, chunck-IMDB.plot-by-year, include=TRUE}
+
+plot(imdb.data$moviecount.byyear);
+
+```
