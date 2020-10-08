@@ -67,6 +67,7 @@ Other DataFrame:
 \code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{removeDuplicatesFromDataFrame}()},
-\code{\link{replaceDateStringWithDateColumns}()}
+\code{\link{replaceDateStringWithDateColumns}()},
+\code{\link{subsetDataFrame}()}
 }
 \concept{DataFrame}

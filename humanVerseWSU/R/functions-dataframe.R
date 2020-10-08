@@ -1,4 +1,62 @@
 
+#' subsetDataFrame
+#'
+#' @family DataFrame
+#'
+#' @param df dataframe
+#' @param mycols names of cols to find idx's ... string or vector of strings will work
+#'
+#' @param myvals values for the cols to subset
+#'
+#' @return NA if not correctly specified; otherwise dataframe of subset
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' mycols = c("Sepal.Width","Petal.Width");
+#' myvals = c(3.0, 0.2);
+#' subsetDataFrame(iris, mycols, myvals);
+#' subsetDataFrame(iris, mycols, myvals, verbose=TRUE);
+#'
+#' myvals = c(1492, 1991);
+#' subsetDataFrame(iris,mycols,myvals);
+#'
+#'
+#' subsetDataFrame(iris,"column-does-not-exist", 123);  # Throws error
+#'
+subsetDataFrame = function(df,mycols,myvals, verbose=FALSE)
+  {
+  n = nrow(df);
+  n.cols = length(mycols);
+  n.vals = length(myvals);
+  if(n.cols != n.vals)
+    {
+    warning("Something wrong in subsetDataFrame ... mycols and myvals are of different lengths");
+    return (NA);
+    }
+
+  idxs = getIndexOfDataFrameColumns(df,mycols);
+  if(anyNA(idxs))
+    {
+    warning("One or more columns of mycols is not found!");
+    return (NA);  # example won't run if I put "stop" when devtools::check();
+    }
+  ndf = df;
+  for(i in 1:n.cols)
+    {
+    if(verbose)
+      {
+      print( paste0( "Subsetting column [",mycols[i],"] == [",myvals[i],"]" ) );
+      }
+    ndf = ndf[ndf[,idxs[i]] == myvals[i], ];
+    }
+  ndf;
+  }
+
+
+
 mergeDataFrames = function(df1,df2,merge.col,extra="")
   {
   # MORE TODO HERE

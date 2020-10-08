@@ -36,6 +36,7 @@ Other DataFrame:
 \code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},
 \code{\link{replaceDateStringWithDateColumns}()},
-\code{\link{sortDataFrameByNumericColumns}()}
+\code{\link{sortDataFrameByNumericColumns}()},
+\code{\link{subsetDataFrame}()}
 }
 \concept{DataFrame}

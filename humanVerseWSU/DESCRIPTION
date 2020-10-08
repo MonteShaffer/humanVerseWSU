@@ -13,8 +13,10 @@ LazyData: true
 Imports:
   magrittr,
   matrixStats,
+  psych,
   RCurl,
   readtext,
+  REdaS,
   rlang,
   rvest,
   stats,
