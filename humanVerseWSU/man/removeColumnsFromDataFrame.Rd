@@ -29,6 +29,7 @@ head(df);
 \seealso{
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{getIndexOfDataFrameRows}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},

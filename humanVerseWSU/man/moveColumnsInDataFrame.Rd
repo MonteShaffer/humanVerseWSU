@@ -28,13 +28,26 @@ data(iris);
 head(iris);
 df = moveColumnsInDataFrame(iris,"Species","before","Sepal.Length");
 head(df);
+
 df = moveColumnsInDataFrame(iris,c("Sepal.Length","Sepal.Width"),"after","Species");
 head(df);  # might be a bug if all are moved?
 
+head(iris[,1:2]);
+df = moveColumnsInDataFrame(iris[,1:2],"Sepal.Width","before","Sepal.Length");
+head(df);
+
+head(iris[,1:2]);
+df = moveColumnsInDataFrame(iris[,1:2],"Sepal.Length","after","Sepal.Width");
+head(df);
+
+head(iris[,1:2]);
+df = moveColumnsInDataFrame(iris[,1:2],"Sepal.Width","after","Sepal.Length");
+head(df);
 }
 \seealso{
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{getIndexOfDataFrameRows}()},
 \code{\link{removeColumnsFromDataFrame}()},
 \code{\link{removeDuplicatesFromDataFrameAllColumns}()},
 \code{\link{removeDuplicatesFromDataFrameUnique}()},

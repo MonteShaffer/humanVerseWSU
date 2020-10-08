@@ -1,0 +1,137 @@
+[33mcommit 0b0d1ec59ef281ab57aec484e409a207dcd66974[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Wed Oct 7 04:46:01 2020 -0700
+
+    added personality.json files
+
+[33mcommit 4a643b97f7f218daa9cd4f5d3bf3495c238b757b[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Tue Oct 6 02:21:39 2020 -0700
+
+    moved IMDB to its own library
+
+[33mcommit de089877cd0e9b9a5ff4d74fb724da03f8cfdbd4[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Oct 5 17:12:30 2020 -0700
+
+    version 0.1.3
+
+[33mcommit 1195965f76f30c1b1a78763177526471125a917b[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Oct 5 14:41:23 2020 -0700
+
+    IMDB (7)
+
+[33mcommit b29106941ae6e0defad7d52cd6c44a9747a2a192[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Oct 5 13:42:01 2020 -0700
+
+    IMDB (6)
+
+[33mcommit 40baa11ed3c4ecbd0f1db508ef6a14c132f4dd2e[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Oct 5 04:05:45 2020 -0700
+
+    IMDB (5)
+
+[33mcommit e238b0d22f9c1b3b29a48b637c8662c74debff22[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Oct 5 02:26:11 2020 -0700
+
+    IMDB actors-movies (BIG)
+
+[33mcommit 343db4bb8208bdf28c23dad65aa004e058c415c4[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Oct 5 00:57:33 2020 -0700
+
+    Buildable package
+
+[33mcommit 003604e5997cc711a29c368ac6722f97ad444e2f[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sun Oct 4 21:52:19 2020 -0700
+
+    Adding IMDB (4)
+
+[33mcommit a9aea7751a686f116440d38e88e844a9328afa83[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sun Oct 4 21:50:19 2020 -0700
+
+    Adding IMDB (3)
+
+[33mcommit b11f4f4b898db008173806d3737508462545c07b[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sun Oct 4 00:56:58 2020 -0700
+
+    Adding IMDB (2)
+
+[33mcommit e0e8a66ec1e01c3dde15ea847a15e5013a41efae[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sat Oct 3 19:55:34 2020 -0700
+
+    Adding IMDB (1)
+
+[33mcommit 8689338837d96b557e200eea3b859956ec606405[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sat Oct 3 18:18:24 2020 -0700
+
+    Updating documentation / Adding IMDB
+
+[33mcommit 8cf99c155d46cb4ba7180556246507e73350cb21[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Mon Sep 28 00:13:42 2020 -0700
+
+    Adding personality-raw dataset
+
+[33mcommit 282a228537eceb1b431271dd0fa987cfc1ab377e[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sun Sep 27 23:59:44 2020 -0700
+
+    Updating inflation and dataframe functions
+
+[33mcommit ae589d93a071986110515cb115b34687b2d6b256[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sat Sep 12 14:42:21 2020 -0700
+
+    doUnique typo
+
+[33mcommit e1f500fe63d0c1cdd3dd118898dab0ac08133918[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Sat Sep 12 00:54:20 2020 -0700
+
+    added 'unique' and 'duplicated' examples
+
+[33mcommit 519c4d3e30709c494e79323aa405132fe616a604[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Fri Sep 11 10:27:25 2020 -0700
+
+    MAD included with median
+
+[33mcommit 88561e8d4e4f90ea6d8ba472b6f8c3189dd32c9a[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Fri Sep 11 10:15:47 2020 -0700
+
+    add isClose help (Ben example)
+
+[33mcommit 09eeed4ac3f3f987e873652028b7db17b715de7e[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Fri Sep 11 00:56:53 2020 -0700
+
+    compile notes
+
+[33mcommit 61398c6e9bb1726c042d4e48cb70420926928c2d[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Fri Sep 11 00:51:39 2020 -0700
+
+    added ext/ dataset; updated functions
+
+[33mcommit 6ee981727236a99e25b2a6024d1d1fb844ae7666[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Wed Sep 9 16:51:29 2020 -0700
+
+    initial release of functions
+
+[33mcommit 66c021d9d40951d56a7d56f9415b70ff61b4f382[m
+Author: MonteShaffer <monte.shaffer@gmail.com>
+Date:   Wed Sep 9 15:54:29 2020 -0700
+
+    Initial commit

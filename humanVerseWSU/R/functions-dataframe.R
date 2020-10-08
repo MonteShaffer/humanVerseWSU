@@ -220,6 +220,61 @@ removeDuplicatesFromDataFrameUnique = function(df, mycolumn)
   }
 
 
+#' getIndexOfDataFrameRows
+#'
+#' @family DataFrame
+#'
+#' @param df dataframe
+#' @param mycols names of cols to find idx's ... string or vector of strings will work
+#'
+#' @param myvals values for the cols (like subsetting, but just getting row indexes)
+#'
+#' @return NA if not found; otherwise numeric vector of the same length as mycols, in the same order as mycols
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' head(iris);
+#' mycols = c("Sepal.Width","Petal.Width");
+#' myvals = c(3.0, 0.2);
+#' getIndexOfDataFrameRows(iris,mycols,myvals);
+#'
+#' myvals = c(1492, 1991);
+#' getIndexOfDataFrameRows(iris,mycols,myvals);
+#'
+#'
+#' getIndexOfDataFrameRows(iris,"column-does-not-exist", 123);  # Throws error
+#'
+getIndexOfDataFrameRows = function(df,mycols,myvals)
+	{
+  n = nrow(df);
+  n.cols = length(mycols);
+  n.vals = length(myvals);
+  if(n.cols != n.vals)
+    {
+    warning("Something wrong in getIndexOfDataFrameRows ... mycols and myvals are of different lengths");
+    return (NA);
+    }
+
+  idxs = getIndexOfDataFrameColumns(df,mycols);
+  if(anyNA(idxs))
+    {
+    warning("One or more columns of mycols is not found!");
+    return (NA);  # example won't run if I put "stop" when devtools::check();
+    }
+
+  truth = matrix(FALSE, ncol = n, nrow = n.cols);
+  for(i in 1:length(mycols) )
+    {
+    truth[i, ] = df[,idxs[i] ] == myvals[i] ;
+    }
+  mySums = colSums(truth) == n.cols;
+
+  result = which(mySums);
+  if(length(result) == 0) { return (NA); }
+  result;
+  }
 
 #' getIndexOfDataFrameColumns
 #'
@@ -229,7 +284,7 @@ removeDuplicatesFromDataFrameUnique = function(df, mycolumn)
 #' @param mycols names of cols to find idx's ... string or vector of strings will work
 #'
 #'
-#' @return numeric vector of the same length as mycols, in the same order as mycols
+#' @return NA if not found; otherwise numeric vector of the same length as mycols, in the same order as mycols
 #' @export
 #'
 #' @examples
@@ -242,6 +297,8 @@ removeDuplicatesFromDataFrameUnique = function(df, mycolumn)
 #' mycols = c("Petal.Length","Sepal.Length");
 #' getIndexOfDataFrameColumns(iris,mycols);
 #'
+#' getIndexOfDataFrameColumns(iris,"column-does-not-exist");  # NA
+#'
 getIndexOfDataFrameColumns = function(df,mycols)
 	{
 	n.cols = length(mycols);
@@ -249,7 +306,13 @@ getIndexOfDataFrameColumns = function(df,mycols)
 	for(i in 1:n.cols)
 		{
 		mycol = mycols[i];
-		result[i] = which( names(df)== mycol );
+		count = sum( names(df)== mycol );
+		if(count == 0)
+		  {
+		  result[i] = NA;
+		  } else {
+		          result[i] = which( names(df)== mycol );
+		          }
 		}
 	if(n.cols == 1)
 		{
@@ -281,20 +344,51 @@ getIndexOfDataFrameColumns = function(df,mycols)
 #' head(iris);
 #' df = moveColumnsInDataFrame(iris,"Species","before","Sepal.Length");
 #' head(df);
+#'
 #' df = moveColumnsInDataFrame(iris,c("Sepal.Length","Sepal.Width"),"after","Species");
 #' head(df);  # might be a bug if all are moved?
 #'
+#' head(iris[,1:2]);
+#' df = moveColumnsInDataFrame(iris[,1:2],"Sepal.Width","before","Sepal.Length");
+#' head(df);
+#'
+#' head(iris[,1:2]);
+#' df = moveColumnsInDataFrame(iris[,1:2],"Sepal.Length","after","Sepal.Width");
+#' head(df);
+#'
+#' head(iris[,1:2]);
+#' df = moveColumnsInDataFrame(iris[,1:2],"Sepal.Width","after","Sepal.Length");
+#' head(df);
 moveColumnsInDataFrame = function(ndf, mycols, where, anchor)
 	{
 	# anchor is a colname by default, but can be an index (is numeric)
 	# mycols are names of the cols ... we will get their locations ...
 	# where can be "before" or "after" the anchor
   # some of mycols can be before/after anchor to begin with, doesn't matter ...
+  ncols = ncol(df);
 
 	anchor.idx = anchor;
 	if(!is.numeric(anchor)) { anchor.idx = getIndexOfDataFrameColumns(ndf, anchor); }
+  if(is.na(anchor.idx))
+    {
+    warning("anchor not found!");
+    return (df);
+    }
+
+	if(where == "after" && ncols == 2 && anchor.idx == 2)
+	  {
+	  return ( ndf[, c(2,1)]);
+	  }
+	if(where == "after" && ncols == 2 && anchor.idx == 1)
+	  {
+	  return ( ndf[, c(1,2)]); # no change
+	  }
+
+  ## above was simple case that was breaking ...
+	## are there others ...
 
 	n.mycols = length(mycols);
+
 	mycols.idx = numeric();
 	for(i in 1:n.mycols)
 		{
@@ -304,7 +398,10 @@ moveColumnsInDataFrame = function(ndf, mycols, where, anchor)
 			{
 			mycols.idx[i] = idx;
 			}
-		}
+	  }
+
+
+
 	last.one = dim(ndf)[2];
 		order.start = 1:last.one;
 	to.move = mycols.idx;

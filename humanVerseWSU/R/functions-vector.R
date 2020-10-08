@@ -6,10 +6,11 @@
 #' @param x numeric vector
 #' @param search single number
 #'
-#' @return numeric vector that contains the indexes of search %in% x
+#' @return NA if not found; otherwisenumeric vector that contains the indexes of search %in% x
 #' @export
 #'
 #' @examples
+#' findAllIndexesWithValueInVector( 1:9, 42);  # NA
 #' findAllIndexesWithValueInVector( 1:9, 5);
 #' findAllIndexesWithValueInVector( rep(1:9, 5), 5);
 #' findAllIndexesWithValueInVector( sample( rep(1:9, 5) ), 5);
@@ -19,7 +20,9 @@ findAllIndexesWithValueInVector = function(x,search)
 	mat.x = as.data.frame( cbind(1:nx,x) );
 		colnames(mat.x) = c("idx","x");
 	mat.s = mat.x[mat.x$x==search, ];
-	as.numeric( stats::na.omit ( as.numeric( as.vector (mat.s$idx) ) ) );
+	result = as.numeric( stats::na.omit ( as.numeric( as.vector (mat.s$idx) ) ) );
+	if(length(result) == 0) { return (NA); }
+	result;
 	}
 
 

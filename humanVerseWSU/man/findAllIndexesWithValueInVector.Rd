@@ -12,12 +12,13 @@ findAllIndexesWithValueInVector(x, search)
 \item{search}{single number}
 }
 \value{
-numeric vector that contains the indexes of search %in% x
+NA if not found; otherwisenumeric vector that contains the indexes of search %in% x
 }
 \description{
 findAllIndexesWithValueInVector
 }
 \examples{
+findAllIndexesWithValueInVector( 1:9, 42);  # NA
 findAllIndexesWithValueInVector( 1:9, 5);
 findAllIndexesWithValueInVector( rep(1:9, 5), 5);
 findAllIndexesWithValueInVector( sample( rep(1:9, 5) ), 5);

@@ -61,6 +61,7 @@ sortDataFrameByNumericColumns(udf,sample(mycols),sample(mydirections) );
 \seealso{
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{getIndexOfDataFrameRows}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
 \code{\link{removeDuplicatesFromDataFrameAllColumns}()},

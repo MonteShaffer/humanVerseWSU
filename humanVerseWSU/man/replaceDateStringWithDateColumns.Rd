@@ -46,6 +46,7 @@ udf = replaceDateStringWithDateColumns(df,"date.strings",ywd);
 \seealso{
 Other DataFrame: 
 \code{\link{getIndexOfDataFrameColumns}()},
+\code{\link{getIndexOfDataFrameRows}()},
 \code{\link{moveColumnsInDataFrame}()},
 \code{\link{removeColumnsFromDataFrame}()},
 \code{\link{removeDuplicatesFromDataFrameAllColumns}()},
