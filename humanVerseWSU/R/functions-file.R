@@ -152,51 +152,37 @@ storeToFile = function (str,myfile)
 #' @export
 grabHTML = function(htmlfile,htmlurl,verbose=TRUE,return.raw=TRUE)
   {
-  if(exists("local.data.path")) # is this available from the global scope?
-		{
-    if(file.exists(htmlfile))
+  if(file.exists(htmlfile))
       {
       if(verbose)
         {
-        print("grabHTML() ... from cache ...");
-        print(htmlfile);
+        print( paste0("grabHTML() ... from cache ... ", htmlfile) );
         }
       if(return.raw)
         {
-        #rawHTML = readtext::readtext(htmlfile); # buggy, throws errors
-        # would be nice if I didn't have to pass a value in for nchars ...
-        # could I use base::scan ?
-        # scan can read URLs
-        # read.csv can read URLs
-        rawHTML = base::readChar(htmlfile, nchars=9724129);  # piping string ...
-        return (rawHTML);
-        } else { return (TRUE); }
+        rawHTML = base::readChar(htmlfile, nchars=9724129);
+        return(rawHTML);
+        }
+      } else  {  # file does not exist
+              if(exists("local.data.path")) # is this available from the global scope?
+		            {
+                utils::download.file(htmlurl, htmlfile, method="curl");
+                if(return.raw)
+                  {
+                  rawHTML = base::readChar(htmlfile, nchars=9724129);
+                  return(rawHTML);
+                  }
+                } else  {
+                        rawHTML = curl::curl( htmlurl );
+                        return(rawHTML);
+                        }
+              }
 
-      }
-    }
-  if(verbose)
-    {
-    print("grabHTML() ... from RCurl ...");
-    }
-  rawHTML = RCurl::getURL( htmlurl );
-  if(exists("local.data.path")) # is this available from the global scope?
-		{
-	  storeToFile(rawHTML,htmlfile);
-    if(verbose)
-      {
-      print("Grabbed from RCurl ... stored");
-      }
-    } else {
-            if(return.raw)
-              {
-              rawHTML;
-            } else  {
-                    if(verbose)
-                      {
-                      print("Grabbed from RCurl, now what?");
-                      }
-                    }
-            }
+  # rawHTML = RCurl::getURL( htmlurl );
+  # rawHTML = RCurl::getURLContent ( htmlurl );
+  # rawHTML = curl::curl( htmlurl );
+  # storeToFile(rawHTML,htmlfile);
+
   }
 
 
