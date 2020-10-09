@@ -1,5 +1,24 @@
 
 
+#' loadRDS
+#'
+#' loads an internal dataset by merely passing the string
+#'
+#' @param str string as the stem of the filename.rds
+#'
+#' @return dataframe if the dataset exists
+#' @export
+#'
+#' @examples
+#' personality = loadRDS("personality-raw");
+#' inflation = loadRDS("inflation");
+#' # cars = loadRDS("cars");
+#' # protein = loadRDS("protein");
+loadRDS = function(str)
+  {
+  df = readRDS( system.file("extdata", paste0(str,".rds"), package="humanVerseWSU") );
+  df;
+  }
 
 #' createDirRecursive
 #'

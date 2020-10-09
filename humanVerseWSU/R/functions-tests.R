@@ -1,4 +1,44 @@
 
+
+#' performSimpleChiSquaredTest
+#'
+#' @param chi numeric (can be vector)
+#' @param df numeric (can be vector of matching length)
+#' @param alpha numeric alpha-level, default is 0.05
+#'
+#' @return list of results
+#' @export
+#'
+#' @examples
+#' performSimpleChiSquaredTest(1944.5, 36);
+#' performSimpleChiSquaredTest(12, 22);
+#' performSimpleChiSquaredTest(22, 12);
+#' performSimpleChiSquaredTest(22, 12, alpha=0.01);
+performSimpleChiSquaredTest = function(chi, df, alpha=0.05)
+  {
+  # performSimpleChiSquaredTest(1944.5,36);
+  n.chi = length(chi);
+  n.df = length(df);
+  if(n.chi != n.df)
+    {
+    warning("Something wrong in performSimpleChiSquaredTest ... chi and df are of different lengths");
+    return (NA);
+    }
+
+  truth = c();
+  pvalues = c();
+
+  for(i in 1:n.chi)
+    {
+    pvalue = 1 - stats::pchisq(chi[i],df[i]);
+    pvalues[i] = pvalue;
+
+    truth[i] = pvalue < alpha;
+    }
+
+  list("alpha" = alpha, "pvalue" = pvalue, "truth" = truth);
+  }
+
 #' performBartlettSphericityTest
 #'
 #' @param X Either the numeric dataframe or the correlation matrix of the dataframe
@@ -22,7 +62,7 @@ performBartlettSphericityTest = function(X, n.obs = NULL, alpha = 0.05)
     {
     # if X is data, it is now in correlation form X
     n.obs = nrow(X);
-    X = cor(X);  # square ...
+    X = stats::cor(X);  # square ...
     }
   myTest = psych::cortest.bartlett(X, n = n.obs);
 
@@ -45,10 +85,7 @@ performBartlettSphericityTest = function(X, n.obs = NULL, alpha = 0.05)
 #' performKMOTest
 #'
 #' @param X Either the numeric dataframe or the correlation matrix of the dataframe
-#' @param n.obs If null, I assume X is a dataframe, not a correlation matrix
-#' @param alpha Alpha level (0.05) to report findings as $msg
-#'
-#' @return list with $pvalue and $msg
+#' @return list with $KMO and $msg
 #' @export
 #'
 #' @examples

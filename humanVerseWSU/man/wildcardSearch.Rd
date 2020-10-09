@@ -30,5 +30,9 @@ wildcardSearch(
 dataframe of results, empty dataframe is possible
 }
 \description{
-wildcardSearch
+By default searches a dataframe string column based on a
+ wildcard `*` operator.
+}
+\details{
+Can also just search a single character vector.
 }

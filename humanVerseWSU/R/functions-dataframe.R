@@ -7,6 +7,7 @@
 #' @param mycols names of cols to find idx's ... string or vector of strings will work
 #'
 #' @param myvals values for the cols to subset
+#' @param verbose if TRUE, will print messages regarding subsetting
 #'
 #' @return NA if not correctly specified; otherwise dataframe of subset
 #' @export
@@ -423,14 +424,14 @@ moveColumnsInDataFrame = function(ndf, mycols, where, anchor)
 	# mycols are names of the cols ... we will get their locations ...
 	# where can be "before" or "after" the anchor
   # some of mycols can be before/after anchor to begin with, doesn't matter ...
-  ncols = ncol(df);
+  ncols = ncol(ndf);
 
 	anchor.idx = anchor;
 	if(!is.numeric(anchor)) { anchor.idx = getIndexOfDataFrameColumns(ndf, anchor); }
   if(is.na(anchor.idx))
     {
     warning("anchor not found!");
-    return (df);
+    return (ndf);
     }
 
 	if(where == "after" && ncols == 2 && anchor.idx == 2)

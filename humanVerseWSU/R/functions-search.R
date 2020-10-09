@@ -1,5 +1,10 @@
 #' wildcardSearch
 #'
+#' By default searches a dataframe string column based on a
+#'  wildcard `*` operator.
+#'
+#' Can also just search a single character vector.
+#'
 #' @param str Search string with basic wildcard `*` operator
 #' @param col.name The column to perform search on [or a character vector]
 #' @param return.cols list of columns you want to display, by default all

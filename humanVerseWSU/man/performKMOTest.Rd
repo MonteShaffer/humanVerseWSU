@@ -8,13 +8,9 @@ performKMOTest(X)
 }
 \arguments{
 \item{X}{Either the numeric dataframe or the correlation matrix of the dataframe}
-
-\item{n.obs}{If null, I assume X is a dataframe, not a correlation matrix}
-
-\item{alpha}{Alpha level (0.05) to report findings as $msg}
 }
 \value{
-list with $pvalue and $msg
+list with $KMO and $msg
 }
 \description{
 performKMOTest

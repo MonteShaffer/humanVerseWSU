@@ -11,10 +11,16 @@ BugReports: https://github.com/MonteShaffer/humanVerseWSU/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
+  colorspace,
+  dendextend,
+  digest,
   magrittr,
   matrixStats,
+  measurements,
+  nFactors,
   psych,
   RCurl,
+  RMariaDB,
   readtext,
   REdaS,
   rlang,

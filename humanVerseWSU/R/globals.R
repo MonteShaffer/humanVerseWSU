@@ -4,3 +4,5 @@ utils::globalVariables(c("inflation.df"));
 
 utils::globalVariables(c("imdb.data"));
 
+utils::globalVariables(c("mysql.memory"));
+

@@ -12,6 +12,8 @@ subsetDataFrame(df, mycols, myvals, verbose = FALSE)
 \item{mycols}{names of cols to find idx's ... string or vector of strings will work}
 
 \item{myvals}{values for the cols to subset}
+
+\item{verbose}{if TRUE, will print messages regarding subsetting}
 }
 \value{
 NA if not correctly specified; otherwise dataframe of subset
