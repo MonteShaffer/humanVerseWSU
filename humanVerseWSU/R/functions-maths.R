@@ -1,4 +1,54 @@
 
+
+# conv_unit("105 22 48", "deg_min_sec", "dec_deg");
+# conv_unit("105.38", "dec_deg", "deg_min_sec");
+
+convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list")
+  {
+  direction = if(which=="latitude") "N" else "E";
+  isNegative = (decimal < 0);
+  if(isNegative)
+    {
+    direction = if(which=="latitude") "S" else "W";
+    }
+  degrees.dec = abs(decimal);
+  degrees = floor(degrees.dec);
+    remainder = degrees.dec - degrees;
+  minutes.dec = 60*remainder;
+  minutes = floor(minutes.dec);
+    remainder = minutes.dec - minutes;
+  seconds.dec = 60*remainder;
+  seconds = floor(seconds.dec);
+
+  if(return == "list")
+    {
+    return (  list("degrees" = degrees, "minutes" = minutes, "seconds" = seconds.dec, "direction" = direction) );
+    }
+  if(return == "measurements" || return == "conv_units")  # measurements::conv_units
+    {
+    if(isNegative) { degrees = -1 * degrees; }
+    return ( paste0(degrees," ",minutes," ", seconds));
+    }
+  if(return == "string")  # measurements::conv_units
+    {
+    return( paste0(degrees,"°",minutes,"′",seconds,"″",direction) );
+    }
+  }
+
+
+convertDMStoDEC = function(degrees, minutes, seconds, direction)
+  {
+  # https://stackoverflow.com/questions/1140189/
+  dd = degrees + minutes/60 + seconds/(60*60);
+  if (direction == "S" || direction == "W")
+    {
+    dd = dd * -1;
+    } # Don't do anything for N or E
+  dd;
+  }
+
+
+
 #' deg2rad
 #'
 #' @param degrees numeric (decimal form) of degrees
