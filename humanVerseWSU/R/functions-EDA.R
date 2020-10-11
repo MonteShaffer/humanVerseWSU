@@ -1,5 +1,6 @@
 library(pvclust);
-
+library(factoextra);
+library(ggplot2);
 
 plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   {
@@ -44,6 +45,8 @@ perform.hclust = function(X, n.groups = 12, method = "complete",
           showPlots = TRUE, pvclust.parallel = FALSE )
   {
   times = c(); time.names = c();
+
+  colors = rainbow(n.groups, s = 0.6, v = 0.75);
 
   time.start = Sys.time();
       X = as.matrix(X);
@@ -109,6 +112,42 @@ perform.hclust = function(X, n.groups = 12, method = "complete",
 
   list("dist" = X.d, "hclust" = X.hclust, "pvclust" = X.pvclust, "timer" = timer);
   }
+
+
+
+perform.kmeans = function(X, centers = 12, algorithm = "Hartigan-Wong",
+                      iter.max = 50, nstart=100, trace=FALSE, showPlots = TRUE,
+                      stars.len = 0.5, stars.key.loc = c(4,3), stars.draw.segments = TRUE  )
+  {
+  if(length(centers) == 1)
+    {
+    colors = rainbow(centers, s = 0.6, v = 0.75);
+    }
+  X.kmeans = stats::kmeans(X, centers,
+                      iter.max = iter.max, algorithm = algorithm,
+                      nstart = nstart, trace = trace);
+
+  if(showPlots)
+    {
+    graphics::stars(X.kmeans$centers, len = stars.len, key.loc = stars.key.loc,
+        main = paste0("Algorithm: [",algorithm,"] \n Stars of KMEANS=", centers),
+        draw.segments = stars.draw.segments);
+
+    factoextra::fviz_cluster(X.kmeans, data=X);
+    }
+
+  membership = as.data.frame( matrix( X.kmeans$cluster, ncol=1)) ;
+      rownames(membership) = row.names(X);
+      colnames(membership) = c("cluster");
+
+
+  list("kmeans" = X.kmeans, "membership" = membership, "table" = table(membership));
+  }
+
+
+
+
+
 
 
 
