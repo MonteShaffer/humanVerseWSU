@@ -175,8 +175,9 @@ perform.EFA = function(X, n.factors=8, which="factanal",
     print(" Uniqueness as (1-$uniquenesses)");
       round(1 - X.factanal$uniquenesses, digits=2);
 
-    print(" Communalities");
-      round(X.factanal$communalities, digits=2);
+    #print(" Communalities");
+    #  round(X.factanal$communalities, digits=2);
+    # https://www.youtube.com/watch?v=C5RJvMaHJNo
 
 
     print(" Loadings");
@@ -207,8 +208,8 @@ perform.EFA = function(X, n.factors=8, which="factanal",
     print(" Uniqueness as (1-$uniquenesses)");
       round(1 - X.factanal$uniquenesses, digits=2);
 
-    print(" Communalities");
-      round(X.factanal$communalities, digits=2);
+    #print(" Communalities");
+    #  round(X.factanal$communalities, digits=2);
 
     # factor1 = c(1,3,7,8,15);
     # psych::alpha( df[, factor1]);
