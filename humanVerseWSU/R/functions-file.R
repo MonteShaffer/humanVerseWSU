@@ -99,9 +99,10 @@ createDir = function (folder,verbose=TRUE)
 #' Very useful for simulations and building data one line at a time.
 #'
 #' @param str The character string to be written
-#' @param file The file to write the line to
 #' @param append If TRUE, will append to the end of the file, otherwise it will overwrite an existing file
 #' @param end EOL character to finish the line; the line separator
+#' @param encoding by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1
+#' @param myfile The file to store the (str) line
 #'
 #' @return
 #' @export
@@ -109,10 +110,12 @@ createDir = function (folder,verbose=TRUE)
 #' @examples
 #' writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
 #' writeLine("hi again", file="R:/monte/says/hi/again/my.log");
-writeLine = function(str, file=file, append=TRUE, end="\n")
+writeLine = function(str, myfile, append=TRUE, end="\n", encoding="UTF-8")
   {
   # wrapper for cat
-  cat( paste(str,end,sep=""), file=file, sep="", append=append );
+  cat( paste(str,end,sep=""),
+      file=file(myfile, encoding = encoding),
+        sep="", append=append );
   }
 
 
@@ -125,9 +128,9 @@ writeLine = function(str, file=file, append=TRUE, end="\n")
 #'
 #' @return
 #' @export
-storeToFile = function (str,myfile)
+storeToFile = function (str, myfile, encoding="UTF-8")
 	{
-	cat(str, file=myfile,append=FALSE);
+	cat(str, file=file(myfile, encoding = encoding) ,append=FALSE);
 	}
 
 
@@ -147,12 +150,13 @@ storeToFile = function (str,myfile)
 #'
 #' @param return.raw If TRUE, will return the raw string
 #' @param verbose If TRUE, will provide some verbosity
+#' @param encoding by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1
 #'
 #' @return
 #' @export
-grabHTML = function(htmlfile,htmlurl,verbose=TRUE,return.raw=TRUE)
+grabHTML = function(htmlfile, htmlurl, verbose=TRUE, return.raw=TRUE, encoding="UTF-8")
   {
-  if(file.exists(htmlfile))
+  if( file.exists(htmlfile) )
       {
       if(verbose)
         {
@@ -160,21 +164,46 @@ grabHTML = function(htmlfile,htmlurl,verbose=TRUE,return.raw=TRUE)
         }
       if(return.raw)
         {
-        rawHTML = base::readChar(htmlfile, nchars=9724129);
-        return(rawHTML);
+        raw.html = base::readChar( file(htmlfile, encoding=encoding), nchars=9724129);
+        # raw.html = base::readLines( file(htmlfile, encoding=encoding) );
+        return(raw.html);
         }
       } else  {  # file does not exist
-              if(exists("local.data.path")) # is this available from the global scope?
+              if( exists("local.data.path") ) # is this available from the global scope?
 		            {
-                utils::download.file(htmlurl, htmlfile, method="curl");
-                if(return.raw)
+                # r = GET( "https://en.wikipedia.org/wiki/Ober%C3%A1" );
+                r = httr::GET( htmlurl );
+                if(r$status_code == 200)
                   {
-                  rawHTML = base::readChar(htmlfile, nchars=9724129);
-                  return(rawHTML);
+                  raw.binary = httr::content(r, "raw");
+                  url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
+                  raw.html = httr::content(r, "text", encoding = url.encoding);
+                  #raw.binary = httr::content(r, "raw");
+                  #writeBin(raw.binary, file(htmlfile, encoding=encoding) );
+                  storeToFile(raw.html, htmlfile, encoding=encoding);
+                  if(return.raw)
+                    {
+                    return(raw.html);
+                    }
                   }
+                return( httr::http_status(r) );
+                #encoding.guess = stringi::stri_enc_detect(content(r, "raw"))[[1]]$Encoding[1];
+                # r$status_code
+                # storeToFile
+                # utils::download.file( url(htmlurl, encoding=encoding), htmlfile, method="curl");
                 } else  {
-                        rawHTML = curl::curl( htmlurl );
-                        return(rawHTML);
+                        #raw.html = curl::curl( htmlurl );
+                        r = httr::GET( htmlurl );
+                        if(r$status_code == 200)
+                          {
+                          raw.binary = httr::content(r, "raw");
+                          url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
+                          raw.html = httr::content(r, "text", encoding = url.encoding);
+                          #raw.binary = httr::content(r, "raw");
+                          #writeBin(raw.binary, file(htmlfile, encoding=encoding) );
+                          return(raw.html);
+                          }
+                        return( httr::http_status(r) );
                         }
               }
 

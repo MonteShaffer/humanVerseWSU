@@ -15,6 +15,7 @@ Imports:
   curl,
   dendextend,
   digest,
+  httr,
   magrittr,
   matrixStats,
   measurements,
@@ -26,6 +27,7 @@ Imports:
   rlang,
   rvest,
   stats,
+  stringi,
   stringr,
   utils,
   xml2

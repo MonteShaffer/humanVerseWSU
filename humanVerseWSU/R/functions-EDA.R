@@ -1,3 +1,5 @@
+library(pvclust);
+
 
 plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   {
@@ -7,17 +9,22 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   colors = colorspace::rainbow_hcl(k);
   dend = stats::as.dendrogram(X.hclust);
   dend = dendextend::color_branches(dend, k = k);
+
+  # grDevices::dev.new(width=10, height=7.5, noRStudioGD = TRUE)
+
   graphics::par(mfrow = c(1,1));
   graphics::plot(dend);
 
   dend.labels = base::labels(dend);
   groups = dendextend::cutree(dend, k=k, order_clusters_as_data = FALSE);
     # stats::cutree
+    # dendextend::cutree
   dends = list();
   for(i in 1:k)
     {
+    print( paste0("Pruning ",i," of ",k) );
     keep.me <- dend.labels[i != groups];
-    dends[[i]] = dendextend::prune(dend, keep.me);
+    dends[[i]] = dendextend::prune(dend, keep.me);  # generics  #  dendextend
     }
 
 
@@ -32,21 +39,75 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   }
 
 
-perform.hclust = function(X, n.groups=12, method="complete", dist.method="euclidean", dist.p = 2, showPlots = TRUE)
+perform.hclust = function(X, n.groups = 12, method = "complete",
+          dist.method = "euclidean", dist.p = 2,
+          showPlots = TRUE, pvclust.parallel = FALSE )
   {
-  X = as.matrix(X);
-  X.t = transposeMatrix(X);
-  X.d = stats::dist(X, method=dist.method, p=dist.p);
+  times = c(); time.names = c();
 
+  time.start = Sys.time();
+      X = as.matrix(X);
+      X.t = transposeMatrix(X);
+      X.d = stats::dist(X, method=dist.method, p=dist.p);
+  time.end = Sys.time();
+
+  elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+      times = c(times,elapse);
+      time.names = c(time.names,"dist");
+
+  time.start = Sys.time();
   X.hclust = stats::hclust( X.d, method=method);
+  time.end = Sys.time();
+
+  elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+      times = c(times,elapse);
+      time.names = c(time.names,"hclust");
+
   if(showPlots)
     {
+    time.start = Sys.time();
     base::plot(X.hclust);
+    time.end = Sys.time();
+
+    elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+        times = c(times,elapse);
+        time.names = c(time.names,"hclust-plot");
+
+    time.start = Sys.time();
     plot.hclust.sub(X.hclust, n.groups);
+    time.end = Sys.time();
+
+    elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+        times = c(times,elapse);
+        time.names = c(time.names,"hclust-plot-groups");
     }
 
+  # pvclust
+  time.start = Sys.time();
+  X.pvclust = pvclust::pvclust ( X.t, method.hclust=method, parallel=pvclust.parallel);
+  time.end = Sys.time();
+
+  elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+        times = c(times,elapse);
+        time.names = c(time.names,"pvclust");
 
 
+  if(showPlots)
+    {
+    time.start = Sys.time();
+        graphics::plot(X.pvclust);
+        pvclust::pvrect(X.pvclust);
+    time.end = Sys.time();
+    elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+        times = c(times,elapse);
+        time.names = c(time.names,"pvclust-plot");
+    }
+
+  timer = as.data.frame( cbind(time.names,times) );
+    colnames(timer) = c("names", "times");
+  timer$times = as.numeric(timer$times);
+
+  list("dist" = X.d, "hclust" = X.hclust, "pvclust" = X.pvclust, "timer" = timer);
   }
 
 

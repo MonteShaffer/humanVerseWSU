@@ -717,6 +717,9 @@ replaceFactorColumnWithIndicatorVariables = function(df, source.column,
       u.keys = c(u.keys,u.vals);
       }
 
+    # can I force a numeric sort?
+    # getting delta.1, delta.10
+    # want delta.1, delta.2 ... delta.10
     mykeys = sort( stats::na.omit( unique(u.keys) ) );  # 26 keys
     mycols = c();
     for(mykey in mykeys)
