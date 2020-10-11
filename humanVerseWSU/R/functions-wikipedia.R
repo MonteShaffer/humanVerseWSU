@@ -1,3 +1,8 @@
+# path.wiki.page = wiki.info$path.wiki.page;
+# wiki.html = wiki.info$wiki.html;
+
+
+
 wiki.parseWikiPageToString = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Montana")
   {
   str = strsplit(url, "//", fixed=TRUE)[[1]][2];
@@ -55,6 +60,17 @@ wiki.downloadWikiPage = function(wiki.url="https://en.wikipedia.org/wiki/Columbi
 strip_tags = function(html.str)
   {
   return(gsub("<.*?>", "", html.str))
+  }
+
+
+
+wiki.cleanupNumericVectors = function(vec)
+  {
+  vec = gsub("(","",vec, fixed=TRUE);
+  vec = gsub(")","",vec, fixed=TRUE);
+  vec = gsub(",","",vec, fixed=TRUE);
+  vec = stringr::str_trim(vec);
+  as.numeric(vec);
   }
 
 
@@ -304,6 +320,63 @@ wiki.historicalPopulation = function(path.wiki.page, wiki.html, encoding="UTF-8"
     }
   return (NA);
   }
+
+
+wiki.parseStateCapitalsOfAmerica  = function(path.wiki.page, wiki.html, encoding="UTF-8")
+  {
+  mycache = paste0(path.wiki.page,"state-capitals.txt");
+  if(file.exists(mycache))
+    {
+    return ( utils::read.csv(mycache, header=TRUE, quote="", sep="|") );
+    }
+
+  rvest.html = xml2::read_html(wiki.html, verbose=TRUE, encoding="UTF-8");
+  tables = rvest.html %>%
+              html_nodes(".wikitable");
+
+  my.table = wiki.findMyTable(tables,"*2716.7*");  # Alaska area should be unique
+
+  if(!is.null(my.table))
+    {
+    table.df = ((my.table %>%  html_table(fill = TRUE))[[1]])[1:50,];
+
+    # I need the links ...
+    url.stem = "https://en.wikipedia.org";
+
+    hrefs = my.table %>%
+      html_nodes("th a") %>%
+      html_attr("href");
+
+    hrefs = hrefs[-c(1:3,54)]
+    length(hrefs);
+
+    # names(table.df);
+    # dput(names(table.df));  c("State", "Capital", "Capital Since", "Area (mi2)", "Population (2019 est.)", "MSA/µSA Population\r\n(2019 est.)", "CSA Population\r\n(2019 est.)", "Rank in State\r\n(city proper)")
+    # new-lines \r\n are not good ... I could manually rebuild or replace ...
+    new.names = gsub("[[:space:]]", " ", names(table.df));
+    colnames(table.df) = new.names;
+
+    table.df$url = paste0(url.stem,hrefs);  # should be in order ...
+    #names(table.df);
+    head(table.df[,c(1:2,9)]);
+
+    if( exists("local.data.path") )
+		  {
+      utils::write.table( table.df , file=mycache, quote=FALSE, col.names=TRUE, row.names=FALSE, sep="|");
+      }
+    return (table.df);
+    }
+  return (NA);
+  }
+
+
+
+
+
+
+
+
+
 
 
 
