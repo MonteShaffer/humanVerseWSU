@@ -1,6 +1,7 @@
 library(pvclust);
 library(factoextra);
 library(ggplot2);
+library(psych);
 
 plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   {
@@ -129,6 +130,8 @@ perform.kmeans = function(X, centers = 12, algorithm = "Hartigan-Wong",
 
   if(showPlots)
     {
+    palette(colors);
+
     graphics::stars(X.kmeans$centers, len = stars.len, key.loc = stars.key.loc,
         main = paste0("Algorithm: [",algorithm,"] \n Stars of KMEANS=", centers),
         draw.segments = stars.draw.segments);
@@ -148,13 +151,109 @@ perform.kmeans = function(X, centers = 12, algorithm = "Hartigan-Wong",
 
 
 
+perform.EFA = function(X, n.factors=8, which="factanal",
+                          rotation = "varimax", scores = "regression",
+                          fa.fm = "ml")
+  {
+  info = list();
+
+  info$KMO = performKMOTest(X);
+  print( paste0(" KMO test has score: ",info$KMO$KMO," --> ",info$KMO$msg) );
+
+  info$BST = performBartlettSphericityTest(X);
+  print( paste0(" Bartlett Test of Sphericity   --> ",info$BST$msg) );
+
+  if(which == "factanal")
+    {
+    print(" Using stats::factanal ... ");
+
+    X.factanal = stats::factanal(X, n.factors, rotation=rotation, scores=scores);
+    print(" Overview ");
+    print(X.factanal);
+
+
+    print(" Uniqueness as (1-$uniquenesses)");
+      round(1 - X.factanal$uniquenesses, digits=2);
+
+    print(" Communalities");
+      round(X.factanal$communalities, digits=2);
+
+
+    print(" Loadings");
+      print(X.factanal$loadings, digits=2, cutoff=0.25, sort=FALSE);
+
+    plot(X.factanal$loadings[,1:2], type="n");
+        text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
+
+    if(scores != "regression")
+      {
+      X.factanal.regression = factanal(X, n.factors, rotation=rotation, scores="regression");
+      myScores = X.factanal.regression$scores;
+      } else { myScores = X.factanal$scores; }
+
+    print(" Scores (Regression) ... saved ... ");
+    X.factanal$scores = myScores;
+    }
+
+  if(which == "fa")
+    {
+    print(" Using psych::fa ... ");
+
+    X.factanal = psych::fa(X, n.factors, rotate=rotation, scores=scores, fm=fa.fm);
+    print(" Overview ");
+    print(X.factanal);
+
+
+    print(" Uniqueness as (1-$uniquenesses)");
+      round(1 - X.factanal$uniquenesses, digits=2);
+
+    print(" Communalities");
+      round(X.factanal$communalities, digits=2);
+
+    # factor1 = c(1,3,7,8,15);
+    # psych::alpha( df[, factor1]);
+
+    print(" Loadings");
+      print(X.factanal$loadings, digits=2, cutoff=0.25, sort=FALSE);
+
+    plot(X.factanal$loadings[,1:2], type="n");
+        text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
+
+    if(scores != "regression")
+      {
+      X.factanal.regression = psych::fa(X, n.factors, rotate=rotation, scores="regression", fm=fa.fm);
+      myScores = X.factanal.regression$scores;
+      } else { myScores = X.factanal$scores; }
+
+    print(" Scores (Regression) ... saved ... ");
+
+    print(" CFI ");
+    X.factanal$CFI = 1-((X.factanal$STATISTIC - X.factanal$dof)/(X.factanal$null.chisq - X.factanal$null.dof));
+    print(X.factanal$CFI);
+    print(" TLI ");
+    print(X.factanal$TLI);
+
+    X.factanal$scores = myScores;
+    }
 
 
 
-howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax", eigen.cutoff = 1, alpha = 0.05, showPlots = TRUE)
+
+
+  X.factanal;
+  }
+
+
+howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
+                              eigen.cutoff = 1, alpha = 0.05, showPlots = TRUE,
+                              fa.fm="minres", fa.fa="fa", fa.iter=50,
+                              fa.error.bars=FALSE, fa.se.bars=FALSE)
   {
   # for VSS, we will let the others run wild ...
   # eigen > 1 may have more than max.factors ...
+  print("  Paralell Analysis");
+  fa = psych::fa.parallel(Xs, fm = fa.fm, fa = fa.fa, n.iter = fa.iter,
+                        error.bars = fa.error.bars, se.bars=fa.se.bars);
 
   n.cols = ncol(X);
   n.rows = nrow(X);
@@ -162,6 +261,8 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax", eigen
 
   choices = c();
 
+  print("=============================================");
+  print("  VSS Analysis");
   myVSS = psych::vss(X, n = max.factors, rotate=rotate, plot=showPlots);
 
   myVSS.dataframe = as.data.frame(cbind(1:max.factors,myVSS$vss.stats[,c(1:3)]) );
@@ -180,8 +281,15 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax", eigen
     }
 
   X.corr = stats::cor(X);
+  print("************************");
+
+
   X.corr.eigen = base::eigen(X.corr)$values;
   eigen.rule = X.corr.eigen[X.corr.eigen >= eigen.cutoff];
+  print( paste0("  Eigenvalues >= ",eigen.cutoff, "   ...  [ n = ",length(eigen.rule)," ]") );
+  print(eigen.rule);
+  print("************************");
+
   n.eigen = length(eigen.rule);
   if(n.eigen != 0)
     {
@@ -230,9 +338,12 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax", eigen
     print("Due to Optimal Coordinantes and Parallel Analysis Agreement,");
     print(  paste0("A ",strong, "-Factor solution is *strongly* recommended!") );
     }
+  print("************************");
+  print("  Final Analysis of VSS, Eigen, nFactors");
+  print(myTable);
   print("");
 
-  list("table" = myTable, "votes" = votes , "strongly" = strong);
+  list("fa" = fa, "eigen" = eigen.rule, "table" = myTable, "votes" = votes , "strongly" = strong);
   }
 
 
