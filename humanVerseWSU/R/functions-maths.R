@@ -1,4 +1,18 @@
 
+# x = c(sin(pi), -sin(pi))
+zeroIsh = function(x, digits=getOption("digits"))
+  {
+  # zapsmall has log10 feature
+
+  # positive values
+  x.pos = 1 / 10^digits
+  x[((x > 0) & (x < x.pos))] = 0;
+  # negative values
+  x.neg = -1 * x.pos;
+  x[((x < 0) & (x > x.neg))] = 0;
+
+  round(x, digits=digits);
+  }
 
 # conv_unit("105 22 48", "deg_min_sec", "dec_deg");
 # conv_unit("105.38", "dec_deg", "deg_min_sec");

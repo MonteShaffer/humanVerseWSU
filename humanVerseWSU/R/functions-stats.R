@@ -236,24 +236,28 @@ findOutliersUsingZscores = function(x, zmin=-3, zmax=3)
 #'
 findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 	{
-	myIQR = stats::IQR(x, na.rm=T);
-	myQuartiles = as.numeric( stats::quantile(x, na.rm=T, prob=c(.25,.5,.75)) );
+  result = list();
 
-	innerFence = myIQR * innerFenceFactor;
-	outerFence = myIQR * outerFenceFactor;
+	result$IQR = myIQR = stats::IQR(x, na.rm=T);
+	result$Quartiles = myQuartiles = as.numeric( stats::quantile(x, na.rm=T, prob=c(.25,.5,.75)) );
 
-	Q1.inner = myQuartiles[1] - innerFence;
-	Q1.outer = myQuartiles[1] - outerFence;
+	result$inner.fence = innerFence = myIQR * innerFenceFactor;
+	result$outer.fence = outerFence = myIQR * outerFenceFactor;
 
-	Q3.inner = myQuartiles[3] + innerFence;
-	Q3.outer = myQuartiles[3] + outerFence;
+	result$Q1.inner = Q1.inner = myQuartiles[1] - innerFence;
+	result$Q1.outer = Q1.outer = myQuartiles[1] - outerFence;
+
+	result$Q3.inner = Q3.inner = myQuartiles[3] + innerFence;
+	result$Q3.outer = Q3.outer = myQuartiles[3] + outerFence;
 
 
 	# values that fall inside the two inner fences are not outliers ...
-	inner = x[x < Q1.inner | x > Q3.inner];	# circles
-	outer = x[x < Q1.outer | x > Q3.outer];	# * in boxplot
+	result$inner.which = inner.which = which(x < Q1.inner | x > Q3.inner);
+	  result$inner = inner = x[inner.which];	# circles
+	result$outer.which = outer.which = which(x < Q1.outer | x > Q3.outer);
+	  result$outer = outer = x[outer.which];	# * in boxplot
 	# outer and inner may have duplicates, let's remove from inner so they are disjoint ...
-	inner = setdiff(inner,outer);
+	result$inner.u = inner = setdiff(inner,outer);
 	# I could separate into lower and upper for later manipulation
 
 	v.inner = rep("inner", length(inner));
@@ -276,15 +280,10 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 
 	df$value = as.numeric(df$value);
 
-	i.lower = i.upper = o.lower = o.upper = NA;
+	result$df = df;
 
-if(length(inner.lower) > 0) { i.lower = max(inner.lower); }
-if(length(inner.upper) > 0) { i.upper = max(inner.upper); }
-
-if(length(outer.lower) > 0) { o.lower = max(outer.lower); }
-if(length(outer.upper) > 0) { o.upper = max(outer.upper); }
-
-	list("df" = df, "inner" = c(i.lower,i.upper), "outer" = c(o.lower,o.upper) ); ;
+	#list("df" = df, "inner" = c(i.lower,i.upper), "outer" = c(o.lower,o.upper) ); ;
+	result;
 	}
 
 
