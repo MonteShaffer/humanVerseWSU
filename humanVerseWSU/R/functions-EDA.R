@@ -3,7 +3,7 @@ library(factoextra);
 library(ggplot2);
 library(psych);
 
-plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
+plot.hclust.sub = function(X.hclust, k=8, mfrow = c(2,2))
   {
   # Let's show cuts as plots
   # https://stackoverflow.com/questions/34948606/hclust-with-cutree-how-to-plot-the-cutree-cluster-in-single-hclust
@@ -46,6 +46,8 @@ perform.hclust = function(X, n.groups = 12, method = "complete",
           showPlots = TRUE, pvclust.parallel = FALSE )
   {
   times = c(); time.names = c();
+  n.cols = ncol(X);
+  if(n.groups > n.cols) { n.groups = n.cols; }
 
   colors = rainbow(n.groups, s = 0.6, v = 0.75);
 
