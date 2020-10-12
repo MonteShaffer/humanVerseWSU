@@ -183,7 +183,7 @@ calculateZscores = function(x, x.bar=NULL, s.hat=NULL)
 #' @param zmin what is the lower-bound cutoff to label an outlier
 #' @param zmax what is the upper-bound cutoff to label an outlier
 #'
-#' @return dataframe, with possibly zero rows
+#' @return list of various features of the outliers
 #' @export
 #'
 #' @examples
@@ -194,11 +194,17 @@ calculateZscores = function(x, x.bar=NULL, s.hat=NULL)
 #'
 findOutliersUsingZscores = function(x, zmin=-3, zmax=3)
 	{
-	z = calculateZscores(x);
+  result = list();
+  result$z = z = calculateZscores(x);
+  result$z.min = zmin;
+  result$z.max = zmax;
+
 	outliers = x[z < zmin | z > zmax];
-		outliers.lower = x[z < zmin];
+	  outliers.lower.which = which(z < zmin);
+	  outliers.lower = x[outliers.lower.which];
 			v.lower = rep("lower", length(outliers.lower));
-		outliers.upper = x[z > zmax];
+		outliers.upper.which = which(z > zmax);
+		outliers.upper = x[outliers.upper.which];
 			v.upper = rep("upper", length(outliers.upper));
 
 	df.lower = cbind(outliers.lower, v.lower);
@@ -207,7 +213,12 @@ findOutliersUsingZscores = function(x, zmin=-3, zmax=3)
 	df = as.data.frame(rbind(df.lower,df.upper));
 		colnames(df) = c("value","direction");
 
-	df;
+	result$df = df;
+
+	result$z.lower = outliers.lower.which;  # indexes
+	result$z.upper = outliers.upper.which;  # indexes
+
+	result;
 	}
 
 
@@ -223,7 +234,8 @@ findOutliersUsingZscores = function(x, zmin=-3, zmax=3)
 #' @param innerFenceFactor typically 1.5 * IQR
 #' @param outerFenceFactor typically 3.0 * IQR
 #'
-#' @return dataframe, with possibly zero rows
+#' @return list of various features of the outliers
+#'
 #' @export
 #'
 #' @examples
@@ -238,8 +250,8 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 	{
   result = list();
 
-	result$IQR = myIQR = stats::IQR(x, na.rm=T);
-	result$Quartiles = myQuartiles = as.numeric( stats::quantile(x, na.rm=T, prob=c(.25,.5,.75)) );
+	result$IQR = myIQR = stats::IQR(x, na.rm=TRUE);
+	result$Quartiles = myQuartiles = as.numeric( stats::quantile(x, na.rm=TRUE, prob=c(.25,.5,.75)) );
 
 	result$inner.fence = innerFence = myIQR * innerFenceFactor;
 	result$outer.fence = outerFence = myIQR * outerFenceFactor;
@@ -253,8 +265,12 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 
 	# values that fall inside the two inner fences are not outliers ...
 	result$inner.which = inner.which = which(x < Q1.inner | x > Q3.inner);
+	          inner.which.lower = which(x < Q1.inner);
+	          inner.which.upper = which(x > Q3.inner);
 	  result$inner = inner = x[inner.which];	# circles
 	result$outer.which = outer.which = which(x < Q1.outer | x > Q3.outer);
+	          outer.which.lower = which(x < Q1.outer);
+	          outer.which.upper = which(x > Q3.outer);
 	  result$outer = outer = x[outer.which];	# * in boxplot
 	# outer and inner may have duplicates, let's remove from inner so they are disjoint ...
 	result$inner.u = inner = setdiff(inner,outer);
@@ -281,6 +297,13 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 	df$value = as.numeric(df$value);
 
 	result$df = df;
+
+    # indexes
+	result$inner.lower = setdiff(inner.which.lower,outer.which.lower);
+	result$inner.upper = setdiff(inner.which.upper,outer.which.upper);
+
+	result$outer.lower = outer.which.lower;
+	result$outer.upper = outer.which.upper;
 
 	#list("df" = df, "inner" = c(i.lower,i.upper), "outer" = c(o.lower,o.upper) ); ;
 	result;
