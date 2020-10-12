@@ -1,6 +1,7 @@
 # path.wiki.page = wiki.info$path.wiki.page;
 # wiki.html = wiki.info$wiki.html;
-
+library(rvest);
+library(magrittr);
 
 
 wiki.parseWikiPageToString = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Montana")
