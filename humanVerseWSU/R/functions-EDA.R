@@ -80,7 +80,7 @@ perform.hclust = function(X, n.groups = 12, method = "complete",
         time.names = c(time.names,"hclust-plot");
 
     time.start = Sys.time();
-    plot.hclust.sub(X.hclust, n.groups);
+    plot.hclust.sub(X.hclust, k=n.groups);
     time.end = Sys.time();
 
     elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
