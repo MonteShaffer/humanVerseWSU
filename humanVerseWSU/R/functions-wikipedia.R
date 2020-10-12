@@ -322,6 +322,11 @@ wiki.historicalPopulation = function(path.wiki.page, wiki.html, encoding="UTF-8"
   return (NA);
   }
 
+# https://en.wikipedia.org/wiki/List_of_national_capitals
+wiki.parseNationalCapitalsOfWorld  = function(path.wiki.page, wiki.html, encoding="UTF-8")
+  {
+
+  }
 
 wiki.parseStateCapitalsOfAmerica  = function(path.wiki.page, wiki.html, encoding="UTF-8")
   {

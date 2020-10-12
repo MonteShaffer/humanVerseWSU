@@ -274,7 +274,17 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 	df = as.data.frame(rbind(df.inner,df.outer));
 		colnames(df) = c("value","fence","direction");
 
-	df;
+	df$value = as.numeric(df$value);
+
+	i.lower = i.upper = o.lower = o.upper = NA;
+
+if(length(inner.lower) > 0) { i.lower = max(inner.lower); }
+if(length(inner.upper) > 0) { i.upper = max(inner.upper); }
+
+if(length(outer.lower) > 0) { o.lower = max(outer.lower); }
+if(length(outer.upper) > 0) { o.upper = max(outer.upper); }
+
+	list("df" = df, "inner" = c(i.lower,i.upper), "outer" = c(o.lower,o.upper) ); ;
 	}
 
 
