@@ -3,7 +3,7 @@ library(factoextra);
 library(ggplot2);
 library(psych);
 
-plot.hclust.sub = function(X.hclust, k=8, mfrow = c(2,2))
+plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   {
   # Let's show cuts as plots
   # https://stackoverflow.com/questions/34948606/hclust-with-cutree-how-to-plot-the-cutree-cluster-in-single-hclust

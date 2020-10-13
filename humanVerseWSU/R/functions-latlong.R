@@ -11,7 +11,7 @@
 #' @param str a string form of lat/long
 #' @param format
 #'
-#' @return a list of $degrees , $minutes , $seconds
+#' @return a list of $degrees , $minutes , $seconds, $direction
 #' @export
 #'
 #' @examples

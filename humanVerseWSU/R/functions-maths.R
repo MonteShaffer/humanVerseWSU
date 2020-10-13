@@ -129,12 +129,13 @@ zeroIsh = function(x, digits=getOption("digits"))
 
   # positive values
   x.pos = 1 / 10^digits
-  x[((x > 0) & (x < x.pos))] = 0;
+  x[((x > 0) & (x < x.pos))] = 0L;
   # negative values
   x.neg = -1 * x.pos;
-  x[((x < 0) & (x > x.neg))] = 0;
+  x[((x < 0) & (x > x.neg))] = 0L;
 
-  round(x, digits=digits);
+  # round(x, digits=digits);
+  x;
   }
 
 
