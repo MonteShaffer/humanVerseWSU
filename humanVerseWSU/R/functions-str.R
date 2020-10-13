@@ -135,6 +135,15 @@ printPaste = function(... , sep = " ", collapse = NULL, recycle0 = FALSE)
 
 
 
+#' printMatrix
+#'
+#' @param mat numeric matrix
+#' @param digits numeric, digits to round
+#'
+#' @return matrix, as character string
+#' @export
+#'
+#' @examples
 printMatrix = function(mat, digits=3) # align decimals ? ... center ... latex
   {
   n.rows = nrow(mat);
@@ -142,7 +151,7 @@ printMatrix = function(mat, digits=3) # align decimals ? ... center ... latex
   my.col.names = colnames(mat);
 
   mat = as.character( round(mat, digits = digits) );
-  mat = matrix(mat, nrow=n.rows, byrow=TRUE);
+  mat = matrix(mat, nrow=n.rows, byrow=FALSE);
     rownames(mat) = my.row.names;
     colnames(mat) = my.col.names;
   print(mat);
