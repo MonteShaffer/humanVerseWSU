@@ -158,9 +158,97 @@ printMatrix = function(mat, digits=3) # align decimals ? ... center ... latex
   }
 
 
+#' strPadLeft
+#'
+#' When caching pages of content, useful for organization.
+#'  (e.g., page1.html becomes page_001.html)
+#'
+#' @param str The 'string' (can be a number)
+#' @param final.str.len How long the final str is to be
+#' @param padding Fill with, default is "0" (zero)
+#'
+#' @return string
+#' @export
+#'
+#' @aliases numberPadLeft
+#'
+#' @examples
+#' strPadLeft(33,1);
+#' strPadLeft(33,2);
+#' strPadLeft(33,3);
+#' strPadLeft(33,4);
+strPadLeft = function(str, final.str.len, padding="0")
+  {
+  stringr::str_pad(str, final.str.len, "left", padding);
+  }
+
+#' strPadRight
+#'
+#'
+#'
+#' @param str The 'string' (can be a number)
+#' @param final.str.len How long the final str is to be
+#' @param padding Fill with, default is "0" (zero)
+#'
+#' @return string
+#' @export
+#'
+#' @aliases numberPadRight
+#'
+#' @examples
+#' strPadRight("33.01",5);
+#' strPadRight("33.01",6);
+#' strPadRight("33.01",7);
+#' strPadRight("33.01",8);
+strPadRight = function(str, final.str.len, padding="0")
+  {
+  stringr::str_pad(str, final.str.len, "right", padding);
+  }
 
 
+#' strlen
+#'
+#' @param str the character string
+#'
+#' @return the numeric length of said string
+#' @export
+#'
+#' @examples
+#' strlen("3.1415926535897932384626");
+#' strlen( pi );
+strlen = function(str)
+  {
+  nchar( as.character(str), type="chars");
+  }
 
+roundMeToString = function(val, digits=3, leadingZero=TRUE, decimal.sep=".")
+  {
+  isNegative = (val < 0);
+  isLessThanOne = (val > 0 && val < 1);
+
+  str = as.character( round(val, digits=digits) );
+  tmp = explodeMe(decimal.sep, str);
+
+  whole = tmp[1];
+  decimal = tmp[2];
+
+  delta = digits - strlen(decimal);
+  if(delta > 0)
+    {
+    decimal = strPadRight(decimal, digits, "0");
+    }
+
+  if(whole == "0" && !leadingZero) { whole = "";}
+
+  paste0(whole, decimal.sep, decimal);
+  }
+
+# not just round length, but total length, so they align on decimal centers
+
+vectorRoundMeToString = function(strvec, digits=3, leadingZero = TRUE, alignDecimal=TRUE)
+  {
+
+  }
 
 
 

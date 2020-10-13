@@ -215,27 +215,7 @@ grabHTML = function(htmlfile, htmlurl, verbose=TRUE, return.raw=TRUE, encoding="
   }
 
 
-#' numberPadLeft
-#'
-#' When caching pages of content, useful for organization.
-#'  (e.g., page1.html becomes page_001.html)
-#'
-#' @param n The 'n'umber
-#' @param w How long the final number is to be
-#' @param c Fill digit, default is 0
-#'
-#' @return string
-#' @export
-#'
-#' @examples
-#' numberPadLeft(33,1);
-#' numberPadLeft(33,2);
-#' numberPadLeft(33,3);
-#' numberPadLeft(33,4);
-numberPadLeft = function(n, w, c="0")
-  {
-  stringr::str_pad(n,w,"left",c);
-  }
+
 
 
 # read triangular correlation table ...
