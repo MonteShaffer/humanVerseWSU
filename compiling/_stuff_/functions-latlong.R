@@ -8,8 +8,8 @@
 #' @family LatLong
 #'
 #'
-#' @param str a string form of lat/long
-#' @param format
+#' @param str a string form of lat/long 
+#' @param format 
 #'
 #' @return a list of $degrees , $minutes , $seconds
 #' @export
@@ -30,11 +30,14 @@ parseDMSfromFormat = function(str="3 8 29.7335529232441", format="measurements")
       direction = NULL;
     if(!is.na(tmp[4])) { direction = tmp[4]; }
     tmp = as.numeric(tmp[1:3]);
-
-    return (  list( "degrees" = tmp[1], "minutes" = tmp[2],
+    
+    return (  list( "degrees" = tmp[1], "minutes" = tmp[2], 
                     "seconds" = tmp[3], "direction" = direction) );
     }
-
+  if(format.4 == "UTF8")
+    {
+    # TODO later ...
+    }
   }
 
 
@@ -67,8 +70,8 @@ parseDMSfromFormat = function(str="3 8 29.7335529232441", format="measurements")
 #' convertDECtoDMS(-3.1415926535897932384626, "longitude", "UTF8");
 #' convertDECtoDMS(3.1415926535897932384626, "lo");
 #'
-#' # convertDECtoDMS(-31.0125,"longitude","UTF8"); # removed, as it breaks R to source it ...
-#'
+#' convertDECtoDMS(-31.0125,"longitude","UTF8");
+#' 
 #' convertDECtoDMS( convertDMStoDEC(30,60,45,"N"), "latitude", return = "MEAS", include.direction=FALSE);
 #' convertDECtoDMS( convertDMStoDEC(30,60,45,"N"), "latitude", return = "MEAS", include.direction=TRUE);
 #' convertDECtoDMS( convertDMStoDEC(-30,60,45,"N"), "latitude", return = "MEAS", include.direction=FALSE);
@@ -96,11 +99,11 @@ convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", in
     remainder = minutes.dec - minutes;
   seconds.dec = 60*remainder;
   seconds = floor(seconds.dec);
-
+  
   my.seconds = seconds;
   if(decimal.seconds) { my.seconds = seconds.dec; }
-
-
+  
+  
   return.4 = substr(toupper(return),1,4);
   if(return.4 == "LIST")   # "list"
     {
@@ -114,7 +117,12 @@ convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", in
       if(include.direction) { stem = paste0(stem, " ", direction); } else { stem = paste0(my.sign, stem); }
     return ( stem );
     }
-
+  if(return.4 == "UTF8")  # UTF8
+    {
+    stem = paste0(degrees,"°",minutes,"′", my.seconds);
+      if(include.direction) { stem = paste0(stem, "″", direction); } else { stem = paste0(my.sign, stem); }
+    return( stem );
+    }
   }
 
 
@@ -135,30 +143,30 @@ convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", in
 #' @examples
 #' convertDMStoDEC(30,60,45,"S");
 #' convertDMStoDEC(-30,60,45,"S");  # negative is only working correctly on degrees
-#'
+#' 
 #' convertDMStoDEC(30,60,45,"N");
 #' convertDMStoDEC(-30,60,45,"N");
-#'
+#' 
 #' convertDMStoDEC("105",direction="E");
 #' convertDMStoDEC("105",direction="W");
-#'
-#'
+#' 
+#' 
 #' convertDMStoDEC("105 22 48",direction="E",format="measurements");
 #' convertDMStoDEC("105 22 48",direction="W",format="MeAsUr");
-#'
+#' 
 #' convertDMStoDEC("105 22 48 E", format="MeAsUr");
 #' convertDMStoDEC("-105 22 48 E", format="MeAsUr");
 #' convertDMStoDEC("105 22 48 W", format="MeAsUr");
 #' convertDMStoDEC("-105 22 48 W", format="MeAsUr");
-#'
-#'
+#' 
+#' 
 #' convertDMStoDEC(30,60,45,"N");
-#'
+#' 
 #' convertDMStoDEC( convertDECtoDMS(3.1415926535897932384626, "lat", "meas"), format="meas");
 convertDMStoDEC = function(degrees, minutes=0, seconds=0, direction="N", format=NULL)
   {
   degrees.raw = degrees;
-
+  
   if(is.character(degrees))
     {
     if(is.null(format))
@@ -175,12 +183,12 @@ convertDMStoDEC = function(degrees, minutes=0, seconds=0, direction="N", format=
     seconds = deg$seconds;
     if(!is.null(deg$direction)) { direction = deg$direction; }
     }
-
+  
   mydeg = degrees; # original sign
   degrees = abs(degrees);
 
   direction = toupper(direction);
-
+  
   reverse = 1;
   if(mydeg < 0) { reverse = -1 * reverse; }
   if (direction == "S" || direction == "W")
