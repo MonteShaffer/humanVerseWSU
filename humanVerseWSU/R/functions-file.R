@@ -117,6 +117,9 @@ writeLine = function(str, file, append=TRUE, end="\n", encoding="UTF-8")
   #     file=file(file, encoding = encoding),
   #       sep="", append=append );
 
+  # force.encoding = TRUE; ??
+  # open / close for writeLine ... maintain the connection
+  # ?open
   cat( paste(str,end,sep=""),
       file=file,
         sep="", append=append );
@@ -138,6 +141,11 @@ storeToFile = function (str, file, encoding="UTF-8")
   cat(str, file=file, append=FALSE);
 	}
 
+readStringFromFile = function(file)
+  {
+  # old school... fopen, fread, fclose ...
+  # base::readChar( file(htmlfile, encoding=encoding), nchars=9724129);
+  }
 
 #' grabHTML
 #'
@@ -169,7 +177,10 @@ grabHTML = function(htmlfile, htmlurl, verbose=TRUE, return.raw=TRUE, encoding="
         }
       if(return.raw)
         {
-        raw.html = base::readChar( file(htmlfile, encoding=encoding), nchars=9724129);
+        #raw.html = base::readChar( file(htmlfile, encoding=encoding), nchars=9724129);
+
+        raw.html = base::readChar( htmlfile, nchars=9724129);
+
         # raw.html = base::readLines( file(htmlfile, encoding=encoding) );
         return(raw.html);
         }

@@ -218,6 +218,10 @@ strPadRight = function(str, final.str.len, padding="0")
 #' strlen( pi );
 strlen = function(str)
   {
+  # history :: # https://en.cppreference.com/w/c/string/byte/strlen
+  # http://www.cplusplus.com/reference/cstring/
+  # https://en.wikipedia.org/wiki/C99
+  # https://www.programiz.com/c-programming/library-function/string.h/strlen
   nchar( as.character(str), type="chars");
   }
 
@@ -355,3 +359,17 @@ getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
         }
       f.vals;
       }
+
+
+
+# for shared notebooks
+stringifyLibrary = function(str)
+  {
+  str = gsub(" ","",str, fixed=TRUE);
+  str = gsub("/","",str, fixed=TRUE);
+  str = gsub(":","",str, fixed=TRUE);
+  str = gsub("-","",str, fixed=TRUE);
+  str = gsub(".","",str, fixed=TRUE);
+  str;
+  }
+
