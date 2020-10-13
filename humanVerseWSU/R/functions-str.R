@@ -98,9 +98,9 @@ removeWhiteSpace = function( str, replace=" ", n=2,
 
 
 
-#' printPaste
+#' printPaste0
 #'
-#' merges print(paste into one function
+#' merges print(paste0 into one function
 #'
 #' @param ...  one or more R objects, to be converted to character vectors.
 #' @param sep a character string to separate the terms
@@ -221,6 +221,30 @@ strlen = function(str)
   nchar( as.character(str), type="chars");
   }
 
+
+
+#' roundMeToString
+#'
+#' @param val a numeric value
+#' @param digits number of digits to round
+#' @param leadingZero TRUE / FALSE ... include the leading zero, if necessary
+#' @param decimal.sep The decimal separator, default is "."
+#'
+#' @return string of numeric based on parameters
+#' @export
+#'
+#' @examples
+#' roundMeToString(pi, 5);
+#' roundMeToString(3.1415926535897932384626, 9);
+#'
+#' roundMeToString(0.9, 3);
+#' roundMeToString(0.9, 3, FALSE);
+#'
+#' roundMeToString(1.9, 3);
+#' roundMeToString(1.9, 3, FALSE);
+#'
+#' roundMeToString(-0.9, 3);
+#' roundMeToString(-0.9, 3, FALSE);
 roundMeToString = function(val, digits=3, leadingZero=TRUE, decimal.sep=".")
   {
   isNegative = (val < 0);
@@ -244,7 +268,6 @@ roundMeToString = function(val, digits=3, leadingZero=TRUE, decimal.sep=".")
   }
 
 # not just round length, but total length, so they align on decimal centers
-
 vectorRoundMeToString = function(strvec, digits=3, leadingZero = TRUE, alignDecimal=TRUE)
   {
 
