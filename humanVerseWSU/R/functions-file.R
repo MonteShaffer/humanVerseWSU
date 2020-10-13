@@ -102,7 +102,7 @@ createDir = function (folder,verbose=TRUE)
 #' @param append If TRUE, will append to the end of the file, otherwise it will overwrite an existing file
 #' @param end EOL character to finish the line; the line separator
 #' @param encoding by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1
-#' @param myfile The file to store the (str) line
+#' @param file The file to store the (str) line
 #'
 #' @return
 #' @export
@@ -110,11 +110,11 @@ createDir = function (folder,verbose=TRUE)
 #' @examples
 #' writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
 #' writeLine("hi again", file="R:/monte/says/hi/again/my.log");
-writeLine = function(str, myfile, append=TRUE, end="\n", encoding="UTF-8")
+writeLine = function(str, file, append=TRUE, end="\n", encoding="UTF-8")
   {
   # wrapper for cat
   cat( paste(str,end,sep=""),
-      file=file(myfile, encoding = encoding),
+      file=file(file, encoding = encoding),
         sep="", append=append );
   }
 
@@ -124,13 +124,13 @@ writeLine = function(str, myfile, append=TRUE, end="\n", encoding="UTF-8")
 #' Store a string to a file (e.g., an HTML page downloaded).
 #'
 #' @param str The string to store
-#' @param myfile The file to store the string (it will override).
+#' @param file The file to store the string (it will override).
 #'
 #' @return
 #' @export
-storeToFile = function (str, myfile, encoding="UTF-8")
+storeToFile = function (str, file, encoding="UTF-8")
 	{
-	cat(str, file=file(myfile, encoding = encoding) ,append=FALSE);
+	cat(str, file=file(file, encoding = encoding) ,append=FALSE);
 	}
 
 
