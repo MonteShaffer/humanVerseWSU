@@ -135,7 +135,18 @@ printPaste = function(... , sep = " ", collapse = NULL, recycle0 = FALSE)
 
 
 
+printMatrix = function(mat, digits=3) # align decimals ? ... center ... latex
+  {
+  n.rows = nrow(mat);
+  my.row.names = rownames(mat);
+  my.col.names = colnames(mat);
 
+  mat = as.character( round(mat, digits = digits) );
+  mat = matrix(mat, nrow=n.rows, byrow=TRUE);
+    rownames(mat) = my.row.names;
+    colnames(mat) = my.col.names;
+  print(mat);
+  }
 
 
 
