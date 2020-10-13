@@ -113,8 +113,12 @@ createDir = function (folder,verbose=TRUE)
 writeLine = function(str, file, append=TRUE, end="\n", encoding="UTF-8")
   {
   # wrapper for cat
+  # cat( paste(str,end,sep=""),
+  #     file=file(file, encoding = encoding),
+  #       sep="", append=append );
+
   cat( paste(str,end,sep=""),
-      file=file(file, encoding = encoding),
+      file=file,
         sep="", append=append );
   }
 
@@ -130,7 +134,8 @@ writeLine = function(str, file, append=TRUE, end="\n", encoding="UTF-8")
 #' @export
 storeToFile = function (str, file, encoding="UTF-8")
 	{
-	cat(str, file=file(file, encoding = encoding) ,append=FALSE);
+	#cat(str, file=file(file, encoding = encoding) ,append=FALSE);
+  cat(str, file=file, append=FALSE);
 	}
 
 
