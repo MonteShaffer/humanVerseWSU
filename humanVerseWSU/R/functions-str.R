@@ -41,10 +41,10 @@ explodeMe = function(delimiter=" ",str="hello friend")
 #'
 #' Similar to javascript.join and php.implode
 #'
-#' @param delimiter character(s) to delimit the split
-#' @param str a character string to be split
+#' @param delimiter character(s) to unsplit with
+#' @param strvec a character string to be unsplit
 #'
-#' @return a character vector
+#' @return a character string
 #' @export
 #'
 #' @examples
@@ -103,7 +103,6 @@ removeWhiteSpace = function( str, replace=" ", n=2,
 #' merges print(paste0 into one function
 #'
 #' @param ...  one or more R objects, to be converted to character vectors.
-#' @param sep a character string to separate the terms
 #' @param collapse an optional character string to separate the results
 #' @param recycle0 TRUE / FALSE
 #'
@@ -139,18 +138,34 @@ printPaste = function(... , sep = " ", collapse = NULL, recycle0 = FALSE)
 #'
 #' @param mat numeric matrix
 #' @param digits numeric, digits to round
+#' @param zeroIsh if TRUE, zeroIsh is also called
+#' @param z.digits numeric, digits to perform zeroIsh
 #'
 #' @return matrix, as character string
 #' @export
 #'
 #' @examples
-printMatrix = function(mat, digits=3) # align decimals ? ... center ... latex
+#' x = cbind( stats::rnorm(10,0,1), stats::rnorm(10,3,1), stats::rnorm(10,9,1) );
+#' printMatrix( stats::cov(x), 3);
+#' printMatrix( stats::cor(x), 3);
+#'
+#' x = matrix( c(sin(pi), cos(pi), -sin(pi), -cos(pi)), nrow=2);
+#' zeroIsh(x);
+#' printMatrix( x, 3 );
+#' printMatrix( x, 22, zeroIsh = FALSE);
+#' printMatrix( x, 22, zeroIsh = TRUE);
+#' printMatrix( x, 22, zeroIsh = TRUE, z.digits=16);
+printMatrix = function(mat, digits=3, zeroIsh=TRUE, z.digits=6) # align decimals ? ... center ... latex
   {
   n.rows = nrow(mat);
   my.row.names = rownames(mat);
   my.col.names = colnames(mat);
 
-  mat = as.character( round(mat, digits = digits) );
+  mat.round = round(mat, digits = digits);
+  if(z.digits > 22) { z.digits = 22; } # is this the maximum on all systems?
+  if(zeroIsh) { mat.round = zeroIsh(mat.round, z.digits); }
+
+  mat = as.character( mat.round );
   mat = matrix(mat, nrow=n.rows, byrow=FALSE);
     rownames(mat) = my.row.names;
     colnames(mat) = my.col.names;

@@ -9,7 +9,8 @@
 #'
 #'
 #' @param str a string form of lat/long
-#' @param format
+#' @param format what formatter to use to parse string
+#'
 #'
 #' @return a list of $degrees , $minutes , $seconds, $direction
 #' @export
@@ -50,6 +51,7 @@ parseDMSfromFormat = function(str="3 8 29.7335529232441", format="measurements")
 #' @param which is it "latitude" or "longitude" ... matters for c("N","S","E","W")
 #' @param return one of :: c("list","measurements","UTF8")
 #' @param include.direction if TRUE, string returns will have direction appended to end
+#' @param use.decimal.seconds if TRUE, the seconds are not "floored", but the entire value is used ...
 #'
 #' @return either a list or a string based on `return` option; default is "list"
 #' @export
@@ -69,11 +71,15 @@ parseDMSfromFormat = function(str="3 8 29.7335529232441", format="measurements")
 #'
 #' # convertDECtoDMS(-31.0125,"longitude","UTF8"); # removed, as it breaks R to source it ...
 #'
-#' convertDECtoDMS( convertDMStoDEC(30,60,45,"N"), "latitude", return = "MEAS", include.direction=FALSE);
-#' convertDECtoDMS( convertDMStoDEC(30,60,45,"N"), "latitude", return = "MEAS", include.direction=TRUE);
-#' convertDECtoDMS( convertDMStoDEC(-30,60,45,"N"), "latitude", return = "MEAS", include.direction=FALSE);
-#' convertDECtoDMS( convertDMStoDEC(-30,60,45,"N"), "latitude", return = "MEAS", include.direction=TRUE);
-convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", include.direction=TRUE, decimal.seconds=TRUE)
+#' convertDECtoDMS( convertDMStoDEC(30,60,45,"N"), "latitude",
+#'                                                return = "MEAS", include.direction=FALSE);
+#' convertDECtoDMS( convertDMStoDEC(30,60,45,"N"), "latitude",
+#'                                                return = "MEAS", include.direction=TRUE);
+#' convertDECtoDMS( convertDMStoDEC(-30,60,45,"N"), "latitude",
+#'                                                return = "MEAS", include.direction=FALSE);
+#' convertDECtoDMS( convertDMStoDEC(-30,60,45,"N"), "latitude",
+#'                                                return = "MEAS", include.direction=TRUE);
+convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", include.direction=TRUE, use.decimal.seconds=TRUE)
   {
   # x = c(sin(pi), -sin(pi))
   which.2 = substr(tolower(which),1,2);
@@ -98,7 +104,7 @@ convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", in
   seconds = floor(seconds.dec);
 
   my.seconds = seconds;
-  if(decimal.seconds) { my.seconds = seconds.dec; }
+  if(use.decimal.seconds) { my.seconds = seconds.dec; }
 
 
   return.4 = substr(toupper(return),1,4);
@@ -128,6 +134,8 @@ convertDECtoDMS = function(decimal = 105.38, which="latitude", return="list", in
 #' @param minutes  numeric (integer likely)
 #' @param seconds  numeric (integer ??)
 #' @param direction one of : c("N","S","E","W");
+#' @param format if degrees contains a character form of the DMS, and format is
+#' not NULL, a parser will take the character form, and build it out correctly
 #'
 #' @return updated form as numeric (decimal)
 #' @export

@@ -21,6 +21,6 @@ data(iris);
 head(iris);
 performKMOTest(iris[,1:4]);
 
-setosa = subsetDataFrame( iris, "Species", "setosa" );
+setosa = subsetDataFrame( iris, "Species", "==", "setosa" );
 performKMOTest( setosa[,1:4] );
 }

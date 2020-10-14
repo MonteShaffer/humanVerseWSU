@@ -14,7 +14,7 @@ findOutliersUsingZscores(x, zmin = -3, zmax = 3)
 \item{zmax}{what is the upper-bound cutoff to label an outlier}
 }
 \value{
-dataframe, with possibly zero rows
+list of various features of the outliers
 }
 \description{
 [assuming normality.  Is that a good assumption?]

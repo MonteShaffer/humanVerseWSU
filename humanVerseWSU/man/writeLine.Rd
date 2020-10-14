@@ -4,16 +4,18 @@
 \alias{writeLine}
 \title{writeLine}
 \usage{
-writeLine(str, file = file, append = TRUE, end = "\\n")
+writeLine(str, file, append = TRUE, end = "\\n", encoding = "UTF-8")
 }
 \arguments{
 \item{str}{The character string to be written}
 
-\item{file}{The file to write the line to}
+\item{file}{The file to store the (str) line}
 
 \item{append}{If TRUE, will append to the end of the file, otherwise it will overwrite an existing file}
 
 \item{end}{EOL character to finish the line; the line separator}
+
+\item{encoding}{by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1}
 }
 \value{
 

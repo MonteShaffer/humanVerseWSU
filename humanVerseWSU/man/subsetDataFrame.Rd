@@ -4,12 +4,20 @@
 \alias{subsetDataFrame}
 \title{subsetDataFrame}
 \usage{
-subsetDataFrame(df, mycols, myvals, verbose = FALSE)
+subsetDataFrame(
+  df,
+  mycols = mycols,
+  comparison = "==",
+  myvals = myvals,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{df}{dataframe}
 
 \item{mycols}{names of cols to find idx's ... string or vector of strings will work}
+
+\item{comparison}{by default "==" equality comparison, LHS is df and RHS is myval}
 
 \item{myvals}{values for the cols to subset}
 
@@ -27,14 +35,25 @@ data(iris);
 head(iris);
 mycols = c("Sepal.Width","Petal.Width");
 myvals = c(3.0, 0.2);
-subsetDataFrame(iris, mycols, myvals);
-subsetDataFrame(iris, mycols, myvals, verbose=TRUE);
+subsetDataFrame(iris, mycols, "==", myvals);
+subsetDataFrame(iris, mycols, "==", myvals, verbose=TRUE);
+
+comparison = c(">=", "<=");
+subsetDataFrame(iris, mycols, comparison=comparison, myvals, verbose=TRUE);
 
 myvals = c(1492, 1991);
-subsetDataFrame(iris,mycols,myvals);
+subsetDataFrame(iris, mycols, "==", myvals);  # not found, returns zero rows ...
+
+dim( subsetDataFrame(iris,"Petal.Length", "==", 1.4) );
+dim( subsetDataFrame(iris,"Petal.Length", "~=", 1.4) );
+
+df = iris;
+df$sinpi = sin(pi);
+dim( subsetDataFrame(df,"sinpi", "==", 0) );
+dim( subsetDataFrame(df,"sinpi", "~=", 0) );  # addresses floating point issues with isClose
 
 
-subsetDataFrame(iris,"column-does-not-exist", 123);  # Throws error
+subsetDataFrame(iris,"column-does-not-exist", "==", 123);  # Throws warning, returns NA
 
 }
 \seealso{

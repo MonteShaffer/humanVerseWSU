@@ -49,7 +49,7 @@ perform.hclust = function(X, n.groups = 12, method = "complete",
   n.cols = ncol(X);
   if(n.groups > n.cols) { n.groups = n.cols; }
 
-  colors = rainbow(n.groups, s = 0.6, v = 0.75);
+  colors = grDevices::rainbow(n.groups, s = 0.6, v = 0.75);
 
   time.start = Sys.time();
       X = as.matrix(X);
@@ -124,7 +124,7 @@ perform.kmeans = function(X, centers = 12, algorithm = "Hartigan-Wong",
   {
   if(length(centers) == 1)
     {
-    colors = rainbow(centers, s = 0.6, v = 0.75);
+    colors = grDevices::rainbow(centers, s = 0.6, v = 0.75);
     }
   X.kmeans = stats::kmeans(X, centers,
                       iter.max = iter.max, algorithm = algorithm,
@@ -132,7 +132,7 @@ perform.kmeans = function(X, centers = 12, algorithm = "Hartigan-Wong",
 
   if(showPlots)
     {
-    palette(colors);
+    grDevices::palette(colors);
 
     graphics::stars(X.kmeans$centers, len = stars.len, key.loc = stars.key.loc,
         main = paste0("Algorithm: [",algorithm,"] \n Stars of KMEANS=", centers),
@@ -185,12 +185,12 @@ perform.EFA = function(X, n.factors=8, which="factanal",
     print(" Loadings");
       print(X.factanal$loadings, digits=2, cutoff=0.25, sort=FALSE);
 
-    plot(X.factanal$loadings[,1:2], type="n");
-        text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
+    graphics::plot(X.factanal$loadings[,1:2], type="n");
+        graphics::text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
 
     if(scores != "regression")
       {
-      X.factanal.regression = factanal(X, n.factors, rotation=rotation, scores="regression");
+      X.factanal.regression = stats::factanal(X, n.factors, rotation=rotation, scores="regression");
       myScores = X.factanal.regression$scores;
       } else { myScores = X.factanal$scores; }
 
@@ -219,8 +219,8 @@ perform.EFA = function(X, n.factors=8, which="factanal",
     print(" Loadings");
       print(X.factanal$loadings, digits=2, cutoff=0.25, sort=FALSE);
 
-    plot(X.factanal$loadings[,1:2], type="n");
-        text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
+    graphics::plot(X.factanal$loadings[,1:2], type="n");
+        graphics::text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
 
     if(scores != "regression")
       {
@@ -255,7 +255,7 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
   # for VSS, we will let the others run wild ...
   # eigen > 1 may have more than max.factors ...
   print("  Paralell Analysis");
-  fa = psych::fa.parallel(Xs, fm = fa.fm, fa = fa.fa, n.iter = fa.iter,
+  fa = psych::fa.parallel(X, fm = fa.fm, fa = fa.fa, n.iter = fa.iter,
                         error.bars = fa.error.bars, se.bars=fa.se.bars);
 
   n.cols = ncol(X);

@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions-maths.R
 \name{rad2deg}
 \alias{rad2deg}
-\title{deg2rad}
+\title{rad2deg}
 \usage{
 rad2deg(radians)
 }
@@ -13,7 +13,7 @@ rad2deg(radians)
 numeric (decimal form) of degrees
 }
 \description{
-deg2rad
+rad2deg
 }
 \examples{
 rad2deg( deg2rad(180) );
@@ -28,3 +28,10 @@ rad2deg( pi/4 );
 rad2deg( pi/3 );
 rad2deg( pi/6 );
 }
+\seealso{
+Other Maths: 
+\code{\link{deg2rad}()},
+\code{\link{isClose}()},
+\code{\link{zeroIsh}()}
+}
+\concept{Maths}

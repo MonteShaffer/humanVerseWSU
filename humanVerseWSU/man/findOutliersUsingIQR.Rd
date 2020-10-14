@@ -14,7 +14,7 @@ findOutliersUsingIQR(x, innerFenceFactor = 1.5, outerFenceFactor = 3)
 \item{outerFenceFactor}{typically 3.0 * IQR}
 }
 \value{
-dataframe, with possibly zero rows
+list of various features of the outliers
 }
 \description{
 [assuming nothing about the data]

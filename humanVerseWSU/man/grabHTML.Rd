@@ -4,7 +4,13 @@
 \alias{grabHTML}
 \title{grabHTML}
 \usage{
-grabHTML(htmlfile, htmlurl, verbose = TRUE, return.raw = TRUE)
+grabHTML(
+  htmlfile,
+  htmlurl,
+  verbose = TRUE,
+  return.raw = TRUE,
+  encoding = "UTF-8"
+)
 }
 \arguments{
 \item{htmlfile}{If cached, we can return this file.  If not, we can store
@@ -16,6 +22,8 @@ source to possibly do offline re-parsing.  bad data provenance.)}
 \item{verbose}{If TRUE, will provide some verbosity}
 
 \item{return.raw}{If TRUE, will return the raw string}
+
+\item{encoding}{by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1}
 }
 \value{
 

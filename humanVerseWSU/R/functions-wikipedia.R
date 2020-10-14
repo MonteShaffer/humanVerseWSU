@@ -177,11 +177,6 @@ wiki.parseClimateTable = function(str.climate,str.climate.sea="")
     {
     row = rows[j];
 
-    # row.key = (strsplit( stringr::str_trim(rows[j]) ,"</th>")[[1]][1]) %>%
-    #             convertStringBetweenEncodings() %>%
-    #             strip_tags() %>%
-    #             stringr::str_trim();
-
     row.key = convertStringBetweenEncodings(
                   stringr::str_trim(
                       strip_tags(
@@ -201,8 +196,6 @@ wiki.parseClimateTable = function(str.climate,str.climate.sea="")
       for(i in 1:12)
         {
         looking = 2; if(i==1) { looking = 4; }
-        #val.info = wiki.cleanupClimateCell(tmp[[i]][looking]);
-        #my.val = as.numeric( wiki.cleanupClimateCell(tmp[[i]][2]) ); # celsius
         vals[i] = wiki.cleanupClimateCell(tmp[[i]][looking]);
         }
       my.rows = rbind(my.rows, vals);
@@ -211,10 +204,8 @@ wiki.parseClimateTable = function(str.climate,str.climate.sea="")
 
   colnames(my.rows) = my.cols;
   rownames(my.rows) = my.keys;
-  #df = as.data.frame( transposeMatrix( my.rows ) );
-  # df = as.data.frame( transposeMatrix( my.rows ) );
-  df = as.data.frame(  my.rows  );
 
+  df = as.data.frame(  my.rows  );
   df = wiki.separateDataFrameUnits(df);
 
 
@@ -229,7 +220,7 @@ wiki.findMyTable = function(tables, search)
     {
     for(i in 1:length(tables))
       {
-      table.i = tables[i] %>% html_text();
+      table.i = tables[i] %>% rvest::html_text();
       if(!is.na(wildcardSearch( search , table.i)))
         {
         my.table = tables[i]; # original format
@@ -252,7 +243,7 @@ wiki.parseAverageClimate = function(path.wiki.page, wiki.html, encoding="UTF-8")
     }
   rvest.html = xml2::read_html(wiki.html, verbose=TRUE, encoding="UTF-8");
   tables = rvest.html %>%
-              html_nodes(".wikitable");
+              rvest::html_nodes(".wikitable");
 
   # my.table = wiki.findMyTable(tables,"*Climate data*");
   my.table = wiki.findMyTable(tables,"*Record high*");
@@ -299,18 +290,18 @@ wiki.historicalPopulation = function(path.wiki.page, wiki.html, encoding="UTF-8"
     }
   rvest.html = xml2::read_html(wiki.html, verbose=TRUE, encoding="UTF-8");
   tables = rvest.html %>%
-              html_nodes(".toccolours");
+              rvest::html_nodes(".toccolours");
 
   my.table = wiki.findMyTable(tables,"*Historical population*");
 
   if(!is.null(my.table))
     {
-    table.df = (my.table %>%  html_table(fill = TRUE))[[1]];
+    table.df = (my.table %>%  rvest::html_table(fill = TRUE))[[1]];
 
     row.year = as.numeric(table.df[,1]);
     row.pop = as.numeric( gsub(",","",table.df[,2],fixed=TRUE) );
 
-    table.ndf = na.omit( as.data.frame( cbind(row.year, row.pop) ) );
+    table.ndf = stats::na.omit( as.data.frame( cbind(row.year, row.pop) ) );
       colnames(table.ndf) = c("year", "population");
 
     if( exists("local.data.path") )
@@ -338,33 +329,30 @@ wiki.parseStateCapitalsOfAmerica  = function(path.wiki.page, wiki.html, encoding
 
   rvest.html = xml2::read_html(wiki.html, verbose=TRUE, encoding="UTF-8");
   tables = rvest.html %>%
-              html_nodes(".wikitable");
+              rvest::html_nodes(".wikitable");
 
   my.table = wiki.findMyTable(tables,"*2716.7*");  # Alaska area should be unique
 
   if(!is.null(my.table))
     {
-    table.df = ((my.table %>%  html_table(fill = TRUE))[[1]])[1:50,];
+    table.df = ((my.table %>%  rvest::html_table(fill = TRUE))[[1]])[1:50,];
 
     # I need the links ...
     url.stem = "https://en.wikipedia.org";
 
     hrefs = my.table %>%
-      html_nodes("th a") %>%
-      html_attr("href");
+      rvest::html_nodes("th a") %>%
+      rvest::html_attr("href");
 
     hrefs = hrefs[-c(1:3,54)]
     length(hrefs);
 
-    # names(table.df);
-    # dput(names(table.df));  c("State", "Capital", "Capital Since", "Area (mi2)", "Population (2019 est.)", "MSA/µSA Population\r\n(2019 est.)", "CSA Population\r\n(2019 est.)", "Rank in State\r\n(city proper)")
-    # new-lines \r\n are not good ... I could manually rebuild or replace ...
     new.names = gsub("[[:space:]]", " ", names(table.df));
     colnames(table.df) = new.names;
 
     table.df$url = paste0(url.stem,hrefs);  # should be in order ...
     #names(table.df);
-    head(table.df[,c(1:2,9)]);
+    # utils::head(table.df[,c(1:2,9)]);
 
     if( exists("local.data.path") )
 		  {
@@ -397,8 +385,8 @@ wiki.findCoordinates = function(path.wiki.page, wiki.html, encoding="UTF-8")
   rvest.html = xml2::read_html(wiki.html, verbose=TRUE, encoding="UTF-8");
 
   coords = rvest.html %>%
-              html_node(".geo-dec") %>%
-              html_text();
+              rvest::html_node(".geo-dec") %>%
+              rvest::html_text();
 
   coords = convertStringBetweenEncodings(coords);
 
@@ -436,11 +424,11 @@ wiki.parseDEC = function(str)
 
 
 
-
-convertStringBetweenEncodings = function(str = "48°24'42<U+2033>N 114°20'24<U+2033>W", from="UTF-8", to="ASCII", method="Unicode")
+convertStringBetweenEncodings = function(str = "Original String is Breaking At Compile Time", from="UTF-8", to="ASCII", method="Unicode")
  {
  iconv(str, from, to, method);
  }
+
 
 
 

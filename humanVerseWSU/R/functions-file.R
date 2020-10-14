@@ -132,6 +132,7 @@ writeLine = function(str, file, append=TRUE, end="\n", encoding="UTF-8")
 #'
 #' @param str The string to store
 #' @param file The file to store the string (it will override).
+#' @param encoding by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1
 #'
 #' @return
 #' @export

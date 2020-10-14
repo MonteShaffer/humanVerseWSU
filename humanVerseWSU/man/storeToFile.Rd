@@ -4,12 +4,14 @@
 \alias{storeToFile}
 \title{storeToFile}
 \usage{
-storeToFile(str, myfile)
+storeToFile(str, file, encoding = "UTF-8")
 }
 \arguments{
 \item{str}{The string to store}
 
-\item{myfile}{The file to store the string (it will override).}
+\item{file}{The file to store the string (it will override).}
+
+\item{encoding}{by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1}
 }
 \value{
 

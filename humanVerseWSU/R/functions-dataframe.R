@@ -19,14 +19,14 @@
 #' head(iris);
 #' mycols = c("Sepal.Width","Petal.Width");
 #' myvals = c(3.0, 0.2);
-#' subsetDataFrame(iris, mycols, myvals);
-#' subsetDataFrame(iris, mycols, myvals, verbose=TRUE);
+#' subsetDataFrame(iris, mycols, "==", myvals);
+#' subsetDataFrame(iris, mycols, "==", myvals, verbose=TRUE);
 #'
 #' comparison = c(">=", "<=");
 #' subsetDataFrame(iris, mycols, comparison=comparison, myvals, verbose=TRUE);
 #'
 #' myvals = c(1492, 1991);
-#' subsetDataFrame(iris,mycols,myvals);  # not found, returns zero rows ...
+#' subsetDataFrame(iris, mycols, "==", myvals);  # not found, returns zero rows ...
 #'
 #' dim( subsetDataFrame(iris,"Petal.Length", "==", 1.4) );
 #' dim( subsetDataFrame(iris,"Petal.Length", "~=", 1.4) );
@@ -37,7 +37,7 @@
 #' dim( subsetDataFrame(df,"sinpi", "~=", 0) );  # addresses floating point issues with isClose
 #'
 #'
-#' subsetDataFrame(iris,"column-does-not-exist", 123);  # Throws warning, returns NA
+#' subsetDataFrame(iris,"column-does-not-exist", "==", 123);  # Throws warning, returns NA
 #'
 subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, verbose=FALSE)
   {

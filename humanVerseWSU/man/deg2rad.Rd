@@ -22,3 +22,10 @@ deg2rad(90);
 deg2rad(60);
 deg2rad(30);
 }
+\seealso{
+Other Maths: 
+\code{\link{isClose}()},
+\code{\link{rad2deg}()},
+\code{\link{zeroIsh}()}
+}
+\concept{Maths}

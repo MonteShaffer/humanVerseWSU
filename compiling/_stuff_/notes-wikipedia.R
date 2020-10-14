@@ -1,5 +1,41 @@
 
 
+
+
+
+
+    # row.key = (strsplit( stringr::str_trim(rows[j]) ,"</th>")[[1]][1]) %>%
+    #             convertStringBetweenEncodings() %>%
+    #             strip_tags() %>%
+    #             stringr::str_trim();
+
+
+
+#val.info = wiki.cleanupClimateCell(tmp[[i]][looking]);
+        #my.val = as.numeric( wiki.cleanupClimateCell(tmp[[i]][2]) ); # celsius
+
+  #df = as.data.frame( transposeMatrix( my.rows ) );
+  # df = as.data.frame( transposeMatrix( my.rows ) );
+
+  #path.wiki.page = wiki.info$path.wiki.page;
+  #wiki.html = wiki.info$wiki.html;
+
+
+    # names(table.df);
+    # dput(names(table.df));  c("State", "Capital", "Capital Since", "Area (mi2)", "Population (2019 est.)", "MSA/µSA Population\r\n(2019 est.)", "CSA Population\r\n(2019 est.)", "Rank in State\r\n(city proper)")
+    # new-lines \r\n are not good ... I could manually rebuild or replace ...
+
+
+
+
+convertStringBetweenEncodings = function(str = "48°24'42<U+2033>N 114°20'24<U+2033>W", from="UTF-8", to="ASCII", method="Unicode")
+ {
+ iconv(str, from, to, method);
+ }
+
+
+
+
 parseWikiStringBackToPage = function(str = "en^wikipedia^org-wiki-Columbia_Falls+_Montana")
   {
   find = c("/",".",",");
@@ -31,24 +67,24 @@ parseWikiPageToString = function(url = "https://en.wikipedia.org/wiki/Columbia_F
 wiki.findCoordinates = function(path.wiki.page,wiki.html)
   {
   mycache = paste0(path.wiki.page,"coordinates.txt");
-  if(file.exists(cache)) 
-    {  
+  if(file.exists(cache))
+    {
     return (utils::read.csv(mycache, header=TRUE, quote="", sep="|") );
     }
-  
+
   rvest.html = xml2::read_html(wiki.html, encoding = "UTF-8");
 
   library(magrittr);
   coords = rvest.html %>%
               html_node(".geo-dec") %>%
               html_text();
-  
+
   coords = gsub("Â°","",coords,fixed=TRUE);
     tmp = strsplit(coords," ",fixed=TRUE)[[1]];
   lat = parseDEC(tmp[1]);
-  
+
   coords;
-  
+
   }
 
 
@@ -60,9 +96,9 @@ parseDEC = function(str)
   str = gsub("S"," S",str,fixed=TRUE);
   str = gsub("E"," E",str,fixed=TRUE);
   str = gsub("W"," W",str,fixed=TRUE);
-  
+
   tm = strsplit(str," ",fixed=TRUE)[[1]];
-  
+
   dec = as.numeric(tm[1]);
   dir = tm[2];
   if(dir == "S" || dir == "W")
@@ -152,28 +188,28 @@ convertStringBetweenEncodings = function(str = "48°24′42″N 114°20′24″W
 downloadWikiPage = function(url="https://en.wikipedia.org/wiki/Columbia_Falls,_Montana", save.encoding="UTF-8")
   {
   str = parseWikiPageToString(url); # this is also reversible ... maybe pass encoding?
-  
-  
-  
+
+
+
   path.wiki.page = paste0(path.wiki,str,"/");
   createDirRecursive(path.wiki.page);
-  
-  
+
+
   wiki.html = paste0(path.wiki.page,"page.html");
-  
-  do.nothing = grabHTML(wiki.html, url, encoding = save.encoding);  
+
+  do.nothing = grabHTML(wiki.html, url, encoding = save.encoding);
         ### will store it ...
   do.nothing = grabHTML(wiki.html, url);
         ### second time, will just say "it's cached" ...
-  
+
   wiki.findCoordinates(path.wiki.page,wiki.html);  # rvest needs file .. not raw
   # utils::download.file(url, wiki.html, method="curl");
 
-  
+
   }
 
 # source("C:/_git_/MonteShaffer/humanVerseWSU/humanVerseWSU/R/functions-file.R");
 
-# cloudflare 
+# cloudflare
 
 # wget works ... on debian console ...
