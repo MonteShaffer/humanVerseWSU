@@ -8,6 +8,7 @@
 #'
 #' @param myvals values for the cols to subset
 #' @param verbose if TRUE, will print messages regarding subsetting
+#' @param comparison by default "==" equality comparison, LHS is df and RHS is myval
 #'
 #' @return NA if not correctly specified; otherwise dataframe of subset
 #' @export
@@ -21,13 +22,24 @@
 #' subsetDataFrame(iris, mycols, myvals);
 #' subsetDataFrame(iris, mycols, myvals, verbose=TRUE);
 #'
+#' comparison = c(">=", "<=");
+#' subsetDataFrame(iris, mycols, comparison=comparison, myvals, verbose=TRUE);
+#'
 #' myvals = c(1492, 1991);
-#' subsetDataFrame(iris,mycols,myvals);
+#' subsetDataFrame(iris,mycols,myvals);  # not found, returns zero rows ...
+#'
+#' dim( subsetDataFrame(iris,"Petal.Length", "==", 1.4) );
+#' dim( subsetDataFrame(iris,"Petal.Length", "~=", 1.4) );
+#'
+#' df = iris;
+#' df$sinpi = sin(pi);
+#' dim( subsetDataFrame(df,"sinpi", "==", 0) );
+#' dim( subsetDataFrame(df,"sinpi", "~=", 0) );  # addresses floating point issues with isClose
 #'
 #'
-#' subsetDataFrame(iris,"column-does-not-exist", 123);  # Throws error
+#' subsetDataFrame(iris,"column-does-not-exist", 123);  # Throws warning, returns NA
 #'
-subsetDataFrame = function(df,mycols,myvals, verbose=FALSE)
+subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, verbose=FALSE)
   {
   n = nrow(df);
   n.cols = length(mycols);
@@ -38,6 +50,21 @@ subsetDataFrame = function(df,mycols,myvals, verbose=FALSE)
     return (NA);
     }
 
+## a comparison per field
+  n.com = length(comparison);
+  if(n.com == 1)
+    {
+    comparisons = rep(comparison, times=n.cols);
+    } else {
+            if(n.cols != n.com)
+              {
+              warning("Something wrong in subsetDataFrame ... mycols and comparison are of different lengths");
+              return (NA);
+              } else { comparisons = comparison; }
+            }
+
+
+
   idxs = getIndexOfDataFrameColumns(df,mycols);
   if(anyNA(idxs))
     {
@@ -47,11 +74,44 @@ subsetDataFrame = function(df,mycols,myvals, verbose=FALSE)
   ndf = df;
   for(i in 1:n.cols)
     {
+
+
+    my.comparison = trimMe(tolower(comparisons[i]));
+    allowed = c("==", "=", "~=", "=~", ">", ">=", "=>", "<", "<=", "=<");
+    if(!is.element(my.comparison, allowed))
+      {
+      warning( paste0( "Comparison:    ", my.comparison, "     NOT FOUND!") );
+      print("Replacing with the default comparison:           ==      ");
+      my.comparison = "==";
+      }
+
     if(verbose)
       {
-      print( paste0( "Subsetting column [",mycols[i],"] == [",myvals[i],"]" ) );
+      print( paste0( "Subsetting column [",mycols[i],"] ", my.comparison ," [",myvals[i],"]" ) );
       }
-    ndf = ndf[ndf[,idxs[i]] == myvals[i], ];
+
+
+
+
+    ndf = switch(my.comparison,
+          "=="    = ndf[ndf[,idxs[i]] == myvals[i], ],
+          "="     = ndf[ndf[,idxs[i]] == myvals[i], ], # bad form, but will work
+
+          "~="    = ndf[isClose(ndf[,idxs[i]] , myvals[i]), ], # maybe jaro-winkler if a string
+          "=~"    = ndf[isClose(ndf[,idxs[i]] , myvals[i]), ], # approximate
+
+
+          ">"     = ndf[ndf[,idxs[i]] > myvals[i], ],
+          ">="    = ndf[ndf[,idxs[i]] >= myvals[i], ],
+          "=>"    = ndf[ndf[,idxs[i]] >= myvals[i], ], # bad form, but will work
+
+          "<"     = ndf[ndf[,idxs[i]] < myvals[i], ],
+          "<="    = ndf[ndf[,idxs[i]] <= myvals[i], ],
+          "=<"    = ndf[ndf[,idxs[i]] <= myvals[i], ], # bad form, but will work
+
+         ndf[ndf[,idxs[i]] == myvals[i], ] # default case of switch
+        );
+    #ndf = ndf[ndf[,idxs[i]] == myvals[i], ];
     }
   ndf;
   }
