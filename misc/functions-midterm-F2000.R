@@ -35,7 +35,8 @@ plotJobs = function(jobs.subset,
   n.jobs.subset = length(deep.dive.sorted);
 
   #colors = palette(rainbow(n.jobs.subset, s = 0.6, v = 0.75));
-  colors = rainbow(n.jobs.subset);
+  # colors = rainbow(n.jobs.subset);
+  colors = rainbow(n.jobs.subset, s = 0.6, v = 0.75);
   
     # first one ...
     my.search = deep.dive.sorted[1];
