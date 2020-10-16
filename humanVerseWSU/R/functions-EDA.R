@@ -41,9 +41,9 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   }
 
 
-perform.hclust = function(X, n.groups = 12, method = "complete",
+perform.hclust = function(X, n.groups = 12, method = "ward.D2",
           dist.method = "euclidean", dist.p = 2,
-          showPlots = TRUE, pvclust.parallel = FALSE )
+          showPlots = TRUE, do.pvclust = FALSE, pvclust.parallel = FALSE )
   {
   times = c(); time.names = c();
   n.cols = ncol(X);
@@ -89,25 +89,29 @@ perform.hclust = function(X, n.groups = 12, method = "complete",
     }
 
   # pvclust
-  time.start = Sys.time();
-  X.pvclust = pvclust::pvclust ( X.t, method.hclust=method, parallel=pvclust.parallel);
-  time.end = Sys.time();
-
-  elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
-        times = c(times,elapse);
-        time.names = c(time.names,"pvclust");
-
-
-  if(showPlots)
+  if(do.pvclust)
     {
     time.start = Sys.time();
-        graphics::plot(X.pvclust);
-        pvclust::pvrect(X.pvclust);
+    X.pvclust = pvclust::pvclust ( X.t, method.hclust=method, parallel=pvclust.parallel);
     time.end = Sys.time();
+
     elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
-        times = c(times,elapse);
-        time.names = c(time.names,"pvclust-plot");
+          times = c(times,elapse);
+          time.names = c(time.names,"pvclust");
+
+    if(showPlots)
+      {
+      time.start = Sys.time();
+          graphics::plot(X.pvclust);
+          pvclust::pvrect(X.pvclust);
+      time.end = Sys.time();
+      elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+          times = c(times,elapse);
+          time.names = c(time.names,"pvclust-plot");
+      }
     }
+
+
 
   timer = as.data.frame( cbind(time.names,times) );
     colnames(timer) = c("names", "times");
