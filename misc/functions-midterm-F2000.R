@@ -225,3 +225,19 @@ plotNeighbors = function(info, state="montana", county="flathead",
   }
   
 
+
+plotXYwithBoxPlots = function(x, y, ...)
+  {
+  # http://rfunction.com/archives/1538
+  mat <- matrix(c(1,2,0,3), 2);
+  layout(mat, c(3.5,1), c(1,3));
+
+  par(mar=c(0.5, 4.5, 0.5, 0.5));
+    boxplot(x, horizontal=TRUE, axes=FALSE);
+  par(mar=c(4.5, 4.5, 0.5, 0.5));
+    plot(x, y, ...);
+  # text(0.5, 85, "layout", cex=2)
+  par(mar=c(4.5, 0.5, 0.5, 0.5));
+  boxplot(y, axes=FALSE);
+  
+  }
