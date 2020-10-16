@@ -1,3 +1,8 @@
+library(maps);
+library(geosphere);     # distm
+library(measurements);  # conv_unit
+library(RMariaDB);
+
 
 t.test.jobs = function(search.query.1 = "Microsoft Office", search.query.2 = "C++")
   {
@@ -21,13 +26,17 @@ boxplotJobQueryComparison = function(search.query.1 = "Microsoft Office", search
   }
 
 
-plotJobs = function(jobs.subset, deep.dive.sorted,
+plotJobs = function(jobs.subset,
                 myy.lim=c(0,max(jobs.subset$job.count.k) ) )
   {
+  jobs.subset = sortDataFrameByNumericColumns(jobs.subset, "job.count", "DESC");
+  
+  deep.dive.sorted = unique(jobs.subset$search.query);
   n.jobs.subset = length(deep.dive.sorted);
 
-  colors = palette(rainbow(n.jobs.subset, s = 0.6, v = 0.75));
+  colors = palette(rainbow(5+n.jobs.subset, s = 0.6, v = 0.75));
 
+  
     # first one ...
     my.search = deep.dive.sorted[1];
     my.subset = subsetDataFrame(jobs.subset, "search.query", "==", my.search);
@@ -37,13 +46,13 @@ plotJobs = function(jobs.subset, deep.dive.sorted,
     xs = 38: (38 + n.my.subset - 1);
   plot(xs, my.subset$job.count.k, 
         xlim = c(38, 43), ylim = myy.lim, lwd=3,
-        type = "l", col=colors[1],
+        type = "l", col=colors[5],
         ylab="Job Count in (1000s)", xlab=("Weeks 38-42 of 2020"),
         main = "Keyword trends in Data Analysis"
         );
       text(42, my.subset$job.count.k[n.my.subset],
               labels=my.subset$search.query[n.my.subset], 
-                pos=4, col=colors[1], cex= 0.5);
+                pos=4, col=colors[5], cex= 0.5);
         
         ## all the rest ...
       for(i in 2:n.jobs.subset)
@@ -60,7 +69,7 @@ plotJobs = function(jobs.subset, deep.dive.sorted,
           par(new=TRUE); # overlays
           plot(xs, my.subset$job.count.k, 
                 xlim = c(38, 43), ylim = myy.lim, lwd=3,
-                type = "l", col=colors[i],
+                type = "l", col=colors[5+i],
                 ylab="", xlab="",
                 main = ""
                 );
@@ -69,6 +78,8 @@ plotJobs = function(jobs.subset, deep.dive.sorted,
                   pos=4, col=colors[i], cex= 0.5);
           }
         }
+    
+  list("colors" = colors, "search" = deep.dive.sorted);  
   }
 
 
