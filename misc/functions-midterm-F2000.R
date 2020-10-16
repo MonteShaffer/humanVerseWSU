@@ -4,6 +4,7 @@ library(measurements);  # conv_unit
 library(RMariaDB);
 
 
+
 t.test.jobs = function(jobs.subset, search.query.1 = "Microsoft Office", search.query.2 = "C++")
   {
   x = subsetDataFrame(jobs.subset, 
@@ -61,7 +62,7 @@ plotJobs = function(jobs.subset,
   plot(xs, my.subset$job.count.k, 
         xlim = c(38, 43), ylim = myy.lim, lwd=3,
         type = "l", col=colors[1],
-        ylab="Job Count in (1000s)", xlab=("Weeks 38-42 of 2020"),
+        ylab="Job Count (in 1000s)", xlab=("Weeks 38-42 of 2020"),
         main = "Keyword trends in Data Analysis"
         );
       text(42, my.subset$job.count.k[n.my.subset],
@@ -155,7 +156,10 @@ good.neighbors = subsetDataFrame(copy.neighbors, "dist.within.radius", "==", TRU
 
 
 
-list("box" = box, "neighbors" = neighbors, "copy.neighbors" = copy.neighbors, "good.neighbors" = good.neighbors);
+list("box" = box, "neighbors" = neighbors, 
+    "copy.neighbors" = copy.neighbors, "good.neighbors" = good.neighbors,
+    "dist.neighbors" = dist.neighbors
+    );
 }
 
 
@@ -253,6 +257,8 @@ plotNeighbors = function(info, state="montana", county="flathead",
 
 plotXYwithBoxPlots = function(x, y, ...)
   {
+  old.par.mar = par()$mar;
+  
   # http://rfunction.com/archives/1538
   mat <- matrix(c(1,2,0,3), 2);
   layout(mat, c(3.5,1), c(1,3));
@@ -265,12 +271,17 @@ plotXYwithBoxPlots = function(x, y, ...)
   par(mar=c(4.5, 0.5, 0.5, 0.5));
     boxplot(y, axes=FALSE);
   
+  # https://stackoverflow.com/questions/9292563/reset-the-graphical-parameters-back-to-default-values-without-use-of-dev-off
+  # back to default ... # http://rfunction.com/archives/1302
+  par(mar=old.par.mar);
   }
 
 
 
 plotXYwithHistograms = function(x, y, ...)
   {
+  old.par.mar = par()$mar;
+  
   # http://rfunction.com/archives/1538
   mat <- matrix(c(1,2,0,3), 2);
   layout(mat, c(3.5,1), c(1,3));
@@ -279,7 +290,7 @@ plotXYwithHistograms = function(x, y, ...)
     # https://stackoverflow.com/questions/50810198/rotating-histogram-horizontally-in-r
     # technical barplots of hist ... used same for both x,y
     #hist(x, horizontal=TRUE, axes=FALSE, main="");
-  xhist = hist(x, axes=FALSE, main="", plot = FALSE);
+  xhist = hist(x, plot = FALSE);
     barplot(xhist$counts, axes = FALSE, space = 0, horiz=FALSE, xlab= "", ylab="")
   
   par(mar=c(4.5, 4.5, 0.5, 0.5));
@@ -287,9 +298,12 @@ plotXYwithHistograms = function(x, y, ...)
   # text(0.5, 85, "layout", cex=2)
   par(mar=c(4.5, 0.5, 0.5, 0.5));
   
-  yhist = hist(y, axes=FALSE, main="", plot = FALSE);
+  yhist = hist(y, plot = FALSE);
     barplot(yhist$counts, axes = FALSE, space = 0, horiz=TRUE, xlab= "", ylab="")
     #hist(y, axes=FALSE, main="");
   
+  # https://stackoverflow.com/questions/9292563/reset-the-graphical-parameters-back-to-default-values-without-use-of-dev-off
+  # back to default ... # http://rfunction.com/archives/1302
+  par(mar=old.par.mar);
   }
 
