@@ -36,7 +36,7 @@ plotJobs = function(jobs.subset, deep.dive.sorted,
     n.my.subset = length(my.subset$job.count.k);
     xs = 38: (38 + n.my.subset - 1);
   plot(xs, my.subset$job.count.k, 
-        xlim = c(38, 43), ylim = myy.lim,
+        xlim = c(38, 43), ylim = myy.lim, lwd=3,
         type = "l", col=colors[1],
         ylab="Job Count in (1000s)", xlab=("Weeks 38-42 of 2020"),
         main = "Keyword trends in Data Analysis"
@@ -59,7 +59,7 @@ plotJobs = function(jobs.subset, deep.dive.sorted,
           {
           par(new=TRUE); # overlays
           plot(xs, my.subset$job.count.k, 
-                xlim = c(38, 43), ylim = myy.lim,
+                xlim = c(38, 43), ylim = myy.lim, lwd=3,
                 type = "l", col=colors[i],
                 ylab="", xlab="",
                 main = ""
