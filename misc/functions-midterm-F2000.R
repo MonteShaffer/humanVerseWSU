@@ -40,6 +40,14 @@ findjobPlotColor = function(jobs.subset, search.query)
   }
 
 
+lookupPairwiseDistance = function(dist.df, loc.1, loc.2)
+  {
+  # symmetric
+  df.names = names(dist.df);
+  idx.1 = which(df.names == loc.1);
+  idx.2 = which(df.names == loc.2);
+  dist.df[idx.1, idx.2];
+  }
 
 
 plotJobs = function(jobs.subset,
