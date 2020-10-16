@@ -4,7 +4,7 @@ library(measurements);  # conv_unit
 library(RMariaDB);
 
 
-t.test.jobs = function(search.query.1 = "Microsoft Office", search.query.2 = "C++")
+t.test.jobs = function(jobs.subset, search.query.1 = "Microsoft Office", search.query.2 = "C++")
   {
   x = subsetDataFrame(jobs.subset, 
                           "search.query", "==", search.query.1)$job.count.k;
@@ -15,14 +15,17 @@ t.test.jobs = function(search.query.1 = "Microsoft Office", search.query.2 = "C+
   }
   
   
-boxplotJobQueryComparison = function(search.query.1 = "Microsoft Office", search.query.2 = "C++")
+boxplotJobQueryComparison = function(jobs.subset, search.query.1 = "Microsoft Office", search.query.2 = "C++")
   {
   x = subsetDataFrame(jobs.subset, 
                           "search.query", "==", search.query.1)$job.count.k;
   y = subsetDataFrame(jobs.subset, 
                           "search.query", "==", search.query.2)$job.count.k;
   
-  boxplot(x,y, names = c(search.query.1, search.query.2)  );
+  color.x = findjobPlotColor(jobs.subset,search.query.1);
+  color.y = findjobPlotColor(jobs.subset,search.query.2); 
+    
+  boxplot(x,y, names = c(search.query.1, search.query.2), col=c(color.x,color.y)  );
   }
 
 
