@@ -46,13 +46,13 @@ plotJobs = function(jobs.subset,
     xs = 38: (38 + n.my.subset - 1);
   plot(xs, my.subset$job.count.k, 
         xlim = c(38, 43), ylim = myy.lim, lwd=3,
-        type = "l", col=colors[5],
+        type = "l", col=colors[1],
         ylab="Job Count in (1000s)", xlab=("Weeks 38-42 of 2020"),
         main = "Keyword trends in Data Analysis"
         );
       text(42, my.subset$job.count.k[n.my.subset],
               labels=my.subset$search.query[n.my.subset], 
-                pos=4, col=colors[5], cex= 0.5);
+                pos=4, col=colors[1], cex= 0.5);
         
         ## all the rest ...
       for(i in 2:n.jobs.subset)
@@ -69,7 +69,7 @@ plotJobs = function(jobs.subset,
           par(new=TRUE); # overlays
           plot(xs, my.subset$job.count.k, 
                 xlim = c(38, 43), ylim = myy.lim, lwd=3,
-                type = "l", col=colors[5+i],
+                type = "l", col=colors[i],
                 ylab="", xlab="",
                 main = ""
                 );
