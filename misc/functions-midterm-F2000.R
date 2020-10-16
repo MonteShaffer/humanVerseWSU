@@ -26,11 +26,20 @@ boxplotJobQueryComparison = function(search.query.1 = "Microsoft Office", search
   }
 
 
+findjobPlotColor = function(jobs.subset, search.query)
+  {
+  deep.dive.sorted = unique(jobs.subset$search.query);
+  colors = rainbow(n.jobs.subset, s = 0.6, v = 0.75);
+  idx = findAllIndexesWithValueInVector(deep.dive.sorted, search.query);
+  colors[idx];
+  }
+
+
+
+
 plotJobs = function(jobs.subset,
                 myy.lim=c(0,max(jobs.subset$job.count.k) ) )
   {
-  jobs.subset = sortDataFrameByNumericColumns(jobs.subset, "job.count", "DESC");
-  
   deep.dive.sorted = unique(jobs.subset$search.query);
   n.jobs.subset = length(deep.dive.sorted);
 
