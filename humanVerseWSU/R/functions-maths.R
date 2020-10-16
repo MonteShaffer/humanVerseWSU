@@ -122,7 +122,7 @@ isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
 #'
 #' x = c(sin(pi), -sin(pi));
 #' zeroIsh(x);
-#' zeroIsh(x, 8);#'
+#' zeroIsh(x, 8);
 zeroIsh = function(x, digits=getOption("digits"))
   {
   # zapsmall has log10 feature
@@ -191,5 +191,16 @@ rad2deg = function(radians)
   {
   degrees = radians * (180/pi);
   degrees;
+  }
+
+
+fahrenheit2celsius = function(fahrenheit)
+  {
+  5/9 * ( fahrenheit - 32);
+  }
+
+celsius2fahrenheit = function(celsius)
+  {
+  32 + celsius * 9/5;
   }
 

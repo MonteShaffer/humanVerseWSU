@@ -34,6 +34,7 @@ wiki.parseWikiStringBackToPage = function(str = "en^wikipedia^org-wiki-Columbia_
 
 
 
+
 wiki.downloadWikiPage = function(wiki.url="https://en.wikipedia.org/wiki/Columbia_Falls,_Montana", path.wiki, save.encoding="UTF-8")
   {
   #wiki.url = "https://en.wikipedia.org/wiki/Whitefish%2C_Montana";
@@ -239,7 +240,8 @@ wiki.parseAverageClimate = function(path.wiki.page, wiki.html, encoding="UTF-8")
   if(file.exists(mycache))
     {
     #data.climate = readRDS( file(mycache, encoding=encoding) );
-    return ( readRDS( file(mycache, encoding=encoding) ) );
+    #return ( readRDS( file(mycache, encoding=encoding) ) );
+    return ( readRDS( mycache ) );
     }
   rvest.html = xml2::read_html(wiki.html, verbose=TRUE, encoding="UTF-8");
   tables = rvest.html %>%
@@ -419,7 +421,6 @@ wiki.parseDEC = function(str)
   if(dir == "S" || dir == "W") { dec = -1 * dec; }
   dec;
   }
-
 
 
 

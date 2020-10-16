@@ -41,10 +41,13 @@
 #'
 subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, verbose=FALSE)
   {
+  # also not logic ....
+  # currently this is AND logic
+  # how to also make it possible or logic ... one long or statement ...
   n = nrow(df);
   n.cols = length(mycols);
   n.vals = length(myvals);
-  if(n.cols != n.vals)
+  if(n.cols != n.vals)  # if n.vals = 1, can I not just do a rep(myvals, times=n.cols)...
     {
     warning("Something wrong in subsetDataFrame ... mycols and myvals are of different lengths");
     return (NA);
