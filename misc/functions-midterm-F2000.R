@@ -32,6 +32,7 @@ boxplotJobQueryComparison = function(jobs.subset, search.query.1 = "Microsoft Of
 findjobPlotColor = function(jobs.subset, search.query)
   {
   deep.dive.sorted = unique(jobs.subset$search.query);
+  n.jobs.subset = length(deep.dive.sorted);
   colors = rainbow(n.jobs.subset, s = 0.6, v = 0.75);
   idx = findAllIndexesWithValueInVector(deep.dive.sorted, search.query);
   colors[idx];
