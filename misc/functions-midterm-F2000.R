@@ -265,7 +265,10 @@ plotNeighbors = function(info, state="montana", county="flathead",
 
 plotXYwithBoxPlots = function(x, y, ...)
   {
-  old.par.mar = par()$mar;
+  # https://stackoverflow.com/questions/23050928/error-in-plot-new-figure-margins-too-large-scatter-plot
+  # old.par.mar = par()$mar;
+  # old.par.mar = c( 5.1, 4.1, 4.1, 2.1);
+  old.par.mar = c(1,1,1,1);
   
   # http://rfunction.com/archives/1538
   mat <- matrix(c(1,2,0,3), 2);
@@ -281,6 +284,9 @@ plotXYwithBoxPlots = function(x, y, ...)
   
   # https://stackoverflow.com/questions/9292563/reset-the-graphical-parameters-back-to-default-values-without-use-of-dev-off
   # back to default ... # http://rfunction.com/archives/1302
+  # graphics.off(); 
+  # par("mar"); 
+  dev.off();
   par(mar=old.par.mar);
   }
 
@@ -288,7 +294,10 @@ plotXYwithBoxPlots = function(x, y, ...)
 
 plotXYwithHistograms = function(x, y, ...)
   {
-  old.par.mar = par()$mar;
+  # https://stackoverflow.com/questions/23050928/error-in-plot-new-figure-margins-too-large-scatter-plot
+  # old.par.mar = par()$mar;
+  # old.par.mar = c( 5.1, 4.1, 4.1, 2.1);
+  old.par.mar = c(1,1,1,1);
   
   # http://rfunction.com/archives/1538
   mat <- matrix(c(1,2,0,3), 2);
@@ -312,6 +321,10 @@ plotXYwithHistograms = function(x, y, ...)
   
   # https://stackoverflow.com/questions/9292563/reset-the-graphical-parameters-back-to-default-values-without-use-of-dev-off
   # back to default ... # http://rfunction.com/archives/1302
+  
+  # graphics.off(); 
+  # par("mar"); 
+  dev.off();
   par(mar=old.par.mar);
   }
 
