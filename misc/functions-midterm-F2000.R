@@ -328,3 +328,220 @@ plotXYwithHistograms = function(x, y, ...)
   par(mar=old.par.mar);
   }
 
+colorsInGradient = function(n, colvec=c("red","royalblue"))
+  {
+  rev( colorRampPalette(colvec)(n) );
+  }
+
+getColorsFromTemperature = function(temps, temp.range, colors, na.color="#333333")
+  {
+  my.colors = c();
+  for(temp in temps)
+    {
+    temp.round = round(temp);
+    idx = which(temp.range == temp.round);
+    if(length(idx) == 0) { my.color = na.color; } else { my.color = colors[idx]; }
+    my.colors = c(my.colors, my.color);
+    }
+  my.colors;
+  }
+
+
+plotTemperature = function(climate, capital="Juneau", units=1)
+  {
+  climate.df = subsetDataFrame(climate, c("capital","units"), "==", c(capital,units) );
+
+  which.JanDec = getIndexOfDataFrameColumns(climate.df, c("Jan","Dec"));
+  
+  keys.few = c("Record high F (C)", "Average high F (C)", "Daily mean F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)" );
+  keys.simple = c("high.max", "high.avg", "daily.avg", "low.avg", "low.max", "rain", "snow");
+
+  # alaska ... -20
+  # phx ... 120
+  
+  
+  temp.range = c(-25:125);
+  temp.lim = c(min(temp.range), max(temp.range));
+  month.lim = c(0.5,12.5);
+  
+  # FFFFFF  .. 4466EE  from = c("#FFFFFF","#4466EE");
+  # 4169E1
+  temp.n = length(temp.range);
+    color.gradient = c( "#FF0000", "#EE0000", "#DD0000", "#CC0000", "#BB0000",
+                        "#AA0000", "#FFA500", "#DD9900", "#DDEE33", "#FFFFCC", 
+                        "#999999", "#D0D8FA", "#A1B2F6", "#728CF2", "#4466EE", 
+                        "#334CBF", "#223390", "#111961", "#000033", "#000011");
+  colors = colorsInGradient(temp.n, color.gradient);
+  
+  myMonths = month.name[1:12];  # month.abb  ... built in
+  
+  
+ ##########################################################    
+  ############# top ############ 
+  # let's setup plot with no data
+  plot(1,1, col="white", 
+            ylim = temp.lim, xlim=month.lim,
+            ylab = "Temperature (in degrees F)",
+            xlab = "Months",
+            xaxt = 'n', bty = 'n', yaxt = 'n',
+            main = paste0(climate.df$capital[1], ", ", climate.df$state[1])
+            );
+  text(1:12, par("usr")[3], labels = myMonths, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.9)
+  
+  # Juneau
+  keys.few = c("Record high F (C)", "Average high F (C)", "Daily mean F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)" );
+  keys.simple = c("high.max", "high.avg", "daily.avg", "low.avg", "low.max", "rain", "snow");
+  key.end = 5;
+  rect.mid = 3;
+  
+  # Phoenix   ... has ... Mean maximum °F (°C) 
+  # that shows greater range for the day ... 
+  keys.few = c("Record high F (C)", "Average high F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)" );
+  keys.simple = c("high.max", "high.avg",  "low.avg", "low.max", "rain", "snow");
+  key.end = 4;
+  rect.mid = 2;
+  
+  rectangles = NULL;
+  n.keys = length(keys.few[1:key.end]);
+  for(i in 1:n.keys)
+    {
+    my.key = keys.few[i];
+    my.simple = keys.simple[i];
+    climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+    months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+    months.data = as.numeric(months);
+    rectangles = rbind(rectangles, months.data); # for shading
+    }
+
+## I have the rectangles ...
+
+   
+  upper.rect = rectangles[c(1,rect.mid),];
+    upper.rect.max = max(as.numeric(upper.rect));
+    upper.rect.med = median(as.numeric(upper.rect));
+    upper.rect.min = min(as.numeric(upper.rect));
+    upper.rect.col = getColorsFromTemperature(upper.rect.med, temp.range, colors);
+  lower.rect = rectangles[c(key.end-1,key.end),];
+    lower.rect.max = max(as.numeric(lower.rect));
+    lower.rect.med = median(as.numeric(lower.rect));
+    lower.rect.min = min(as.numeric(lower.rect));
+    lower.rect.col = getColorsFromTemperature(lower.rect.min, temp.range, colors);
+
+## grid lines  
+  grid.max = 10*ceiling(upper.rect.max/10);
+  grid.min = 10*floor(lower.rect.min/10);
+  grid.steps = seq(grid.min, grid.max, by=10);
+  for(grid.step in grid.steps)
+    {
+
+    grid.step.color = getColorsFromTemperature(grid.step, temp.range, colors);
+    # abline(h=grid.step, col="black", lwd=2);
+    abline(h=grid.step, col=grid.step.color, lwd=1);
+    
+    text(x=0.5,y=-1.5+grid.step, labels=grid.step, 
+        col=grid.step.color, cex=0.75, pos=3);
+    text(x=12.5,y=-1.5+grid.step, labels=grid.step, 
+        col=grid.step.color, cex=0.75, pos=3);
+    }
+
+  ############# grid me ############ 
+  
+  # months.data = c(-25, 0, 30, 40, 50, 60, 70, 80, 90, 100, 110, 125);
+  # getColorsFromTemperature(months.data, temp.range, colors);
+  
+  
+  
+## upper polygon
+x = c(1:12,12:1); y = c(upper.rect[1,], rev(upper.rect[2,])); 
+  polygon(x,y, col=upper.rect.col, border=NA);   
+## upper polygon  
+x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,])); 
+  polygon(x,y, col=lower.rect.col, border=NA);  
+    
+  
+  for(i in 1:n.keys)
+    {
+    my.key = keys.few[i];
+    my.simple = keys.simple[i];
+    climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+    months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+    months.data = as.numeric(months);
+
+    months.colors = getColorsFromTemperature(months.data, temp.range, colors);
+    
+    
+    point.cex = switch(my.simple,
+          "high.max"    = max(months.data),
+          "high.avg"    = max(months.data),
+          "daily.avg"   = median(months.data),
+          "low.avg"     = min(months.data),
+          "low.max"     = min(months.data),
+         mean(months.data) # default case of switch
+        );
+    
+    line.data = switch(my.simple,
+          "high.max"    = max(months.data),
+          "high.avg"    = max(months.data),
+          "daily.avg"   = median(months.data),
+          "low.avg"     = min(months.data),
+          "low.max"     = min(months.data),
+         mean(months.data) # default case of switch
+        );
+    line.color = getColorsFromTemperature(line.data, temp.range, colors)
+    
+    
+    par(new=TRUE); # overlay line ... black
+    plot(1:12, months.data, 
+            ylim = temp.lim, xlim=month.lim,
+            pch = 20, cex = 3, 
+            col="black", 
+            lwd = 4, type='l',
+            ylab = "",
+            xlab = "",
+            xaxt = 'n', bty = 'n', yaxt = 'n',
+            main = ""
+            );
+    
+    if(my.simple != "daily.avg")
+      {
+      par(new=TRUE); # overlay line with color
+      plot(1:12, months.data, 
+              ylim = temp.lim, xlim=month.lim,
+              pch = 20, cex = 3, 
+              col=line.color, 
+              lwd = 2, type='l',
+              ylab = "",
+              xlab = "",
+              xaxt = 'n', bty = 'n', yaxt = 'n',
+              main = ""
+              );
+    
+      par(new=TRUE); # overlay big black dots
+      plot(1:12, months.data, 
+              ylim = temp.lim, xlim=month.lim,
+              pch = 20, cex = 3, col="black", 
+              ylab = "",
+              xlab = "",
+              xaxt = 'n', bty = 'n', yaxt = 'n',
+              main = ""
+              );
+      par(new=TRUE); # overlay colored dots
+      plot(1:12, months.data, 
+              ylim = temp.lim, xlim=month.lim,
+              pch = 20, cex = 2, col=months.colors, 
+              ylab = "",
+              xlab = "",
+              xaxt = 'n', bty = 'n', yaxt = 'n',
+              main = ""
+              );
+      }
+    
+    
+    }
+  
+ ############################# 
+
+
+  
+  }
+  
