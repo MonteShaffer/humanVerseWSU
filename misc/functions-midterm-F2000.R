@@ -345,11 +345,11 @@ getColorsFromTemperature = function(temps, temp.range, colors, na.color="#333333
     }
   my.colors;
   }
+ 
 
-
-plotTemperature = function(climate, capital="Juneau", units=1)
+plotTemperature = function(climate, city.key="capital", city.val="Juneau", units=1)
   {
-  climate.df = subsetDataFrame(climate, c("capital","units"), "==", c(capital,units) );
+  climate.df = subsetDataFrame(climate, c(city.key,"units"), "==", c(city.val,units) );
 
   which.JanDec = getIndexOfDataFrameColumns(climate.df, c("Jan","Dec"));
   
@@ -359,8 +359,7 @@ plotTemperature = function(climate, capital="Juneau", units=1)
   # alaska ... -20
   # phx ... 120
   
-  
-  temp.range = c(-25:125);
+  temp.range = c(-50:125);  # Helena is -42
   temp.lim = c(min(temp.range), max(temp.range));
   month.lim = c(0.5,12.5);
   
@@ -428,7 +427,7 @@ plotTemperature = function(climate, capital="Juneau", units=1)
     lower.rect.col = getColorsFromTemperature(lower.rect.min, temp.range, colors);
 
 ## grid lines  
-  grid.max = 10*ceiling(upper.rect.max/10);
+  grid.max = 10*floor(upper.rect.max/10);
   grid.min = 10*floor(lower.rect.min/10);
   grid.steps = seq(grid.min, grid.max, by=10);
   for(grid.step in grid.steps)
@@ -438,10 +437,10 @@ plotTemperature = function(climate, capital="Juneau", units=1)
     # abline(h=grid.step, col="black", lwd=2);
     abline(h=grid.step, col=grid.step.color, lwd=1);
     
-    text(x=0.5,y=-1.5+grid.step, labels=grid.step, 
-        col=grid.step.color, cex=0.75, pos=3);
-    text(x=12.5,y=-1.5+grid.step, labels=grid.step, 
-        col=grid.step.color, cex=0.75, pos=3);
+    text(x=0.5,y=-5 + grid.step, labels=grid.step, 
+        col=grid.step.color, cex=0.5, pos=3);
+    text(x=12.5,y=-5 + grid.step, labels=grid.step, 
+        col=grid.step.color, cex=0.5, pos=3);
     }
 
   ############# grid me ############ 
