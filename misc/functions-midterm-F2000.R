@@ -347,7 +347,8 @@ getColorsFromTemperature = function(temps, temp.range, colors, na.color="#333333
   }
  
 
-plotTemperature = function(climate, city.key="capital", city.val="Juneau", units=1)
+plotTemperature = function(climate, city.key="capital", city.val="Juneau", units=1,
+      cex.bg=2, cex.fg=1, lwd.bg=4, lwd.fg=2)
   {
   climate.df = subsetDataFrame(climate, c(city.key,"units"), "==", c(city.val,units) );
 
@@ -376,16 +377,17 @@ plotTemperature = function(climate, city.key="capital", city.val="Juneau", units
   
   
  ##########################################################    
-  ############# top ############ 
+  ############# top ############  
   # let's setup plot with no data
   plot(1,1, col="white", 
             ylim = temp.lim, xlim=month.lim,
             ylab = "Temperature (in degrees F)",
             xlab = "Months",
             xaxt = 'n', bty = 'n', yaxt = 'n',
+            sub = "Wikipedia (October 2020)", 
             main = paste0(climate.df$capital[1], ", ", climate.df$state[1])
             );
-  text(1:12, par("usr")[3], labels = myMonths, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.9)
+  text(1:12, par("usr")[3], labels = myMonths, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75)
   
   # Juneau
   keys.few = c("Record high F (C)", "Average high F (C)", "Daily mean F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)" );
@@ -494,7 +496,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
             ylim = temp.lim, xlim=month.lim,
             pch = 20, cex = 3, 
             col="black", 
-            lwd = 4, type='l',
+            lwd = lwd.bg, type='l',
             ylab = "",
             xlab = "",
             xaxt = 'n', bty = 'n', yaxt = 'n',
@@ -508,7 +510,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
               ylim = temp.lim, xlim=month.lim,
               pch = 20, cex = 3, 
               col=line.color, 
-              lwd = 2, type='l',
+              lwd = lwd.fg, type='l',
               ylab = "",
               xlab = "",
               xaxt = 'n', bty = 'n', yaxt = 'n',
@@ -518,7 +520,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
       par(new=TRUE); # overlay big black dots
       plot(1:12, months.data, 
               ylim = temp.lim, xlim=month.lim,
-              pch = 20, cex = 3, col="black", 
+              pch = 20, cex = cex.bg, col="black", 
               ylab = "",
               xlab = "",
               xaxt = 'n', bty = 'n', yaxt = 'n',
@@ -527,7 +529,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
       par(new=TRUE); # overlay colored dots
       plot(1:12, months.data, 
               ylim = temp.lim, xlim=month.lim,
-              pch = 20, cex = 2, col=months.colors, 
+              pch = 20, cex = cex.fg, col=months.colors, 
               ylab = "",
               xlab = "",
               xaxt = 'n', bty = 'n', yaxt = 'n',

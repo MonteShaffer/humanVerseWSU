@@ -665,10 +665,11 @@ replaceDateStringWithDateColumns = function(df, mycolumn, newcols)
 #'
 #' sortDataFrameByNumericColumns(udf,sample(mycols),sample(mydirections) );
 #'
+#'
 sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 	{
 	# if direction.length is not n.cols, we will only use the first element ...
-
+  # sort.data.frame(dd,by = ~ -z + b)
 	n.cols = length(mycols);
 	n.dirs = length(direction);
 
