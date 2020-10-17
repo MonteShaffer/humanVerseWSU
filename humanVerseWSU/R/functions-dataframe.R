@@ -1,3 +1,6 @@
+## TODO
+#     trim(col) before searching for it ... maybe extra white space ...
+
 
 #' subsetDataFrame
 #'

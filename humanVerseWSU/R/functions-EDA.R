@@ -47,7 +47,8 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
   {
   times = c(); time.names = c();
   n.cols = ncol(X);
-  if(n.groups > n.cols) { n.groups = n.cols; }
+  n.rows = nrow(X);
+  # if(n.groups > n.cols) { n.groups = n.cols; }
 
   colors = grDevices::rainbow(n.groups, s = 0.6, v = 0.75);
 
@@ -89,26 +90,34 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
     }
 
   # pvclust
+  X.pvclust = NULL;  # must have n > 2 to cluster
   if(do.pvclust)
     {
-    time.start = Sys.time();
-    X.pvclust = pvclust::pvclust ( X.t, method.hclust=method, parallel=pvclust.parallel);
-    time.end = Sys.time();
-
-    elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
-          times = c(times,elapse);
-          time.names = c(time.names,"pvclust");
-
-    if(showPlots)
+    if(n.cols > 2)
       {
       time.start = Sys.time();
-          graphics::plot(X.pvclust);
-          pvclust::pvrect(X.pvclust);
+      X.pvclust = pvclust::pvclust ( X.t,
+                                      method.hclust = method,
+                                      method.dist = method,
+                                      #method.dist = "uncentered",
+                                      parallel = pvclust.parallel);
       time.end = Sys.time();
+
       elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
-          times = c(times,elapse);
-          time.names = c(time.names,"pvclust-plot");
-      }
+            times = c(times,elapse);
+            time.names = c(time.names,"pvclust");
+
+      if(showPlots)
+        {
+        time.start = Sys.time();
+            graphics::plot(X.pvclust);
+            pvclust::pvrect(X.pvclust);
+        time.end = Sys.time();
+        elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
+            times = c(times,elapse);
+            time.names = c(time.names,"pvclust-plot");
+        }
+      } else { warning("pvclust replies:  must have >= 2 objects to cluster"); }
     }
 
 
