@@ -842,8 +842,10 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
   grid.min = grid.min - grid.delta;
   grid.delta = grid.max %% 20;
   grid.max = grid.max + grid.delta;
+  if(grid.min <= -60) {grid.min = -40;}
+  
   grid.steps = seq(grid.min, grid.max, by=20);
-  if(grid.min <= 60) {grid.min = 40;}
+  
   for(grid.step in grid.steps)
     {
 
