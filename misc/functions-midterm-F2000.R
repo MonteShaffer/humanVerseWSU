@@ -25,7 +25,10 @@ boxplotJobQueryComparison = function(jobs.subset, search.query.1 = "Microsoft Of
   
   color.x = findjobPlotColor(jobs.subset,search.query.1);
   color.y = findjobPlotColor(jobs.subset,search.query.2); 
-    
+  
+  #summary(x);
+  #summary(y);
+  
   boxplot(x,y, names = c(search.query.1, search.query.2), col=c(color.x,color.y)  );
   }
 
@@ -520,8 +523,8 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
   
   temp.range = c(-50:125);  # Helena is -42
   rain.lim = c(0,375); # top at 500 is 375 ...
-  temp.lim = c(min(temp.range), rain.lim[2]);
-  #temp.lim = c(min(temp.range), max(temp.range));
+  #temp.lim = c(min(temp.range), rain.lim[2]);
+  temp.lim = c(min(temp.range), max(temp.range));
   month.lim = c(0.5,12.5);
   
   # FFFFFF  .. 4466EE  from = c("#FFFFFF","#4466EE");
