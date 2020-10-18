@@ -33,7 +33,7 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   graphics::par(mfrow = mfrow);
   for(i in 1:k)
     {
-    graphics::plot(dends[[i]], main = paste0("SubTree number ", i));
+    graphics::plot(dends[[i]], cex=0.5, main = paste0("SubTree number ", i));
     }
 
   # restore plot

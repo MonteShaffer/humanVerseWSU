@@ -239,7 +239,9 @@ buildBoundingBoxFromRadiusAndGivenLatitudeLongitude = function(my.radius, my.lat
   factor.long = 69.172; if(my.units != "mi") { factor.long  = measurements::conv_unit(69.172, "mi", my.units); }
 
   delta.latitude = my.radius / factor.lat ;
-  delta.longitude = my.radius / (factor.long * cos(deg2rad(my.longitude)));
+  # BUG ...
+  # delta.longitude = my.radius / (factor.long * cos(deg2rad(my.longitude)));
+  delta.longitude = my.radius / (factor.long * cos(deg2rad(delta.latitude)));
 
   latitude.lower = my.latitude - delta.latitude;
   latitude.upper = my.latitude + delta.latitude;

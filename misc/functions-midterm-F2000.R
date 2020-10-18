@@ -107,7 +107,28 @@ plotJobs = function(jobs.subset,
 
 
 
+buildBoundingBoxFromRadiusAndGivenLatitudeLongitudeTemporaryFix = function(my.radius, my.latitude, my.longitude, my.units="mi")
+  {
+  # default values are in miles
+  option = c("angstrom", "nm", "um", "mm", "cm", "dm", "m", "km", "inch", "ft",
+              "yd", "fathom", "mi", "naut_mi", "au", "light_yr", "parsec", "point");
+  if(!is.element(my.units,option)) { my.units = "mi"; } # miles
+  factor.lat  = 68.703; if(my.units != "mi") { factor.lat  = measurements::conv_unit(68.703, "mi", my.units); }
+  factor.long = 69.172; if(my.units != "mi") { factor.long  = measurements::conv_unit(69.172, "mi", my.units); }
 
+  delta.latitude = my.radius / factor.lat ;
+  # BUG ... # is this change true??
+  # delta.longitude = my.radius / (factor.long * cos(deg2rad(my.longitude)));
+  delta.longitude = my.radius / (factor.long * cos(deg2rad(delta.latitude)) );
+
+  latitude.lower = my.latitude - delta.latitude;
+  latitude.upper = my.latitude + delta.latitude;
+
+  longitude.lower = my.longitude - delta.longitude;
+  longitude.upper = my.longitude + delta.longitude;
+
+  c(latitude.lower, latitude.upper, longitude.lower, longitude.upper);
+  }
 
 getNeighborsFromLatLong = function(my.radius, my.latitude, my.longitude, my.units) 
 {
@@ -117,14 +138,18 @@ library(RMariaDB); # install.packages("RMariaDB", dependencies=TRUE);
 mysql.connection = mysql.secretConnectionSQL(str="WSU_SANDBOX_", save="wsu");
 
 	my.tablename = "zipcodes";
-box = buildBoundingBoxFromRadiusAndGivenLatitudeLongitude(my.radius, my.latitude, my.longitude, my.units);
+box = buildBoundingBoxFromRadiusAndGivenLatitudeLongitudeTemporaryFix(my.radius, my.latitude, my.longitude, my.units);
 
-sql.template = "SELECT * FROM {tablename} WHERE latitude > {latitude.lower} AND latitude < {latitude.upper} AND longitude < {longitude.lower} AND longitude > {longitude.upper} ORDER BY zipcode ASC;";
+sql.template = "SELECT * FROM {tablename} WHERE latitude > {latitude.lower} AND latitude < {latitude.upper} AND longitude > {longitude.lower} AND longitude < {longitude.upper} ORDER BY zipcode ASC;";
 	keys = c("tablename", "latitude.lower", "latitude.upper", "longitude.lower", "longitude.upper");	
 	vals = c(my.tablename, box);	
 sql = parseTemplateSQL(sql.template, keys, vals);
 neighbors = mysql.fetchAllSQL(mysql.connection, sql);
-neighbors;
+
+if(dim(neighbors)[1] == 0) { stop( paste0(" QUERY FAILED: ", sql) ); }
+
+print(paste0("The QUERY returned ...  ", dim(neighbors)[1], "  ... NEIGHBORS"));
+# neighbors;
 
 RMariaDB::dbDisconnect(mysql.connection);
 
@@ -137,8 +162,8 @@ copy.neighbors = neighbors;
 # add row ... with empty values
 copy.neighbors = rbind(copy.neighbors, NA);
   nrows = dim(neighbors)[1];  # let's add our single location to the end
-copy.neighbors[1+nrows,2] = cfalls.latitude;
-copy.neighbors[1+nrows,3] = cfalls.longitude;
+copy.neighbors[1+nrows,2] = my.latitude;
+copy.neighbors[1+nrows,3] = my.longitude;
 copy.neighbors;
 
 
@@ -149,11 +174,11 @@ dist.neighbors = conv_unit(
 
 my.distances = dist.neighbors[1+nrows,];
 
-copy.neighbors$dist.from.cfalls = my.distances;
+copy.neighbors$dist.from.reference = my.distances;
 
 copy.neighbors$dist.within.radius = (my.distances < my.radius);
 
-copy.neighbors = sortDataFrameByNumericColumns(copy.neighbors, "dist.from.cfalls", "ASC");
+copy.neighbors = sortDataFrameByNumericColumns(copy.neighbors, "dist.from.reference", "ASC");
 
 copy.neighbors = moveColumnsInDataFrame(copy.neighbors, c("latitude", "longitude", "zipcode", "state_long", "state"), "after", "dist.within.radius");
 
@@ -175,6 +200,7 @@ list("box" = box, "neighbors" = neighbors,
 
 plotNeighbors = function(info, state="montana", county="flathead", 
     state.color = "#ffe4c4", county.color = "#014421", 
+    state.border = 0.05, county.border = 0.05,
     nearby.states = c("idaho", "washington", "oregon"), 
     nearby.states.color = "white", 
     center.color = "yellow", center.pch=20, center.cex = 1.25, 
@@ -194,7 +220,7 @@ plotNeighbors = function(info, state="montana", county="flathead",
   region.colors[state.idx] = state.color;
   ### plot state with regional neighbor states
   map('state', region=my.region, col=region.colors, 
-              plot = TRUE, fill = TRUE, myborder=0);
+              plot = TRUE, fill = TRUE, myborder=state.border);
   
   
   data(county.fips);
@@ -211,12 +237,12 @@ plotNeighbors = function(info, state="montana", county="flathead",
   state.colors[county.fip.idx] = county.color;
   ### plot counties, highlighting this county of interest ...
   map('county', state, col=state.colors,
-                plot = TRUE, fill = TRUE, myborder=0);
+                plot = TRUE, fill = TRUE, myborder=county.border);
   
   ### plot county of interest
   map('county', paste(state,county,sep=","), 
               col=county.color, bg=state.color,
-              plot = TRUE, fill = TRUE, myborder=0);
+              plot = TRUE, fill = TRUE, myborder=county.border);
   # flathead lake not found ...
   # my.lakes = map("lakes", "montana,flathead", plot=FALSE);
   
@@ -345,23 +371,157 @@ getColorsFromTemperature = function(temps, temp.range, colors, na.color="#333333
     }
   my.colors;
   }
- 
 
-plotTemperature = function(climate, city.key="capital", city.val="Juneau", units=1,
+ 
+# http://www.statisticstoproveanything.com/2013/09/using-custom-images-as-pch-values-in-r.html
+image_points = function(image, x, y, cex = 1, pos = NULL) {
+    if (length(x) != length(y)) {
+        stop("length(x)!=length(y): check your data")
+    }
+    dim.x = dim(image)[2]  #image width
+    dim.y = dim(image)[1]  #image height
+    if (dim.x == dim.y) {
+        # obtian the ratio of width to height or height to width
+        ratio.x = ratio.y = 1
+    } else if (dim.x < dim.y) {
+        ratio.x = dim.x/dim.y
+        ratio.y = 1
+    } else {
+        ratio.x = 1
+        ratio.y = dim.y/dim.x
+    }
+    cex = cex/10  #how large the image should be, divided by 10 so that it matches more closely to plotting points
+    pin = par()$pin  #pin provides the width and height of the _active graphic device_
+    pin.ratio = pin/max(pin)  #take the ratio
+    usr = par()$usr  #usr provides the lower.x, lower.y, upper.x, upper.y values of the plotable region
+
+    # combine the active device dimensions, the image dimensions, and the
+    # desired output size
+    image.size.y = (usr[4] - usr[3]) * pin.ratio[1] * cex
+    image.size.x = (usr[2] - usr[1]) * pin.ratio[2] * cex
+    for (i in 1:length(x)) {
+        # plot each point pos can be NULL (default) or 1, 2, 3, or 4, corresponding
+        # to centered (defualt), bottom, left, top, right, respectively.
+        if (is.null(pos)) {
+            # centered at (x,y), define the bottom/top and left/right boundaries of the
+            # image
+            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
+                ratio.x)/2)
+            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
+                ratio.y)/2)
+
+            rasterImage(image, x.pos[1], y.pos[1], x.pos[2], y.pos[2])
+        } else if (pos == 1) {
+            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
+                ratio.x)/2)
+            y.pos = c(y[i] - (image.size.y * ratio.y), y[i])
+        } else if (pos == 2) {
+            x.pos = c(x[i] - (image.size.x * ratio.x), x[i])
+            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
+                ratio.y)/2)
+        } else if (pos == 3) {
+            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
+                ratio.x)/2)
+            y.pos = c(y[i], y[i] + (image.size.y * ratio.y))
+        } else if (pos == 4) {
+            x.pos = c(x[i], x[i] + (image.size.x * ratio.x))
+            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
+                ratio.y)/2)
+        }
+
+        rasterImage(image, x.pos[1], y.pos[1], x.pos[2], y.pos[2])  #plot image
+    }
+}
+
+
+buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)", 
+      "Average high F (C)", "Average low F (C)", "Record low F (C)", 
+      "Average precipitation inches (mm)", "Average snowfall inches (cm)"), 
+      keys.n = c("highmax", "highavg",  "lowavg", "lowmin", "rain", "snow"), 
+      units=1 )
+  {
+  
+  # hack-add from https://en.wikipedia.org/wiki/ISO_3166-2:US
+  my.st = c("AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"); # ,"DC","AS","GU","MP","PR","UM","VI");
+  my.capitals = unique(climate$capital);
+  my.labels = paste0(my.capitals, ", ", my.st);
+ 
+  climate.df = unique( removeAllColumnsBut(climate, c("state", "capital")) );
+  climate.df$st = my.st;
+  climate.df$labels = my.labels;
+  
+  # this has our data still ...
+  climate.units = subsetDataFrame(climate, "units", "==", units);
+  which.JanDec = getIndexOfDataFrameColumns(climate.units, c("Jan","Dec"));
+  
+  month.labels = month.abb;
+  
+  for(j in 1:length(my.capitals))
+    {
+    capital = my.capitals[j];
+    climate.units.capital = subsetDataFrame(climate.units, "capital", "==", capital);
+    print(capital);
+    print(dim(  climate.units.capital ) );
+    Sys.sleep(0.02);
+    for(i in 1:length(keys))
+      {
+      key = keys[i];
+      key.n = keys.n[i];
+      climate.units.sub = subsetDataFrame(climate.units.capital, "key", "==", key);
+      months.data = as.numeric( climate.units.sub[1,which.JanDec[1]:which.JanDec[2]] );
+    
+      print(key);
+      print(key.n);
+      print(dim(  climate.units.sub ) );
+      print(months.data);
+      Sys.sleep(0.01);
+      
+      for(m in months)
+        {
+        my.colname = paste0(key.n,".",month.labels[m]);
+        print(my.colname); print( months.data[m] );
+        col.names = names(climate.df);
+        col.idx = which(col.names == my.colname);
+        col.n = ncol(climate.df);
+        if(length(col.idx) == 0)
+          {
+          col.names = c(col.names, my.colname);
+          col.idx = 1+col.n;
+          climate.df[,col.idx] = NA;
+          colnames(climate.df) = col.names;
+          }
+        my.data = months.data[m];
+        if(is.na(my.data)) { my.data = 0; } # NA values are now zero
+        climate.df[j,col.idx] = my.data;
+        }
+      print(months.data);
+      print("next key");
+      }
+    print(capital);
+    print("next capital");
+    }
+  
+  climate.df;
+  }
+
+plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.val="Juneau", units=1,
       cex.bg=2, cex.fg=1, lwd.bg=4, lwd.fg=2)
   {
   climate.df = subsetDataFrame(climate, c(city.key,"units"), "==", c(city.val,units) );
-
+  climate.df[is.na(climate.df)] = 0;
+  
   which.JanDec = getIndexOfDataFrameColumns(climate.df, c("Jan","Dec"));
   
   keys.few = c("Record high F (C)", "Average high F (C)", "Daily mean F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)" );
   keys.simple = c("high.max", "high.avg", "daily.avg", "low.avg", "low.max", "rain", "snow");
 
-  # alaska ... -20
-  # phx ... 120
+  # alaska ... -20 ... -45
+  # phx ... 120 ... 122
   
   temp.range = c(-50:125);  # Helena is -42
-  temp.lim = c(min(temp.range), max(temp.range));
+  rain.lim = c(0,375); # top at 500 is 375 ...
+  temp.lim = c(min(temp.range), rain.lim[2]);
+  #temp.lim = c(min(temp.range), max(temp.range));
   month.lim = c(0.5,12.5);
   
   # FFFFFF  .. 4466EE  from = c("#FFFFFF","#4466EE");
