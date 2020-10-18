@@ -2,7 +2,10 @@ library(maps);
 library(geosphere);     # distm
 library(measurements);  # conv_unit
 library(RMariaDB);
+
+
 library(RCurl);
+library(png);
 
 
 t.test.jobs = function(jobs.subset, search.query.1 = "Microsoft Office", search.query.2 = "C++")
@@ -449,12 +452,12 @@ buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)
 
 
 compareTwoCitiesClimates = function(climate, city.key="capital", 
-      city.val1="Juneau", city.val2="Juneau", units=1,
-      cex.bg=2, cex.fg=1, lwd.bg=4, lwd.fg=2)
+      city.1="Juneau", city.2="Denver", units=1,
+      ...)
   {
-  par(mfrow=c(2,2));
-  
-  
+  par(mfrow=c(1,2));
+    plotTemperatureFromWikipediaData(climate, city.key=city.key, city.val=city.1, units=units, ...);
+    plotTemperatureFromWikipediaData(climate, city.key=city.key, city.val=city.2, units=units, ...);
   par(mfrow=c(1,1));
   }
 
@@ -734,11 +737,12 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
   # phx ... 120 ... 122
   
   above = 5;
-  below = 15;
+  below = 5;
+  rain.multiplier = 2.5;
   temp.range = c(-45:125);  # Helena is -42
   rain.lim = c(0,15); # top at 500 is 375 ... 375 was mm
-  gap = 25;
-  temp.lim = c(min(temp.range), gap + rain.lim[2] + max(temp.range) + above + below);
+  gap = 35;
+  temp.lim = c(min(temp.range), gap + rain.multiplier * rain.lim[2] + max(temp.range) + above + below);
   #temp.lim = c(min(temp.range), max(temp.range));
   month.lim = c(0,13);
   
@@ -771,7 +775,7 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
   keys.few = c("Record high F (C)", "Average high F (C)", "Daily mean F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)" );
   keys.simple = c("high.max", "high.avg", "daily.avg", "low.avg", "low.max", "rain", "snow");
   key.end = 5;
-  rect.mid = 3;
+  rect.mid = 3; 
   
   # Phoenix   ... has ... Mean maximum °F (°C) 
   # that shows greater range for the day ... 
@@ -834,7 +838,12 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
 ## grid lines  
   grid.max = 10*floor(upper.rect.max/10);
   grid.min = 10*floor(lower.rect.min/10);
-  grid.steps = seq(grid.min, grid.max, by=10);
+  grid.delta = grid.min %% 20;
+  grid.min = grid.min - grid.delta;
+  grid.delta = grid.max %% 20;
+  grid.max = grid.max + grid.delta;
+  grid.steps = seq(grid.min, grid.max, by=20);
+  if(grid.min <= 60) {grid.min = 40;}
   for(grid.step in grid.steps)
     {
 
@@ -991,7 +1000,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
     ## add rain/snow
     path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
 
-    img.url.rain = paste0(path.mshaffer, "_images_/v2/raindropW.png");
+    img.url.rain = paste0(path.mshaffer, "_images_/v2/raindropW2.png");
       img.rain = readPNG(getURLContent(img.url.rain));
 
     img.url.snow = paste0(path.mshaffer, "_images_/v2/snowflake.png");
@@ -1018,23 +1027,25 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
     if(my.max > max.precip) { max.precip = my.max; }
     }
 
+        # gap + rain.multiplier * 
+        # labels= "  0 inches ",
       # rain/snow
-    text(x=c(0,13), y=gap + max(temp.range) + -5 + 0, 
-        labels= "  0 inches ", col="black", cex=0.5, pos=3);
-    abline(h=gap + max(temp.range) + 0, col="black", lwd=.25);
+    text(x=c(0,13), y=gap + max(temp.range) + -5 + rain.multiplier * 0, 
+        labels= "  0 ", col="black", cex=0.5, pos=3);
+    abline(h=gap + max(temp.range) + rain.multiplier * 0, col="black", lwd=.25);
     
     if(max.precip > 5)
     {
-    text(x=c(0,13), y=gap + max(temp.range) + -5 + 5, 
-        labels=" 5 inches ",  col="#000099", cex=0.5, pos=3);
-    abline(h=gap + max(temp.range) + 5, col="#000099", lwd=.25);
+    text(x=c(0,13), y=gap + max(temp.range) + -5 + rain.multiplier * 5, 
+        labels=" 5 ",  col="#000099", cex=0.5, pos=3);
+    abline(h=gap + max(temp.range) + rain.multiplier * 5, col="#000099", lwd=.25);
     }
     
     if(max.precip > 10)
     {
-    text(x=c(0,13), y=gap + max(temp.range) + -5 + 10, 
-        labels=" 10 inches ",  col="#0000FF", cex=0.5, pos=3);
-    abline(h=gap + max(temp.range) + 10, col="#0000FF", lwd=.25);
+    text(x=c(0,13), y=gap + max(temp.range) + -5 + rain.multiplier * 10, 
+        labels=" 10 ",  col="#0000FF", cex=0.5, pos=3);
+    abline(h=gap + max(temp.range) + rain.multiplier * 10, col="#0000FF", lwd=.25);
     }
       
               
@@ -1059,7 +1070,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
     if(my.simple == "snow")
       {
       par(new=TRUE); # overlay line with color
-      plot(1:12, gap + max(temp.range) + months.data, 
+      plot(1:12, gap + max(temp.range) + rain.multiplier * months.data, 
               ylim = temp.lim, xlim=month.lim,
               pch = 20, cex = 3, 
               col = "royalblue", 
@@ -1084,18 +1095,18 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
           first.na = my.na[1];
           ## left polygon 
           x = c(1:first.na,first.na:1);
-          y = c(gap + max(temp.range) + months.data[1:first.na], 
+          y = c(gap + max(temp.range) + rain.multiplier * months.data[1:first.na], 
                 gap + max(temp.range) + 0*months.data[first.na:1]);
           polygon(x,y, col = "royalblue", border=NA); 
           
-          print("left");
-          dput(x);
-          dput(y);
+          #print("left");
+          #dput(x);
+          #dput(y);
           
           last.na = rev(my.na)[1];
           ## right polygon 
           x = c(last.na:12,12:last.na);
-          y = c(gap + max(temp.range) + months.data[last.na:12], 
+          y = c(gap + max(temp.range) + rain.multiplier * months.data[last.na:12], 
                 gap + max(temp.range) + 0*months.data[12:last.na]);
           polygon(x,y, col = "royalblue", border=NA); 
           }
@@ -1104,7 +1115,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
       dec.snow = round(months.data[12],digits=1);
       if(!is.na(dec.snow))
         {
-        text(12.5, gap + max(temp.range) +  dec.snow, 
+        text(12.5, gap + max(temp.range) +  rain.multiplier * dec.snow, 
             labels = paste0("snow = ",dec.snow), col = "royalblue",
             pos = 3, srt = 15, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
         }
@@ -1112,7 +1123,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
       jan.snow = round(months.data[1],digits=1);
       if(!is.na(jan.snow))
         {
-        text(0.5, gap + max(temp.range) +  jan.snow, 
+        text(0.5, gap + max(temp.range) +  rain.multiplier * jan.snow, 
             labels = paste0("snow = ",jan.snow), col = "royalblue",
             pos = 3, srt = -15, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
         }
@@ -1122,7 +1133,7 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
 
     # back and forth 
     months.data[months.data == 0] = NA;
-    print(months.data);
+   ### print(months.data);
 
     # snow on the dot
     # rain about 0.25 to the right
@@ -1137,12 +1148,12 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
          img.rain # default case of switch
         );
     my.y.offset = switch(my.simple,
-          "rain"    = -1,
+          "rain"    = rain.multiplier * -3.5,
           "snow"    = 3,
          0 # default case of switch
         );
     my.x.offset = switch(my.simple,
-          "rain"    = -0.05,
+          "rain"    = 0,
           "snow"    = 0.05,
          0 # default case of switch
         );
@@ -1157,15 +1168,19 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
          "#9999FF" # default case of switch
         );
 
-    myLabels = round(months.data, digits=2);
+    myLabels = round(months.data, digits=1);
     myLabels[is.na(myLabels)] = "";
 
     # https://stackoverflow.com/questions/45366243/text-labels-with-background-colour-in-r
     if(my.simple == "rain")
-      {
-      image_points(my.img, 1:12, gap + max(temp.range) + months.data, cex=my.cex);
-          boxtext(x = my.x.offset + 1:12, y = gap + max(temp.range) + my.y.offset + months.data, col=my.col,
-                col.bg="white", labels = myLabels, cex=0.5, pos=my.pos);
+      { 
+      image_points(my.img, 1:12, gap + max(temp.range) + rain.multiplier * months.data, cex=my.cex);
+          text(x = my.x.offset + 1:12, y = gap + max(temp.range) + my.y.offset + rain.multiplier * months.data, col=my.col,
+                labels = myLabels, cex=0.5, pos=my.pos);
+          # text(x = my.x.offset + 5:8, y = gap + max(temp.range) + my.y.offset + rain.multiplier * months.data, col=my.col,
+          #       labels = myLabels, cex=0.5, pos=3);
+          # text(x = my.x.offset + 9:12, y = gap + max(temp.range) + my.y.offset + rain.multiplier * months.data, col=my.col,
+          #       labels = myLabels, cex=0.5, pos=1);
       }
 
     }
