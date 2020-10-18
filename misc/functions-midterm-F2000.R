@@ -211,7 +211,7 @@ plotNeighbors = function(info, state="montana", county="flathead",
 )
   {
   state = tolower(state); 
-  county = tolower(county);
+  county = tolower(county); 
   nearby.states = tolower(nearby.states);
   my.region = c(state, nearby.states);
     region = map('state', region=my.region, plot=FALSE);

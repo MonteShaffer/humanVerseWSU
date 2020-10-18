@@ -670,6 +670,7 @@ sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 	{
 	# if direction.length is not n.cols, we will only use the first element ...
   # sort.data.frame(dd,by = ~ -z + b)
+  # if the df only has one dimension, doesn't work as expected "membership"
 	n.cols = length(mycols);
 	n.dirs = length(direction);
 
