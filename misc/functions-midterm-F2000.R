@@ -2,7 +2,7 @@ library(maps);
 library(geosphere);     # distm
 library(measurements);  # conv_unit
 library(RMariaDB);
-
+library(RCurl);
 
 
 t.test.jobs = function(jobs.subset, search.query.1 = "Microsoft Office", search.query.2 = "C++")
@@ -376,66 +376,6 @@ getColorsFromTemperature = function(temps, temp.range, colors, na.color="#333333
   }
 
  
-# http://www.statisticstoproveanything.com/2013/09/using-custom-images-as-pch-values-in-r.html
-image_points = function(image, x, y, cex = 1, pos = NULL) {
-    if (length(x) != length(y)) {
-        stop("length(x)!=length(y): check your data")
-    }
-    dim.x = dim(image)[2]  #image width
-    dim.y = dim(image)[1]  #image height
-    if (dim.x == dim.y) {
-        # obtian the ratio of width to height or height to width
-        ratio.x = ratio.y = 1
-    } else if (dim.x < dim.y) {
-        ratio.x = dim.x/dim.y
-        ratio.y = 1
-    } else {
-        ratio.x = 1
-        ratio.y = dim.y/dim.x
-    }
-    cex = cex/10  #how large the image should be, divided by 10 so that it matches more closely to plotting points
-    pin = par()$pin  #pin provides the width and height of the _active graphic device_
-    pin.ratio = pin/max(pin)  #take the ratio
-    usr = par()$usr  #usr provides the lower.x, lower.y, upper.x, upper.y values of the plotable region
-
-    # combine the active device dimensions, the image dimensions, and the
-    # desired output size
-    image.size.y = (usr[4] - usr[3]) * pin.ratio[1] * cex
-    image.size.x = (usr[2] - usr[1]) * pin.ratio[2] * cex
-    for (i in 1:length(x)) {
-        # plot each point pos can be NULL (default) or 1, 2, 3, or 4, corresponding
-        # to centered (defualt), bottom, left, top, right, respectively.
-        if (is.null(pos)) {
-            # centered at (x,y), define the bottom/top and left/right boundaries of the
-            # image
-            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
-                ratio.x)/2)
-            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
-                ratio.y)/2)
-
-            rasterImage(image, x.pos[1], y.pos[1], x.pos[2], y.pos[2])
-        } else if (pos == 1) {
-            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
-                ratio.x)/2)
-            y.pos = c(y[i] - (image.size.y * ratio.y), y[i])
-        } else if (pos == 2) {
-            x.pos = c(x[i] - (image.size.x * ratio.x), x[i])
-            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
-                ratio.y)/2)
-        } else if (pos == 3) {
-            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
-                ratio.x)/2)
-            y.pos = c(y[i], y[i] + (image.size.y * ratio.y))
-        } else if (pos == 4) {
-            x.pos = c(x[i], x[i] + (image.size.x * ratio.x))
-            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
-                ratio.y)/2)
-        }
-
-        rasterImage(image, x.pos[1], y.pos[1], x.pos[2], y.pos[2])  #plot image
-    }
-}
-
 
 buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)", 
       "Average high F (C)", "Average low F (C)", "Record low F (C)", 
@@ -463,9 +403,9 @@ buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)
     {
     capital = my.capitals[j];
     climate.units.capital = subsetDataFrame(climate.units, "capital", "==", capital);
-    print(capital);
-    print(dim(  climate.units.capital ) );
-    Sys.sleep(0.02);
+    #print(capital);
+    #print(dim(  climate.units.capital ) );
+    #Sys.sleep(0.02);
     for(i in 1:length(keys))
       {
       key = keys[i];
@@ -473,16 +413,16 @@ buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)
       climate.units.sub = subsetDataFrame(climate.units.capital, "key", "==", key);
       months.data = as.numeric( climate.units.sub[1,which.JanDec[1]:which.JanDec[2]] );
     
-      print(key);
-      print(key.n);
-      print(dim(  climate.units.sub ) );
-      print(months.data);
-      Sys.sleep(0.01);
+      #print(key);
+      #print(key.n);
+      #print(dim(  climate.units.sub ) );
+      #print(months.data);
+      #Sys.sleep(0.01);
       
       for(m in months)
         {
         my.colname = paste0(key.n,".",month.labels[m]);
-        print(my.colname); print( months.data[m] );
+        #print(my.colname); print( months.data[m] );
         col.names = names(climate.df);
         col.idx = which(col.names == my.colname);
         col.n = ncol(climate.df);
@@ -497,15 +437,287 @@ buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)
         if(is.na(my.data)) { my.data = 0; } # NA values are now zero
         climate.df[j,col.idx] = my.data;
         }
-      print(months.data);
-      print("next key");
+      #print(months.data);
+      #print("next key");
       }
-    print(capital);
-    print("next capital");
+    #print(capital);
+    #print("next capital");
     }
   
   climate.df;
   }
+
+
+compareTwoCitiesClimates = function(climate, city.key="capital", 
+      city.val1="Juneau", city.val2="Juneau", units=1,
+      cex.bg=2, cex.fg=1, lwd.bg=4, lwd.fg=2)
+  {
+  par(mfrow=c(2,2));
+  
+  
+  par(mfrow=c(1,1));
+  }
+
+
+
+# 
+# plotPrecipitationFromWikipediaData = function(climate, city.key="capital", city.val="Juneau", units=1,
+#       cex.bg=2, cex.fg=1, lwd.bg=4, lwd.fg=2)
+#   {
+#   climate.df = subsetDataFrame(climate, c(city.key,"units"), "==", c(city.val,units) );
+#   climate.df[is.na(climate.df)] = 0;
+#   
+#   which.JanDec = getIndexOfDataFrameColumns(climate.df, c("Jan","Dec"));
+# 
+#   rain.range = c(-10:20);  
+#   rain.lim = c(min(rain.range), max(rain.range));
+#   month.lim = c(0.5,12.5);
+# 
+#   rain.n = length(rain.range);
+#     color.gradient = c( "#000066", "#000099", "#0000CC", "#0000FF", 
+#                         "#00FFFF", "#33FFFF", "#66FFFF", "#66FFFF", "#CCFFFF");
+#   colors = colorsInGradient(rain.n, color.gradient);
+#   
+#   myMonths = month.name[1:12];  # month.abb  ... built in
+#   
+#   
+#  ##########################################################    
+#   ############# top ############  
+#   # let's setup plot with no data
+#   plot(1,1, col="white", 
+#             ylim = rain.lim, xlim=month.lim,
+#             ylab = "Precipitation (in inches)",
+#             xlab = "Months",
+#             xaxt = 'n', bty = 'n', yaxt = 'n',
+#             sub = "Wikipedia (October 2020)", 
+#             main = paste0(climate.df$capital[1], ", ", climate.df$state[1])
+#             );
+#   text(1:12, par("usr")[3], labels = myMonths, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75)
+# 
+#   keys.few = c("Average precipitation inches (mm)", "Average snowfall inches (cm)" );
+#   keys.simple = c("rain", "snow");
+#   n.keys = length(keys.simple);
+#   
+#   grid.min = 0;
+#   grid.max = 0;
+#   
+#   for(i in 1:n.keys)
+#     {
+#     my.key = keys.few[i];
+#     my.simple = keys.simple[i];
+#     climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+#     months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+#     months.data = as.numeric(months);
+#     
+#     my.max = max(months.data, na.rm=TRUE);
+#     
+#     if(my.max > grid.max) { grid.max = my.max; }
+#     }
+#   
+#   my.max = grid.max;
+#   # print(grid.max); 
+#   grid.max = 10*ceiling(my.max/10);
+#   # grid.steps = seq(grid.min, grid.max, by=10);
+#   grid.steps = c(0, 20, 40, 60, 80, 100, 200, 300);
+#   print(grid.max);
+#   grid.steps = grid.steps[grid.steps <= grid.max];
+#   
+#   for(grid.step in grid.steps)
+#     {
+# 
+#     grid.step.color = getColorsFromTemperature(grid.step, temp.range, colors);
+#     # abline(h=grid.step, col="black", lwd=2);
+#     abline(h=grid.step, col=grid.step.color, lwd=1);
+#     
+#     text(x=0.5,y=-8 + grid.step, labels=grid.step, 
+#         col="black", cex=0.5, pos=3);
+#     text(x=12.5,y=-8 + grid.step, labels=grid.step, 
+#         col="black", cex=0.5, pos=3);
+#     text(x=6.5,y=-8 + grid.step, labels=grid.step, 
+#         col="black", cex=0.5, pos=3);
+#     }
+#   
+# 
+#   
+#   # for(i in 1:n.keys)
+#   #   {
+#   #   my.key = keys.few[i];
+#   #   my.simple = keys.simple[i];
+#   #   climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+#   #   months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+#   #   months.data = as.numeric(months);
+#   # 
+#   #   months.colors = getColorsFromTemperature(months.data, temp.range, colors);
+#   #   
+#   #   
+#   #   point.cex = switch(my.simple,
+#   #         "rain"    = max(months.data, na.rm=TRUE),
+#   #         "snow"    = max(months.data, na.rm=TRUE),
+#   #        mean(months.data) # default case of switch
+#   #       );
+#   #   
+#   #   line.data = switch(my.simple,
+#   #         "rain"    = max(months.data, na.rm=TRUE),
+#   #         "snow"    = max(months.data, na.rm=TRUE),
+#   #        mean(months.data) # default case of switch
+#   #       );
+#   #   
+#   #   line.color = getColorsFromTemperature(line.data, temp.range, colors)
+#   #   
+#   #   line.color = switch(my.simple,
+#   #         "rain"    = getColorsFromTemperature(line.data, temp.range, colors),
+#   #         "snow"    = colors[1],
+#   #        getColorsFromTemperature(line.data, temp.range, colors) # default case of switch
+#   #       );
+#   #   
+#   #   print(my.simple);
+#   #   print(line.color);
+#   #   print(months.data);
+#   #   months.data[months.data == 0] = NA;
+#   #   print(months.data);
+#   #   
+#   #   par(new=TRUE); # overlay line ... black
+#   #   plot(1:12, months.data, 
+#   #           ylim = temp.lim, xlim=month.lim,
+#   #           pch = 20, cex = 3, 
+#   #           col="black", 
+#   #           lwd = lwd.bg, type='l',
+#   #           ylab = "",
+#   #           xlab = "",
+#   #           xaxt = 'n', bty = 'n', yaxt = 'n',
+#   #           main = ""
+#   #           );
+#   #   
+#   #   if(my.simple != "daily.avg")
+#   #     {
+#   #     par(new=TRUE); # overlay line with color
+#   #     plot(1:12, months.data, 
+#   #             ylim = temp.lim, xlim=month.lim,
+#   #             pch = 20, cex = 3, 
+#   #             col=line.color, 
+#   #             lwd = lwd.fg, type='l',
+#   #             ylab = "",
+#   #             xlab = "",
+#   #             xaxt = 'n', bty = 'n', yaxt = 'n',
+#   #             main = ""
+#   #             );
+#   #   
+#   #     par(new=TRUE); # overlay big black dots
+#   #     plot(1:12, months.data, 
+#   #             ylim = temp.lim, xlim=month.lim,
+#   #             pch = 20, cex = cex.bg, col="black", 
+#   #             ylab = "",
+#   #             xlab = "",
+#   #             xaxt = 'n', bty = 'n', yaxt = 'n',
+#   #             main = ""
+#   #             );
+#   #     par(new=TRUE); # overlay colored dots
+#   #     plot(1:12, months.data, 
+#   #             ylim = temp.lim, xlim=month.lim,
+#   #             pch = 20, cex = cex.fg, col=months.colors, 
+#   #             ylab = "",
+#   #             xlab = "",
+#   #             xaxt = 'n', bty = 'n', yaxt = 'n',
+#   #             main = ""
+#   #             );
+#   #     }
+#   #   
+#   #   
+#   #   }
+#   
+#  ############################# 
+#   path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+# 
+#     img.url.rain = paste0(path.mshaffer, "_images_/v2/raindrop.png");
+#       img.rain = readPNG(getURLContent(img.url.rain));
+#       
+#     img.url.snow = paste0(path.mshaffer, "_images_/v2/snowflake.png");
+#       img.snow = readPNG(getURLContent(img.url.snow));
+#   
+#   for(i in 1:n.keys)
+#     {
+#     my.key = keys.few[i];
+#     my.simple = keys.simple[i];
+#     climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+#     months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+#     months.data = as.numeric(months);
+# 
+#     months.colors = getColorsFromTemperature(months.data, temp.range, colors);
+#     months.data[months.data == 0] = NA;
+#     
+#     print(months.data);
+#     
+#     # snow on the dot
+#     # rain about 0.25 to the right
+#     my.img = switch(my.simple,
+#           "rain"    = img.rain,
+#           "snow"    = img.snow,
+#          img.rain # default case of switch
+#         );
+#     my.cex = switch(my.simple,
+#           "rain"    = 1,
+#           "snow"    = 0.5,
+#          img.rain # default case of switch
+#         );
+#     my.y.offset = switch(my.simple,
+#           "rain"    = -3,
+#           "snow"    = 3,
+#          -3 # default case of switch
+#         );
+#     my.pos = switch(my.simple,
+#           "rain"    = 1,
+#           "snow"    = 3,
+#          1 # default case of switch
+#         );
+#     my.col = switch(my.simple,
+#           "rain"    = "#9999FF",
+#           "snow"    = "#000099",
+#          "#9999FF" # default case of switch
+#         );
+#       
+#     myLabels = round(months.data, digits=1);
+#     myLabels[is.na(myLabels)] = "";
+#     
+#     image_points(my.img, 1:12, months.data, cex=my.cex);
+#         text(x = 1:12, y = my.y.offset + months.data, col=my.col,
+#               labels = myLabels, cex=1, pos=my.pos);
+# 
+#     
+#     }
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   }
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+
+
+
+
+
+
+
+
+
+
+
+
 
 plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.val="Juneau", units=1,
       cex.bg=2, cex.fg=1, lwd.bg=4, lwd.fg=2)
@@ -521,11 +733,14 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
   # alaska ... -20 ... -45
   # phx ... 120 ... 122
   
-  temp.range = c(-50:125);  # Helena is -42
-  rain.lim = c(0,375); # top at 500 is 375 ...
-  #temp.lim = c(min(temp.range), rain.lim[2]);
-  temp.lim = c(min(temp.range), max(temp.range));
-  month.lim = c(0.5,12.5);
+  above = 5;
+  below = 15;
+  temp.range = c(-45:125);  # Helena is -42
+  rain.lim = c(0,15); # top at 500 is 375 ... 375 was mm
+  gap = 25;
+  temp.lim = c(min(temp.range), gap + rain.lim[2] + max(temp.range) + above + below);
+  #temp.lim = c(min(temp.range), max(temp.range));
+  month.lim = c(0,13);
   
   # FFFFFF  .. 4466EE  from = c("#FFFFFF","#4466EE");
   # 4169E1
@@ -565,6 +780,17 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
   key.end = 4;
   rect.mid = 2;
   
+  high.max.x = 6;
+  high.max.y = 60;
+  
+  # which.JanDec
+  low.min.jan.x  = 1;
+  low.min.dec.x  = 12;
+  
+  low.min.jan.y  = -10;
+  low.min.dec.y  = -10;
+  
+  
   rectangles = NULL;
   n.keys = length(keys.few[1:key.end]);
   for(i in 1:n.keys)
@@ -575,6 +801,20 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
     months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
     months.data = as.numeric(months);
     rectangles = rbind(rectangles, months.data); # for shading
+
+    if(my.simple == "high.max")
+      {
+      high.max.y = max(months.data, na.rm=TRUE);
+      high.max.x = which(months.data == high.max.y)[1];  ## could be a tie for multiple, Helena
+      }
+    if(my.simple == "low.max")  # low.min
+      {
+      low.min.jan.y = months.data[1]; # if we have 12 
+      low.min.dec.y = months.data[12]; # if we have 12 
+      
+      # print(months.data);
+      }
+    
     }
 
 ## I have the rectangles ...
@@ -602,13 +842,15 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
     # abline(h=grid.step, col="black", lwd=2);
     abline(h=grid.step, col=grid.step.color, lwd=1);
     
-    text(x=0.5,y=-5 + grid.step, labels=grid.step, 
+    text(x=0,y=-5 + grid.step, labels=grid.step, 
         col=grid.step.color, cex=0.5, pos=3);
-    text(x=12.5,y=-5 + grid.step, labels=grid.step, 
+    text(x=13,y=-5 + grid.step, labels=grid.step, 
+        col=grid.step.color, cex=0.5, pos=3);
+    text(x=6.5,y=-5 + grid.step, labels=grid.step, 
         col=grid.step.color, cex=0.5, pos=3);
     }
 
-  ############# grid me ############ 
+    ############# grid me ############ 
   
   # months.data = c(-25, 0, 30, 40, 50, 60, 70, 80, 90, 100, 110, 125);
   # getColorsFromTemperature(months.data, temp.range, colors);
@@ -618,7 +860,7 @@ plotTemperatureFromWikipediaData = function(climate, city.key="capital", city.va
 ## upper polygon
 x = c(1:12,12:1); y = c(upper.rect[1,], rev(upper.rect[2,])); 
   polygon(x,y, col=upper.rect.col, border=NA);   
-## upper polygon  
+## lower polygon  
 x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,])); 
   polygon(x,y, col=lower.rect.col, border=NA);  
     
@@ -703,9 +945,539 @@ x = c(1:12,12:1); y = c(lower.rect[1,], rev(lower.rect[2,]));
     
     }
   
- ############################# 
-
-
   
+  # final elements
+    path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+
+    img.url.sun  = paste0(path.mshaffer, "_images_/v2/sunshine.png");
+      img.sun = readPNG(getURLContent(img.url.sun));
+ ############################# 
+    image_points(img.sun,  high.max.x, high.max.y, cex=1.5);
+            high.max.color = getColorsFromTemperature(high.max.y, temp.range, colors)
+    
+      text(x = high.max.x, y = 8 + high.max.y, col=high.max.color,
+              labels = round(high.max.y, digits=1), 
+              cex=1.5, pos=3);
+    
+    img.url.moon = paste0(path.mshaffer, "_images_/v2/moon.png");
+      img.moon = readPNG(getURLContent(img.url.moon));
+    
+    
+    image_points(img.moon, 
+                          c(low.min.jan.x, low.min.dec.x), 
+                          c(low.min.jan.y, low.min.dec.y),
+                    cex=0.5);
+      
+        high.min.color = getColorsFromTemperature(low.min.jan.y, temp.range, colors)
+        text(x = low.min.jan.x - 0.5, y = 12 + low.min.jan.y, col=high.min.color,
+              labels = round(low.min.jan.y, digits=1), 
+              cex=0.75, pos=1);
+      
+        high.min.color = getColorsFromTemperature(low.min.dec.y, temp.range, colors)
+        text(x = low.min.dec.x + 0.5, y = 12 + low.min.dec.y, col=high.min.color,
+              labels = round(low.min.dec.y, digits=1), 
+              cex=0.75, pos=1);
+    #print(paste0(" HIGH: ", high.max.x));
+    #print(paste0(" HIGH: ", high.max.y));
+
+    #print(paste0("  LOW: ", low.min.jan.x));
+    #print(paste0("  LOW: ", low.min.jan.y));
+    
+    #print(paste0("  LOW: ", low.min.dec.x));
+    #print(paste0("  LOW: ", low.min.dec.y));
+        
+        
+        
+    ## add rain/snow
+    path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+
+    img.url.rain = paste0(path.mshaffer, "_images_/v2/raindropW.png");
+      img.rain = readPNG(getURLContent(img.url.rain));
+
+    img.url.snow = paste0(path.mshaffer, "_images_/v2/snowflake.png");
+      img.snow = readPNG(getURLContent(img.url.snow));
+
+
+        
+  keys.few = c("Average snowfall inches (cm)","Average precipitation inches (mm)" );
+  keys.simple = c("snow", "rain");
+  n.keys = length(keys.simple);
+  max.precip = 0;
+  for(i in 1:n.keys)
+    {
+    my.key = keys.few[i];
+    my.simple = keys.simple[i];
+    climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+    months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+    months.data = as.numeric(months);
+    my.max = 0;
+    if( sum(is.na(months.data)) < 12)
+      {
+      my.max = max(months.data, na.rm=TRUE);
+      }
+    if(my.max > max.precip) { max.precip = my.max; }
+    }
+
+      # rain/snow
+    text(x=c(0,13), y=gap + max(temp.range) + -5 + 0, 
+        labels= "  0 inches ", col="black", cex=0.5, pos=3);
+    abline(h=gap + max(temp.range) + 0, col="black", lwd=.25);
+    
+    if(max.precip > 5)
+    {
+    text(x=c(0,13), y=gap + max(temp.range) + -5 + 5, 
+        labels=" 5 inches ",  col="#000099", cex=0.5, pos=3);
+    abline(h=gap + max(temp.range) + 5, col="#000099", lwd=.25);
+    }
+    
+    if(max.precip > 10)
+    {
+    text(x=c(0,13), y=gap + max(temp.range) + -5 + 10, 
+        labels=" 10 inches ",  col="#0000FF", cex=0.5, pos=3);
+    abline(h=gap + max(temp.range) + 10, col="#0000FF", lwd=.25);
+    }
+      
+              
+        
+        
+        
+        
+        
+        
+                
+  for(i in 1:n.keys)
+    {
+    my.key = keys.few[i];
+    my.simple = keys.simple[i];
+    climate.sub = subsetDataFrame(climate.df, "key", "==", my.key);
+    months = climate.sub[1,which.JanDec[1]:which.JanDec[2]];
+    months.data = as.numeric(months);
+
+    months.colors = getColorsFromTemperature(months.data, temp.range, colors);
+    months.data[months.data == 0] = NA;
+    
+    if(my.simple == "snow")
+      {
+      par(new=TRUE); # overlay line with color
+      plot(1:12, gap + max(temp.range) + months.data, 
+              ylim = temp.lim, xlim=month.lim,
+              pch = 20, cex = 3, 
+              col = "royalblue", 
+              lwd = lwd.fg, type='l',
+              ylab = "",
+              xlab = "",
+              xaxt = 'n', bty = 'n', yaxt = 'n',
+              main = ""
+              );
+
+      
+######################  my.rect polygon #############  
+      # rectangle ?
+      my.na = which(is.na(months.data));
+      if(length(my.na) != 12)
+        {
+        if(length(my.na) > 0)
+          {
+          months.data[is.na(months.data)] = 0; # back to this form
+          
+  
+          first.na = my.na[1];
+          ## left polygon 
+          x = c(1:first.na,first.na:1);
+          y = c(gap + max(temp.range) + months.data[1:first.na], 
+                gap + max(temp.range) + 0*months.data[first.na:1]);
+          polygon(x,y, col = "royalblue", border=NA); 
+          
+          print("left");
+          dput(x);
+          dput(y);
+          
+          last.na = rev(my.na)[1];
+          ## right polygon 
+          x = c(last.na:12,12:last.na);
+          y = c(gap + max(temp.range) + months.data[last.na:12], 
+                gap + max(temp.range) + 0*months.data[12:last.na]);
+          polygon(x,y, col = "royalblue", border=NA); 
+          }
+        }
+      
+      dec.snow = round(months.data[12],digits=1);
+      if(!is.na(dec.snow))
+        {
+        text(12.5, gap + max(temp.range) +  dec.snow, 
+            labels = paste0("snow = ",dec.snow), col = "royalblue",
+            pos = 3, srt = 15, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+        }
+
+      jan.snow = round(months.data[1],digits=1);
+      if(!is.na(jan.snow))
+        {
+        text(0.5, gap + max(temp.range) +  jan.snow, 
+            labels = paste0("snow = ",jan.snow), col = "royalblue",
+            pos = 3, srt = -15, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+        }
+
+      
+      }
+
+    # back and forth 
+    months.data[months.data == 0] = NA;
+    print(months.data);
+
+    # snow on the dot
+    # rain about 0.25 to the right
+    my.img = switch(my.simple,
+          "rain"    = img.rain,
+          "snow"    = img.snow,
+         img.rain # default case of switch
+        );
+    my.cex = switch(my.simple,
+          "rain"    = 1,
+          "snow"    = 0.5,
+         img.rain # default case of switch
+        );
+    my.y.offset = switch(my.simple,
+          "rain"    = -1,
+          "snow"    = 3,
+         0 # default case of switch
+        );
+    my.x.offset = switch(my.simple,
+          "rain"    = -0.05,
+          "snow"    = 0.05,
+         0 # default case of switch
+        );
+    my.pos = switch(my.simple,
+          "rain"    = 3,
+          "snow"    = 3,
+         3 # default case of switch
+        );
+    my.col = switch(my.simple,
+          "rain"    = "#9999FF",
+          "snow"    = "#000099",
+         "#9999FF" # default case of switch
+        );
+
+    myLabels = round(months.data, digits=2);
+    myLabels[is.na(myLabels)] = "";
+
+    # https://stackoverflow.com/questions/45366243/text-labels-with-background-colour-in-r
+    if(my.simple == "rain")
+      {
+      image_points(my.img, 1:12, gap + max(temp.range) + months.data, cex=my.cex);
+          boxtext(x = my.x.offset + 1:12, y = gap + max(temp.range) + my.y.offset + months.data, col=my.col,
+                col.bg="white", labels = myLabels, cex=0.5, pos=my.pos);
+      }
+
+    }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
   }
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# https://stackoverflow.com/questions/45366243/text-labels-with-background-colour-in-r
+#' Add text with background box to a plot
+#'
+#' \code{boxtext} places a text given in the vector \code{labels} 
+#' onto a plot in the base graphics system and places a coloured box behind 
+#' it to make it stand out from the background.
+#' 
+#' @param x numeric vector of x-coordinates where the text labels should be 
+#' written. If the length of \code{x} and \code{y} differs, the shorter one 
+#' is recycled.
+#' @param y numeric vector of y-coordinates where the text labels should be 
+#' written. 
+#' @param labels a character vector specifying the text to be written.
+#' @param col.text the colour of the text 
+#' @param col.bg color(s) to fill or shade the rectangle(s) with. The default 
+#' \code{NA} means do not fill, i.e., draw transparent rectangles.
+#' @param border.bg color(s) for rectangle border(s). The default \code{NA}
+#' omits borders. 
+#' @param adj one or two values in [0, 1] which specify the x (and optionally 
+#' y) adjustment of the labels. 
+#' @param pos a position specifier for the text. If specified this overrides 
+#' any adj value given. Values of 1, 2, 3 and 4, respectively indicate 
+#' positions below, to the left of, above and to the right of the specified 
+#' coordinates.
+#' @param offset when \code{pos} is specified, this value gives the offset of 
+#' the label from the specified coordinate in fractions of a character width.
+#' @param padding factor used for the padding of the box around 
+#' the text. Padding is specified in fractions of a character width. If a 
+#' vector of length two is specified then different factors are used for the
+#' padding in x- and y-direction.    
+#' @param cex numeric character expansion factor; multiplied by 
+#' code{par("cex")} yields the final character size. 
+#' @param font the font to be used
+#'
+#' @return Returns the coordinates of the background rectangle(s). If 
+#' multiple labels are placed in a vactor then the coordinates are returned
+#' as a matrix with columns corresponding to xleft, xright, ybottom, ytop. 
+#' If just one label is placed, the coordinates are returned as a vector.
+#' @author Ian Kopacka
+#' @examples
+#' ## Create noisy background
+#' plot(x = runif(1000), y = runif(1000), type = "p", pch = 16, 
+#' col = "#40404060")
+#' boxtext(x = 0.5, y = 0.5, labels = "some Text", col.bg = "#b2f4f480", 
+#'     pos = 4, font = 2, cex = 1.3, padding = 1)
+#' @export
+boxtext <- function(x, y, labels = NA, col.text = NULL, col.bg = NA, 
+        border.bg = NA, adj = NULL, pos = NULL, offset = 0.5, 
+        padding = c(0.5, 0.5), cex = 1, font = graphics::par('font')){
+
+    ## The Character expansion factro to be used:
+    theCex <- graphics::par('cex')*cex
+
+    ## Is y provided:
+    if (missing(y)) y <- x
+
+    ## Recycle coords if necessary:    
+    if (length(x) != length(y)){
+        lx <- length(x)
+        ly <- length(y)
+        if (lx > ly){
+            y <- rep(y, ceiling(lx/ly))[1:lx]           
+        } else {
+            x <- rep(x, ceiling(ly/lx))[1:ly]
+        }       
+    }
+
+    ## Width and height of text
+    textHeight <- graphics::strheight(labels, cex = theCex, font = font)
+    textWidth <- graphics::strwidth(labels, cex = theCex, font = font)
+
+    ## Width of one character:
+    charWidth <- graphics::strwidth("e", cex = theCex, font = font)
+
+    ## Is 'adj' of length 1 or 2?
+    if (!is.null(adj)){
+        if (length(adj == 1)){
+            adj <- c(adj[1], 0.5)            
+        }        
+    } else {
+        adj <- c(0.5, 0.5)
+    }
+
+    ## Is 'pos' specified?
+    if (!is.null(pos)){
+        if (pos == 1){
+            adj <- c(0.5, 1)
+            offsetVec <- c(0, -offset*charWidth)
+        } else if (pos == 2){
+            adj <- c(1, 0.5)
+            offsetVec <- c(-offset*charWidth, 0)
+        } else if (pos == 3){
+            adj <- c(0.5, 0)
+            offsetVec <- c(0, offset*charWidth)
+        } else if (pos == 4){
+            adj <- c(0, 0.5)
+            offsetVec <- c(offset*charWidth, 0)
+        } else {
+            stop('Invalid argument pos')
+        }       
+    } else {
+      offsetVec <- c(0, 0)
+    }
+
+    ## Padding for boxes:
+    if (length(padding) == 1){
+        padding <- c(padding[1], padding[1])
+    }
+
+    ## Midpoints for text:
+    xMid <- x + (-adj[1] + 1/2)*textWidth + offsetVec[1]
+    yMid <- y + (-adj[2] + 1/2)*textHeight + offsetVec[2]
+
+    ## Draw rectangles:
+    rectWidth <- textWidth + 2*padding[1]*charWidth
+    rectHeight <- textHeight + 2*padding[2]*charWidth    
+    graphics::rect(xleft = xMid - rectWidth/2, 
+            ybottom = yMid - rectHeight/2, 
+            xright = xMid + rectWidth/2, 
+            ytop = yMid + rectHeight/2,
+            col = col.bg, border = border.bg)
+
+    ## Place the text:
+    graphics::text(xMid, yMid, labels, col = col.text, cex = theCex, font = font, 
+            adj = c(0.5, 0.5))    
+
+    ## Return value:
+    if (length(xMid) == 1){
+        invisible(c(xMid - rectWidth/2, xMid + rectWidth/2, yMid - rectHeight/2,
+                        yMid + rectHeight/2))
+    } else {
+        invisible(cbind(xMid - rectWidth/2, xMid + rectWidth/2, yMid - rectHeight/2,
+                        yMid + rectHeight/2))
+    }    
+}
+
+
+
+# http://www.statisticstoproveanything.com/2013/09/using-custom-images-as-pch-values-in-r.html
+image_points = function(image, x, y, cex = 1, pos = NULL) {
+    if (length(x) != length(y)) {
+        stop("length(x)!=length(y): check your data")
+    }
+    dim.x = dim(image)[2]  #image width
+    dim.y = dim(image)[1]  #image height
+    if (dim.x == dim.y) {
+        # obtian the ratio of width to height or height to width
+        ratio.x = ratio.y = 1
+    } else if (dim.x < dim.y) {
+        ratio.x = dim.x/dim.y
+        ratio.y = 1
+    } else {
+        ratio.x = 1
+        ratio.y = dim.y/dim.x
+    }
+    cex = cex/10  #how large the image should be, divided by 10 so that it matches more closely to plotting points
+    pin = par()$pin  #pin provides the width and height of the _active graphic device_
+    pin.ratio = pin/max(pin)  #take the ratio
+    usr = par()$usr  #usr provides the lower.x, lower.y, upper.x, upper.y values of the plotable region
+
+    # combine the active device dimensions, the image dimensions, and the
+    # desired output size
+    image.size.y = (usr[4] - usr[3]) * pin.ratio[1] * cex
+    image.size.x = (usr[2] - usr[1]) * pin.ratio[2] * cex
+    for (i in 1:length(x)) {
+        # plot each point pos can be NULL (default) or 1, 2, 3, or 4, corresponding
+        # to centered (defualt), bottom, left, top, right, respectively.
+        if (is.null(pos)) {
+            # centered at (x,y), define the bottom/top and left/right boundaries of the
+            # image
+            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
+                ratio.x)/2)
+            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
+                ratio.y)/2)
+
+            rasterImage(image, x.pos[1], y.pos[1], x.pos[2], y.pos[2])
+        } else if (pos == 1) {
+            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
+                ratio.x)/2)
+            y.pos = c(y[i] - (image.size.y * ratio.y), y[i])
+        } else if (pos == 2) {
+            x.pos = c(x[i] - (image.size.x * ratio.x), x[i])
+            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
+                ratio.y)/2)
+        } else if (pos == 3) {
+            x.pos = c(x[i] - (image.size.x * ratio.x)/2, x[i] + (image.size.x * 
+                ratio.x)/2)
+            y.pos = c(y[i], y[i] + (image.size.y * ratio.y))
+        } else if (pos == 4) {
+            x.pos = c(x[i], x[i] + (image.size.x * ratio.x))
+            y.pos = c(y[i] - (image.size.y * ratio.y)/2, y[i] + (image.size.y * 
+                ratio.y)/2)
+        }
+
+        rasterImage(image, x.pos[1], y.pos[1], x.pos[2], y.pos[2])  #plot image
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from HW # 5, __student_access__\sample_latex_files\Multivariate-2009
+# # https://stat.ethz.ch/pipermail/r-help/2007-May/131275.html
+multifactanal = function(factors=1:3, ...)
+{
+names(factors) = factors;
+ret = lapply(factors, function(factors)
+{
+try(factanal(factors=factors, ...))
+});
+class(ret) = "multifactanal";
+ret;
+}
+
+
+summary.multifactanal = function(object,...)
+{
+do.call("rbind", lapply(object, summary.factanal));
+}
+
+
+print.multifactanal = function(x,...)
+{
+ret = summary.multifactanal(x);
+print(ret, ...);
+invisible(ret);
+}
+
+
+summary.factanal =function(object, ...)
+{
+if (inherits(object, "try-error"))
+{
+c(n=NA, items=NA, factors=NA, total.df=NA, rest.df=NA, 
+  model.df=NA, LL=NA, AIC=NA, AICc=NA, BIC=NA);
+}
+else
+{
+n = object$n.obs;
+p = length(object$uniquenesses);
+m = object$factors;
+model.df = (p*m) + (m*(m+1))/2 + p - m^2;
+total.df = p*(p+1)/2;
+rest.df = total.df - model.df; # = object$dof
+LL = -as.vector(object$criteria["objective"]);
+k = model.df;
+aic = 2*k - 2*LL;
+aicc = aic + (2*k*(k+1))/(n-k-1);
+bic = k*log(n) - 2*LL;
+c(n=n, items=p, factors=m, total.df=total.df, rest.df=rest.df, 
+  model.df=model.df, LL=LL, AIC=aic, AICc=aicc, BIC=bic); 
+  }
+}
+
+
+
+
+
+
