@@ -26,9 +26,9 @@ doStatsSummary = function(x)
 	result$median = stats::median(xx);
 	result$MAD = stats::mad(xx);
 	result$IQR = stats::IQR(xx);
-	result$quartiles = stats::quantile(xx, prob=c(.25,.5,.75));
-	result$deciles = stats::quantile(xx, prob=seq(0.1,0.9,by=0.1) );
-	result$centiles = stats::quantile(xx, prob=seq(0.01,0.99,by=0.01) );
+	result$quartiles = stats::quantile(xx, prob=c(.25,.5,.75), type=1); # tries to use actual data, not averages ...
+	result$deciles = stats::quantile(xx, prob=seq(0.1,0.9,by=0.1), type=1 );
+	result$centiles = stats::quantile(xx, prob=seq(0.01,0.99,by=0.01), type=1 );
 
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);

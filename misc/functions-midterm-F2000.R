@@ -378,7 +378,20 @@ getColorsFromTemperature = function(temps, temp.range, colors, na.color="#333333
   my.colors;
   }
 
- 
+
+computeDistance.df = function(X.f, method="euclidean", myLabels=NULL, digits=1)
+    {
+    dist.method = dist( X.f , method=method, 
+                            diag=TRUE, upper=TRUE);
+    dist.method.m = as.matrix( dist.method );
+      rownames(dist.method.m) = myLabels;
+      colnames(dist.method.m) = myLabels;
+
+    dist.method.df = as.data.frame( round( dist.method.m, digits=digits) );
+
+    dist.method.df;  ## too big
+    }
+
 
 buildClimateDataFrame = function(climate, months=1:12, keys=c("Record high F (C)", 
       "Average high F (C)", "Average low F (C)", "Record low F (C)", 

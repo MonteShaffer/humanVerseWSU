@@ -377,6 +377,11 @@ getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
 
 
 
+# normalizePath("C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/sample_latex_files/Multivariate-2009/datasets/MBA_CAR_ATTRIB.txt");
+# windowsNormalize ...
+
+
+
 # for shared notebooks
 stringifyLibrary = function(str)
   {
