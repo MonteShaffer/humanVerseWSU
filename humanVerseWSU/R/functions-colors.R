@@ -1,28 +1,8 @@
 # http://www.sthda.com/english/wiki/colors-in-r
 
-# Generate a plot of color names which R knows about.
-#++++++++++++++++++++++++++++++++++++++++++++
-# cl : a vector of colors to plots
-# bg: background of the plot
-# rot: text rotation angle
-#usage=showCols(bg="gray33")
-showCols <- function(cl=colors(), bg = "grey",
-                     cex = 0.75, rot = 30) {
-    m <- ceiling(sqrt(n <-length(cl)))
-    length(cl) <- m*m; cm <- matrix(cl, m)
-    require("grid")
-    grid.newpage(); vp <- viewport(w = .92, h = .92)
-    grid.rect(gp=gpar(fill=bg))
-    grid.text(cm, x = col(cm)/m, y = rev(row(cm))/m, rot = rot,
-              vp=vp, gp=gpar(cex = cex, col = cm))
-  }
-# showCols(cl= colors(), bg="gray33", rot=30, cex=0.75)
-
 ## build a collection of graphs, each two columsn ... 
 ## limit the total number per row of a column ... pagination ...
 ## how to let them copy it?  identify? clipboard?
-
-library(grid);
 
 displayColorOptions = function(my.colors = colors(),
                               xlim=c(0,10),
@@ -35,7 +15,7 @@ displayColorOptions = function(my.colors = colors(),
   pages = ceiling(nc / per.page);
 
   i = 1;
-  page = 1;
+  page = 1; 
   
   xunit = diff(xlim) / ncol;
   yunit = diff(ylim) / nrow;
@@ -82,5 +62,11 @@ displayColorOptions = function(my.colors = colors(),
     }
   }
 
+
+
+colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
+  {
+  colorRampPalette(colvec, alpha=alpha)(n);
+  }
 
 
