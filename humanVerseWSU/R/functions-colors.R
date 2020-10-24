@@ -40,7 +40,7 @@ displayColorOptions = function(my.colors = colors(),
   xunit = diff(xlim) / ncol;
   yunit = diff(ylim) / nrow;
   
-  while(page < pages)
+  while(page <= pages)
     {
     xstart = xlim[1];
     ystart = ylim[2];
