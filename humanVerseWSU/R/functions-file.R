@@ -1,5 +1,33 @@
 
 
+# dump httr, stringr, etc.
+# use network analysis to map the tidyverse ...
+
+
+
+
+# https://stackoverflow.com/questions/64476043/
+# https://stackoverflow.com/questions/1189759/
+convertDirectoryR.toWin = function(myDir = getwd())  # "R:/data/state-capitals/final/"
+  {
+  cat( normalizePath(myDir) );
+    writeClipboard( normalizePath(myDir) ); # R:\data\state-capitals\final\
+  }
+
+openDirectoryR.inWin = function(myDir = getwd())  # "R:/data/state-capitals/final/"
+  {
+  cmd = paste("explorer",  gsub('/', '\\\\', myDir, fixed=TRUE ) );
+  suppressWarnings( shell( cmd ) );        # R:\data\state-capitals\final\
+  }
+
+convertDirectoryWin.toR = function(myDir = readClipboard()) # # R:\data\state-capitals\final\
+  {
+  gsub('\\', '/', myDir, fixed=TRUE );   # "R:/data/state-capitals/final/"
+  }
+
+
+
+
 #' loadRDS
 #'
 #' loads an internal dataset by merely passing the string
