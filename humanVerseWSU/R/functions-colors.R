@@ -6,6 +6,7 @@
 
 displayColorOptions = function(my.colors = colors(),
                               showHEX = FALSE,
+                              alpha = TRUE, # works with showHEX = TRUE
                               xlim=c(0,10),
                               ylim=c(0,10),
                               cex = 0.75, 
@@ -44,7 +45,7 @@ displayColorOptions = function(my.colors = colors(),
         if(is.na(mycolor)) { break; break; }
         mycolor.name = names(my.colors)[i];
         
-        hexcolor = rgb2col( col2rgb(mycolor, alpha=TRUE)  );
+        hexcolor = rgb2col( col2rgb(mycolor, alpha=alpha)  );
         
         if(is.null(mycolor.name)) { mycolor.name = mycolor;}
         
