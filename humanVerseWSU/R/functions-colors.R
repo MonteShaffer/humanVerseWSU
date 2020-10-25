@@ -44,7 +44,7 @@ displayColorOptions = function(my.colors = colors(),
         if(is.na(mycolor)) { break; break; }
         mycolor.name = names(my.colors)[i];
         
-        hexcolor = rgb2col( col2rgb(mycolor)  );
+        hexcolor = rgb2col( col2rgb(mycolor, alpha=TRUE)  );
         
         if(is.null(mycolor.name)) { mycolor.name = mycolor;}
         
