@@ -46,7 +46,7 @@ displayColorOptions = function(my.colors = colors(),
         
         hexcolor = rgb2col( col2rgb(mycolor)  );
         
-        if(is.na(mycolor.name)) { mycolor.name = mycolor;}
+        if(is.null(mycolor.name)) { mycolor.name = mycolor;}
         
         if(!showHEX)
           {
