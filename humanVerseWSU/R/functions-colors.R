@@ -42,7 +42,7 @@ displayColorOptions = function(my.colors = colors(),
         {
         mycolor = as.character(my.colors[i]);
         if(is.na(mycolor)) { break; break; }
-        mycolor.name = names(mycolors)[i];
+        mycolor.name = names(my.colors)[i];
         
         hexcolor = rgb2col( col2rgb(mycolor)  );
         
