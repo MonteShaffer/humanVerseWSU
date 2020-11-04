@@ -1,22 +1,22 @@
 library(humanVerseWSU);
 library(Hmisc);
 
-
+ 
 # https://texblog.org/2019/06/03/control-the-width-of-table-columns-tabular-in-latex/
 # https://tex.stackexchange.com/questions/559679/error-package-array-error-illegal-pream-toke-c-used
 buildLatexCorrelationTable = function(myData, 
                                 myFile = paste0(getwd(),"/","table-correlation.tex"),
                                 myLabel = "table:correlation",
                                 myCaption = "Descriptive Statistics and Correlation Analysis",
-                                myNote = "Pearson pairwise correlations with two-tailed p-values are reported.",
+                                myNote = "Pearson pairwise correlations are reported; \\newline a two-side test was performed to report correlation significance.",
                                 myNames = colnames(myData),
                                 rotateTable=TRUE,
                                 rowDivider = TRUE,
                                 width.table = 0.99, # percent of textwidth
                                 width.names = "35mm", # width of variable names
-                                space.M.SD = "5mm",
-                                space.SD.corr = "10mm",
-                                space.end = "5mm",
+                                space.M.SD = "1mm",
+                                space.SD.corr = "5mm",
+                                space.between = "2mm",
                                 showOnes = "left" # options are "center" or "left" or NULL
                                 )
   {
@@ -27,7 +27,7 @@ buildLatexCorrelationTable = function(myData,
   ncol = ncol(myData);
   
   myCorr = rcorr( myData );
-  myM = colMeans(trees);
+  myM = colMeans(myData);
   mySD = c();
   for(i in 1:ncol)
     {
@@ -140,22 +140,22 @@ buildLatexCorrelationTable = function(myData,
   # let's compute the space we need ?
   
   #myT = paste0("r@{ \\ \\ } X ");
-  myT = paste0("r@{ \\ \\ } ", "p{",width.names,"}");
+  myT = paste0("r@{ \\ \\ } ", "p{",width.names,"} ");
   # width.names
   
-  myT = paste0(myT, "r@{}l");  # M
-  myT = paste0(myT, paste0("p{",space.M.SD,"}"));
-  myT = paste0(myT, "r@{}l");  # SD
-  myT = paste0(myT, paste0("p{",space.SD.corr,"}"));
+  myT = paste0(myT, "r@{}l" );  # M
+  myT = paste0(myT, paste0("p{",space.M.SD,"} "));
+  myT = paste0(myT, "r@{}l ");  # SD
+  myT = paste0(myT, paste0("p{",space.SD.corr,"} "));
   
   for(i in 1:(ncol-1))
     {
-    myT = paste0(myT, "r@{}l");
+    myT = paste0(myT, "r@{}l ", "p{",space.between,"} ");
     }
-  myT = paste0(myT, paste0("p{",space.end,"}"));
+  # myT = paste0(myT, paste0("p{",space.end,"}"));
   #myT = paste0(myT, "{X}"); # end with right space
   #myT = paste0(myT, "{c}"); 
-  myT = paste0(myT, "r@{}l");
+  myT = paste0(myT, "  r@{}l  ");
   
   writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{{",myT,"}}"), myFile);
   writeLine(" & \\\\", myFile);
@@ -166,7 +166,7 @@ buildLatexCorrelationTable = function(myData,
   myT = paste0("\\multicolumn{2}{c}{\\textbf{ }} & \\multicolumn{2}{c}{\\textbf{M}} & & \\multicolumn{2}{c}{\\textbf{SD}} & " );
   for(i in 1:(ncol-1))
     {
-    myT = paste0(myT, " & \\multicolumn{2}{c}{\\textbf{",i,"}} ");
+    myT = paste0(myT, " & \\multicolumn{2}{c}{\\textbf{",i,"}} & ");
     }
   myT = paste0(myT, " & \\\\ ");
   
@@ -183,7 +183,7 @@ buildLatexCorrelationTable = function(myData,
     
     for(j in 1:(ncol-1))
       {
-      myR = paste0(myR, " & ", splitCorrelation(myCorr,i,j,2));
+      myR = paste0(myR, " & ", splitCorrelation(myCorr,i,j,2), " & ");
       }
     myR = paste0(myR, " & \\\\ ");
     writeLine(myR, myFile);
@@ -203,12 +203,13 @@ buildLatexCorrelationTable = function(myData,
   writeLine("\\hline", myFile);
   writeLine(" & \\\\", myFile);
   
-  writeLine(paste0("& \\multicolumn{",(2+6+1+2*(ncol-1)),"}{p{0.9\\textwidth}}{  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} \\ \\ ",
+  writeLine(paste0("\\multicolumn{",(6+1+3*(ncol-1)),"}{p{",round((0.9*width.table),2),"\\textwidth}}{ ",
+                    " \\footnotesize { \\begin{hangparas}{0.75in}{1} \\textbf{\\underline{Notes}:} \\ \\ ",
                     myNote, "  \\end{hangparas} } }  & \\\\  "), myFile);
   
   # writeLine(" & \\\\ ", myFile);
   
-  writeLine(paste0( "\\multicolumn{",(2+6+1+2*(ncol-1)),"}{p{0.9\\textwidth}}{ ",
+  writeLine(paste0( "\\multicolumn{",(6+1+3*(ncol-1)),"}{p{",round((0.9*width.table),2),"\\textwidth}}{ ",
                     " {\\tiny {$^{\\dagger} p < .10$} }  { \ \ \ \ }",
                     " {\\tiny        {$^{*} p < .05$} }  { \ \ \ \ }",
                     " {\\tiny       {$^{**} p < .01$} }  { \ \ \ \ }",

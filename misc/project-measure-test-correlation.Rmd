@@ -64,9 +64,13 @@ file.correlation = paste0(path.tables,"tree-correlation-table.tex");
 myData = as.matrix(trees);  # numeric values only, only what will appear in table
 
 # https://www.overleaf.com/read/srzhrcryjpwn
+# keepaspectratio of include graphics 
+# could scale \input if still too big ...
+# https://tex.stackexchange.com/questions/13460/scalebox-knowing-how-much-it-scales#13487
 buildLatexCorrelationTable(myData, 
-  rotateTable = FALSE,
-  width.table = 0.75, # this probably looks best for this data ... 0.5 if rotated, 0.75 if not rotated
+  rotateTable = TRUE,
+  width.table = 0.60, # best for given data ... 0.95 when rotateTable = FALSE
+                      # 0.60 when rotateTable = TRUE
   myFile = file.correlation,
   myNames = c("Diameter (in)", "Height (ft)", "Volume (ft$^3$)") );
 
@@ -76,7 +80,6 @@ Sys.sleep(2); # in case Knit-PDF doesn't like that I just created the file...
 
 ```
 
-
 \newpage
 
 \input{tables/tree-correlation-table} 
@@ -84,4 +87,38 @@ Sys.sleep(2); # in case Knit-PDF doesn't like that I just created the file...
 \newpage
 
 
+
+```{r,test-correlation-2,message=FALSE}
+# build a second table, with more data ... 
+
+file.correlation = paste0(path.tables,"tree-correlation-table2.tex");
+
+
+myData = as.matrix(trees);  # numeric values only, only what will appear in table
+
+myData = cbind(myData,myData);
+# https://www.overleaf.com/read/srzhrcryjpwn
+# keepaspectratio of include graphics 
+# could scale \input if still too big ...
+# https://tex.stackexchange.com/questions/13460/scalebox-knowing-how-much-it-scales#13487
+buildLatexCorrelationTable(myData, 
+  rotateTable = TRUE,
+  width.table = 0.95,
+  myFile = file.correlation,
+  myNames = c("Diameter (in)", "Height (ft)", "Volume (ft$^3$)", "Diameter (in)", "Height (ft)", "Volume (ft$^3$)") );
+
+
+Sys.sleep(2); # in case Knit-PDF doesn't like that I just created the file...
+
+
+```
+
+
+
+
+\newpage
+
+\input{tables/tree-correlation-table2} 
+
+\newpage
 
