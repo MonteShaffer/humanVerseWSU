@@ -12,10 +12,11 @@ buildLatexCorrelationTable = function(myData,
                                 myNames = colnames(myData),
                                 rotateTable=TRUE,
                                 rowDivider = TRUE,
-                                width.table = 0.90,
-                                width.names = "5cm", # this includes space to M
+                                width.table = 0.99, # percent of textwidth
+                                width.names = "35mm", # width of variable names
                                 space.M.SD = "5mm",
                                 space.SD.corr = "10mm",
+                                space.end = "5mm",
                                 showOnes = "left" # options are "center" or "left" or NULL
                                 )
   {
@@ -55,7 +56,7 @@ buildLatexCorrelationTable = function(myData,
     if(is.na(dec)) { dec = "0"; }
     dec = strPadRight(dec, digits, "0");
     
-    paste0(whole,"&.",dec);
+    paste0(" ",whole,"&.",dec,"");
     }
   
   
@@ -70,7 +71,7 @@ buildLatexCorrelationTable = function(myData,
       char = chars[i];
       if(pval < cut)
         {
-        str = paste0("{$^{",char,"}$}"); 
+        str = paste0("{$^{",char,"}$} "); 
         }
       }
     str;
@@ -81,31 +82,31 @@ buildLatexCorrelationTable = function(myData,
     {
     # print(showOnes);
     oneSpace = " \\ ";
-    mySpace = paste0( rep(oneSpace, times=10), collapse="");
+    mySpace = paste0( rep(oneSpace, times=5), collapse="");
     # mySpace = " \\  \\  \\  \\  \\  \\  \\ ";  # do we need filler space?
     # mySpace = "";
     if(i == j)
       {
       if(is.null(showOnes))
         {
-        empty = paste0("\\multicolumn{2}{c}{",mySpace,"}");
+        empty = paste0(" \\multicolumn{2}{c}{",mySpace,"} ");
         return(empty);
         }
         
       if(showOnes == "center")
         {
-        one = "\\multicolumn{2}{c}{1}";
+        one = " \\multicolumn{2}{c}{1} ";
         return(one);
         }
     
         ## default
-        one = "1&";
+        one = " 1& ";
         return(one);
       }
     
     if(i < j)
       {
-      empty = paste0("\\multicolumn{2}{c}{",mySpace,"}");
+      empty = paste0(" \\multicolumn{2}{c}{",mySpace,"} ");
       return(empty);
       }
     
@@ -136,19 +137,25 @@ buildLatexCorrelationTable = function(myData,
   #writeLine(paste0("\\vspace{",vspace.row.separator,"}"), myFile);
   #writeLine(paste0("\\vspace{",vspace.row.separator,"}"), myFile);
   
-  myT = paste0("r@{ \\ \\ }p{",width.names,"}");
+  # let's compute the space we need ?
+  
+  #myT = paste0("r@{ \\ \\ } X ");
+  myT = paste0("r@{ \\ \\ } ", "p{",width.names,"}");
+  # width.names
   
   myT = paste0(myT, "r@{}l");  # M
   myT = paste0(myT, paste0("p{",space.M.SD,"}"));
   myT = paste0(myT, "r@{}l");  # SD
   myT = paste0(myT, paste0("p{",space.SD.corr,"}"));
   
-  for(i in 1:ncol)
+  for(i in 1:(ncol-1))
     {
     myT = paste0(myT, "r@{}l");
     }
+  myT = paste0(myT, paste0("p{",space.end,"}"));
   #myT = paste0(myT, "{X}"); # end with right space
-  myT = paste0(myT, "{c}"); 
+  #myT = paste0(myT, "{c}"); 
+  myT = paste0(myT, "r@{}l");
   
   writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{{",myT,"}}"), myFile);
   writeLine(" & \\\\", myFile);
@@ -157,11 +164,11 @@ buildLatexCorrelationTable = function(myData,
   #writeLine(paste0("\\vspace{",vspace.row.separator,"}"), myFile);
   
   myT = paste0("\\multicolumn{2}{c}{\\textbf{ }} & \\multicolumn{2}{c}{\\textbf{M}} & & \\multicolumn{2}{c}{\\textbf{SD}} & " );
-  for(i in 1:ncol)
+  for(i in 1:(ncol-1))
     {
     myT = paste0(myT, " & \\multicolumn{2}{c}{\\textbf{",i,"}} ");
     }
-  myT = paste0(myT, " \\\\ ");
+  myT = paste0(myT, " & \\\\ ");
   
   writeLine(myT, myFile);
   #writeLine(paste0("\\vspace{",vspace.row.separator,"}"), myFile);
@@ -174,11 +181,11 @@ buildLatexCorrelationTable = function(myData,
     myR = paste0("\\textbf{",i,"} & \\textbf{",myNames[i],"} & ", 
                  splitValue(myM[i],1), " &  & ",splitValue(mySD[i],2), " & ");
     
-    for(j in 1:ncol)
+    for(j in 1:(ncol-1))
       {
       myR = paste0(myR, " & ", splitCorrelation(myCorr,i,j,2));
       }
-    myR = paste0(myR, " \\\\ ");
+    myR = paste0(myR, " & \\\\ ");
     writeLine(myR, myFile);
     if(rowDivider) { writeLine(" & \\\\", myFile); }
     #print(i);
@@ -196,11 +203,16 @@ buildLatexCorrelationTable = function(myData,
   writeLine("\\hline", myFile);
   writeLine(" & \\\\", myFile);
   
-  writeLine(paste0( "\\multicolumn{7}{c}{ } & \\multicolumn{",(1+2*ncol),"}{c}{ ",
+  writeLine(paste0("& \\multicolumn{",(2+6+1+2*(ncol-1)),"}{p{0.9\\textwidth}}{  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} \\ \\ ",
+                    myNote, "  \\end{hangparas} } }  & \\\\  "), myFile);
+  
+  # writeLine(" & \\\\ ", myFile);
+  
+  writeLine(paste0( "\\multicolumn{",(2+6+1+2*(ncol-1)),"}{p{0.9\\textwidth}}{ ",
                     " {\\tiny {$^{\\dagger} p < .10$} }  { \ \ \ \ }",
                     " {\\tiny        {$^{*} p < .05$} }  { \ \ \ \ }",
                     " {\\tiny       {$^{**} p < .01$} }  { \ \ \ \ }",
-                    " {\\tiny      {$^{***} p < .001$} } { \ \ \ \ }     }\\\\ "), myFile);
+                    " {\\tiny      {$^{***} p < .001$} } { \ \ \ \ }     } & \\\\ "), myFile);
   
   writeLine(" & \\\\", myFile);
   
@@ -209,10 +221,7 @@ buildLatexCorrelationTable = function(myData,
   #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
   #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { l{",width.table,"\\textwidth} } }"), myFile);
   
-  writeLine(paste0("& \\multicolumn{",(6+1+2*ncol),"}{p{0.9\\textwidth}}{  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:}",
-                    myNote, "  \\end{hangparas} } }  \\\\  "), myFile);
-  
-  writeLine(" \\\\ ", myFile);
+ 
   
   writeLine("\\hline", myFile);
   
