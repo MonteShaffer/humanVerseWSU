@@ -205,7 +205,8 @@ buildLatexCorrelationTable = function(myData,
   
   writeLine("\\end{tabularx}", myFile);
   
-  writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
+  #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
+  writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { l{",width.table,"\\textwidth} } }"), myFile);
   
   writeLine("  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} Pearson pairwise correlations are reported.    \\end{hangparas} }   \\\\  ", myFile);
   
