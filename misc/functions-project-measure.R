@@ -8,6 +8,7 @@ buildLatexCorrelationTable = function(myData,
                                 myFile = paste0(getwd(),"/","table-correlation.tex"),
                                 myLabel = "table:correlation",
                                 myCaption = "Descriptive Statistics and Correlation Analysis",
+                                myNote = "Pearson pairwise correlations with two-tailed p-values are reported.",
                                 myNames = colnames(myData),
                                 rotateTable=TRUE,
                                 rowDivider = TRUE,
@@ -208,7 +209,8 @@ buildLatexCorrelationTable = function(myData,
   #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
   #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { l{",width.table,"\\textwidth} } }"), myFile);
   
-  writeLine(paste0("& \\multicolumn{",(6+1+2*ncol),"}{p{0.9\\textwidth}}{  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} Pearson pairwise correlations are reported.    \\end{hangparas} } }  \\\\  "), myFile);
+  writeLine(paste0("& \\multicolumn{",(6+1+2*ncol),"}{p{0.9\\textwidth}}{  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:}",
+                    myNote, "  \\end{hangparas} } }  \\\\  "), myFile);
   
   writeLine(" \\\\ ", myFile);
   
