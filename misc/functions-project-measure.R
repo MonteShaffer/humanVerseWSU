@@ -146,8 +146,8 @@ buildLatexCorrelationTable = function(myData,
     {
     myT = paste0(myT, "r@{}l");
     }
-  myT = paste0(myT, "{X}"); # end with right space
-  #myT = paste0(myT, "{c}"); 
+  #myT = paste0(myT, "{X}"); # end with right space
+  myT = paste0(myT, "{c}"); 
   
   writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{{",myT,"}}"), myFile);
   writeLine(" & \\\\", myFile);
@@ -203,12 +203,12 @@ buildLatexCorrelationTable = function(myData,
   
   writeLine(" & \\\\", myFile);
   
-  writeLine("\\end{tabularx}", myFile);
+  #writeLine("\\end{tabularx}", myFile);
   
-  writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
+  #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
   #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { l{",width.table,"\\textwidth} } }"), myFile);
   
-  writeLine("  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} Pearson pairwise correlations are reported.    \\end{hangparas} }   \\\\  ", myFile);
+  writeLine(paste0("& \\multicolumn{",(6+1+2*ncol),"}{p{0.9\\textwidth}}{  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} Pearson pairwise correlations are reported.    \\end{hangparas} } }  \\\\  "), myFile);
   
   writeLine(" \\\\ ", myFile);
   
