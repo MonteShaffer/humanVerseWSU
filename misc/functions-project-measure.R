@@ -3,7 +3,7 @@ library(Hmisc);
 
 
 
-
+# https://tex.stackexchange.com/questions/559679/error-package-array-error-illegal-pream-toke-c-used
 buildLatexCorrelationTable = function(myData, 
                                 myFile = paste0(getwd(),"/","table-correlation.tex"),
                                 myLabel = "table:correlation",
@@ -146,7 +146,8 @@ buildLatexCorrelationTable = function(myData,
     {
     myT = paste0(myT, "r@{}l");
     }
-  myT = paste0(myT, "{X}"); # end with right space
+  #myT = paste0(myT, "{X}"); # end with right space
+  myT = paste0(myT, "{c}"); 
   
   writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{{",myT,"}}"), myFile);
   writeLine(" & \\\\", myFile);
