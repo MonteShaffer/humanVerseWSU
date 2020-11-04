@@ -46,6 +46,8 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, ve
   {
   # also not logic ....
   # currently this is AND logic
+  # https://www.tutorialspoint.com/r/r_operators.htm
+  # & is vector, && is first element
   # how to also make it possible or logic ... one long or statement ...
   n = nrow(df);
   n.cols = length(mycols);
