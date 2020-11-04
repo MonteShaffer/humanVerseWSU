@@ -2,7 +2,7 @@ library(humanVerseWSU);
 library(Hmisc);
 
 
-
+# https://texblog.org/2019/06/03/control-the-width-of-table-columns-tabular-in-latex/
 # https://tex.stackexchange.com/questions/559679/error-package-array-error-illegal-pream-toke-c-used
 buildLatexCorrelationTable = function(myData, 
                                 myFile = paste0(getwd(),"/","table-correlation.tex"),
@@ -146,8 +146,8 @@ buildLatexCorrelationTable = function(myData,
     {
     myT = paste0(myT, "r@{}l");
     }
-  #myT = paste0(myT, "{X}"); # end with right space
-  myT = paste0(myT, "{c}"); 
+  myT = paste0(myT, "{X}"); # end with right space
+  #myT = paste0(myT, "{c}"); 
   
   writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{{",myT,"}}"), myFile);
   writeLine(" & \\\\", myFile);
@@ -205,8 +205,8 @@ buildLatexCorrelationTable = function(myData,
   
   writeLine("\\end{tabularx}", myFile);
   
-  #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
-  writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { l{",width.table,"\\textwidth} } }"), myFile);
+  writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { p{",width.table,"\\textwidth} } }"), myFile);
+  #writeLine(paste0("\\begin{tabularx}{",width.table,"\\textwidth}{ { l{",width.table,"\\textwidth} } }"), myFile);
   
   writeLine("  \\footnotesize { \\begin{hangparas}{0.5in}{1} \\textbf{Notes:} Pearson pairwise correlations are reported.    \\end{hangparas} }   \\\\  ", myFile);
   
