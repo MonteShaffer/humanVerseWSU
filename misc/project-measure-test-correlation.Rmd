@@ -1,0 +1,87 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    toc: true
+    toc_depth: 3 
+    number_sections: true
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../latex-templates/report.tex
+  html_document:
+    df_print: paged
+    
+title: "A boring (academic) title or a clever title?"
+subtitle: "A secondary title"
+author: 
+- name: "YOUR NAME HERE"
+  affiliation: "Washington State University"
+keywords: |
+    multiple comparisons to control; multivariate chi-square distribution; nonlinear growth curves; Richard's curve; simulated critical points
+abstract: |
+  In this article we compare the \emph{empirical characteristic function} \citep{Tukey:1977, Becker:1988} to a \emph{moment-generating-functional form} to compute the proportion of hypotheses $m$ that are rejected under the null hypothesis. \vspace{0.25in}
+
+  \noindent Here is a second paragraph of the abstract (if necessary), and with the pipe notation it doesn't break. Notice it still needs to be indented. \vspace{0.25in}
+
+  \noindent Generally, we write this abstract last.  Often it is called the executive summary. It should succinctly summarize the entire document.  You can include references such as this one to the Appendices section \ref{sec:appendix} if necessary.
+sectionnumberdepth: 3
+titleEndnotes: "ENDNOTES"
+titleReferences: "REFERENCES"
+columnsReferences: 2
+titleTOC:  "TABLE OF CONTENTS"
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r,setup-test-correlation,message=FALSE}
+
+library(devtools);       # required for source_url
+
+path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
+source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
+
+path.project = "C:/_git_/WSU_STATS419_FALL2020/project-measure/";
+path.tables = paste0(path.project,"tables/");
+  createDirRecursive(path.tables);
+
+```
+
+
+
+```{r,test-correlation,message=FALSE}
+file.correlation = paste0(path.tables,"tree-correlation-table.tex");
+
+
+myData = as.matrix(trees);  # numeric values only, only what will appear in table
+
+# https://www.overleaf.com/read/srzhrcryjpwn
+buildLatexCorrelationTable(myData, 
+  rotateTable = FALSE,
+  width.table = 0.75, # this probably looks best for this data ... 0.5 if rotated, 0.75 if not rotated
+  myFile = file.correlation,
+  myNames = c("Diameter (in)", "Height (ft)", "Volume (ft$^3$)") );
+
+
+Sys.sleep(2); # in case Knit-PDF doesn't like that I just created the file...
+
+
+```
+
+
+\newpage
+
+\input{tables/tree-correlation-table} 
+
+\newpage
+
+
+
