@@ -27,11 +27,11 @@ buildLatexCorrelationTable = function(myData,
   ncol = ncol(myData);
   
   myCorr = rcorr( myData );
-  myM = colMeans(myData);
+  myM = colMeans(myData, na.rm=TRUE);
   mySD = c();
   for(i in 1:ncol)
     {
-    mySD = c(mySD, sd(myData[,i]));
+    mySD = c(mySD, sd(myData[,i], na.rm=TRUE));
     }
   
   
