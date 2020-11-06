@@ -24,6 +24,7 @@
 #' myvals = c(3.0, 0.2);
 #' subsetDataFrame(iris, mycols, "==", myvals);
 #' subsetDataFrame(iris, mycols, "==", myvals, verbose=TRUE);
+#' subsetDataFrame(iris, mycols, "==", myvals, logic="OR");
 #'
 #' comparison = c(">=", "<=");
 #' subsetDataFrame(iris, mycols, comparison=comparison, myvals, verbose=TRUE);
@@ -42,35 +43,83 @@
 #'
 #' subsetDataFrame(iris,"column-does-not-exist", "==", 123);  # Throws warning, returns NA
 #'
-subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, verbose=FALSE)
+subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, logic="AND", verbose=FALSE)
   {
+  # YOU cannot have different variable types in the myvals ... all numeric or all string
   # also not logic ....
   # currently this is AND logic
   # https://www.tutorialspoint.com/r/r_operators.htm
+  # https://stat.ethz.ch/R-manual/R-devel/library/base/html/Logic.html
   # & is vector, && is first element
   # how to also make it possible or logic ... one long or statement ...
+  # if OR ... we could have on "mycol" ... just do repeat ...
   n = nrow(df);
   n.cols = length(mycols);
+  n.com = length(comparison);
+  if(n.com == 1)
+    {
+    comparisons = rep(comparison, times=n.cols);
+    n.com = length(comparisons);
+    } else { comparisons = comparison; }
+
   n.vals = length(myvals);
+  if(n.vals == 1)
+    {
+    myvals = rep(myvals, times=n.cols);
+    n.vals = length(myvals);
+    }
+
   if(n.cols != n.vals)  # if n.vals = 1, can I not just do a rep(myvals, times=n.cols)...
     {
     warning("Something wrong in subsetDataFrame ... mycols and myvals are of different lengths");
     return (NA);
     }
+  if(n.cols != n.com)
+    {
+    warning("Something wrong in subsetDataFrame ... mycols and comparison are of different lengths");
+    return (NA);
+    }
+
+  idxs = getIndexOfDataFrameColumns(df,mycols);
+  if(anyNA(idxs))
+    {
+    warning("One or more columns of mycols is not found!");
+    return (NA);  # example won't run if I put "stop" when devtools::check();
+    }
+  ndf = df;
+
+#
+#   myTruth = list();
+#   for(i in 1:n.cols)
+#       {
+#       my.comparison = trimMe(tolower(comparisons[i]));
+#       allowed = c("!=", "==", "=", "~=", "=~", ">", ">=", "=>", "<", "<=", "=<");
+#       if(!is.element(my.comparison, allowed))
+#         {
+#         warning( paste0( "Comparison:    ", my.comparison, "     NOT FOUND!") );
+#         print("Replacing with the default comparison:           ==      ");
+#         my.comparison = "==";
+#         }
+#
+#       }
+
+
+  # do OR or AND on the TRUTH table...
+
 
 ## a comparison per field
-  n.com = length(comparison);
-  if(n.com == 1)
-    {
-    comparisons = rep(comparison, times=n.cols);
-    } else {
-            if(n.cols != n.com)
-              {
-              warning("Something wrong in subsetDataFrame ... mycols and comparison are of different lengths");
-              return (NA);
-              } else { comparisons = comparison; }
-            }
-
+  # n.com = length(comparison);
+  # if(n.com == 1)
+  #   {
+  #   comparisons = rep(comparison, times=n.cols);
+  #   } else {
+  #           if(n.cols != n.com)
+  #             {
+  #             warning("Something wrong in subsetDataFrame ... mycols and comparison are of different lengths");
+  #             return (NA);
+  #             } else { comparisons = comparison; }
+  #           }
+  #
 
 
   idxs = getIndexOfDataFrameColumns(df,mycols);
@@ -80,48 +129,163 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, ve
     return (NA);  # example won't run if I put "stop" when devtools::check();
     }
   ndf = df;
-  for(i in 1:n.cols)
+
+    #myTruth = list();
+    myTruth = matrix(FALSE, nrow=n, ncol=n.cols);
+
+    for(i in 1:n.cols)
+      {
+      my.comparison = trimMe(tolower(comparisons[i]));
+      allowed = c("!=", "==", "=", "~=", "=~", "!~=", "!=~", ">", ">=", "=>", "<", "<=", "=<");
+      if(!is.element(my.comparison, allowed))
+        {
+        warning( paste0( "Comparison:    ", my.comparison, "     NOT FOUND!") );
+        print("Replacing with the default comparison:           ==      ");
+        my.comparison = "==";
+        }
+
+      if(verbose)
+        {
+        print( paste0( "Subsetting column [",mycols[i],"] ", my.comparison ," [",myvals[i],"]" ) );
+        }
+
+
+      myTruth[,i] = switch(my.comparison,
+            "!="    = ndf[,idxs[i]] != myvals[i],
+
+            "=="    = ndf[,idxs[i]] == myvals[i],
+            "="     = ndf[,idxs[i]] == myvals[i], # bad form, but will work
+
+            "~="    = isClose(ndf[,idxs[i]] , myvals[i]), # maybe jaro-winkler if a string
+            "=~"    = isClose(ndf[,idxs[i]] , myvals[i]), # approximate
+            "!~="    = !isClose(ndf[,idxs[i]] , myvals[i]), # maybe jaro-winkler if a string
+            "!=~"    = !isClose(ndf[,idxs[i]] , myvals[i]), # approximate
+
+            ">"     = ndf[,idxs[i]] > myvals[i],
+            ">="    = ndf[,idxs[i]] >= myvals[i],
+            "=>"    = ndf[,idxs[i]] >= myvals[i], # bad form, but will work
+
+            "<"     = ndf[,idxs[i]] < myvals[i],
+            "<="    = ndf[,idxs[i]] <= myvals[i],
+            "=<"    = ndf[,idxs[i]] <= myvals[i], # bad form, but will work
+
+           ndf[,idxs[i]] != myvals[i] # default case of switch
+          );
+
+
+      }
+
+
+  #print(myTruth);
+
+  truth.rows = rowSums(myTruth);
+
+# AND is default
+  if(logic=="OR")
     {
+    final.idxs = which(truth.rows > 0);
+    } else {
+            final.idxs = which(truth.rows == n.cols);
+            }
 
+  #print(truth.rows);
+  #stop("monte");
 
-    my.comparison = trimMe(tolower(comparisons[i]));
-    allowed = c("==", "=", "~=", "=~", ">", ">=", "=>", "<", "<=", "=<");
-    if(!is.element(my.comparison, allowed))
-      {
-      warning( paste0( "Comparison:    ", my.comparison, "     NOT FOUND!") );
-      print("Replacing with the default comparison:           ==      ");
-      my.comparison = "==";
-      }
+#
+#
+#       myTruth[[i]] = switch(my.comparison,
+#             "!="    = ndf[,idxs[i]] != myvals[i],
+#
+#             "=="    = ndf[,idxs[i]] == myvals[i],
+#             "="     = ndf[,idxs[i]] == myvals[i], # bad form, but will work
+#
+#             "~="    = isClose(ndf[,idxs[i]] , myvals[i]), # maybe jaro-winkler if a string
+#             "=~"    = isClose(ndf[,idxs[i]] , myvals[i]), # approximate
+#
+#
+#             ">"     = ndf[,idxs[i]] > myvals[i],
+#             ">="    = ndf[,idxs[i]] >= myvals[i],
+#             "=>"    = ndf[,idxs[i]] >= myvals[i], # bad form, but will work
+#
+#             "<"     = ndf[,idxs[i]] < myvals[i],
+#             "<="    = ndf[,idxs[i]] <= myvals[i],
+#             "=<"    = ndf[,idxs[i]] <= myvals[i], # bad form, but will work
+#
+#            ndf[,idxs[i]] != myvals[i] # default case of switch
+#           );
+#       #ndf = ndf[ndf[,idxs[i]] == myvals[i], ];
+#       }
+#
+#     print(myTruth);
+# # matrix of true/false, ... rowsum > 1 ... true at end ?
+#
+# #    https://stat.ethz.ch/R-manual/R-devel/library/base/html/Logic.html
+# # midterm ... eval ?
+# #     or = "";
+# # for(search in deep.dive)
+# #   {
+# #   or = paste0(or, " jobs$search.query == '",search,"' | ");
+# #   }
+# # or = substr(or,0, strlen(or) - 2);
+# #
+# # ## TODO ... update subsetDataFrame to allow "OR" logic, currently only does "AND" ...
+# #
+# # # jobs.subset = jobs[ or , ];  # doesn't work ...
+# # jobs.subset = jobs[ jobs$search.query == 'Microsoft Office' |  jobs$search.query == 'C++' |  jobs$search.query == 'SQL' |  jobs$search.query == 'Computer Science' |  jobs$search.query == 'Python' |  jobs$search.query == 'Java' |  jobs$search.query == 'Statistics' |  jobs$search.query == 'Data analysis' |  jobs$search.query == 'Data analytics' |  jobs$search.query == 'Javascript' |  jobs$search.query == 'machine learning' |  jobs$search.query == 'Git' |  jobs$search.query == 'Tableau' |  jobs$search.query == 'Business intelligence' |  jobs$search.query == 'PHP' |  jobs$search.query == 'Mysql' |  jobs$search.query == 'MariaDB' |  jobs$search.query == 'SAS' |  jobs$search.query == 'SPSS' |  jobs$search.query == 'Stata' |  jobs$search.query == 'Data entry' |  jobs$search.query == 'Big data' |  jobs$search.query == 'Data science' |  jobs$search.query == 'Power BI'  , ];
+#
+#
+#
+#     }
+#
+#
+#   if(logic == "AND")
+#     {
+#     for(i in 1:n.cols)
+#       {
+#
+#
+#       my.comparison = trimMe(tolower(comparisons[i]));
+#       allowed = c("!=", "==", "=", "~=", "=~", ">", ">=", "=>", "<", "<=", "=<");
+#       if(!is.element(my.comparison, allowed))
+#         {
+#         warning( paste0( "Comparison:    ", my.comparison, "     NOT FOUND!") );
+#         print("Replacing with the default comparison:           ==      ");
+#         my.comparison = "==";
+#         }
+#
+#       if(verbose)
+#         {
+#         print( paste0( "Subsetting column [",mycols[i],"] ", my.comparison ," [",myvals[i],"]" ) );
+#         }
+#
+#
+#
+#
+#       ndf = switch(my.comparison,
+#             "!="    = ndf[ndf[,idxs[i]] != myvals[i], ],
+#
+#             "=="    = ndf[ndf[,idxs[i]] == myvals[i], ],
+#             "="     = ndf[ndf[,idxs[i]] == myvals[i], ], # bad form, but will work
+#
+#             "~="    = ndf[isClose(ndf[,idxs[i]] , myvals[i]), ], # maybe jaro-winkler if a string
+#             "=~"    = ndf[isClose(ndf[,idxs[i]] , myvals[i]), ], # approximate
+#
+#
+#             ">"     = ndf[ndf[,idxs[i]] > myvals[i], ],
+#             ">="    = ndf[ndf[,idxs[i]] >= myvals[i], ],
+#             "=>"    = ndf[ndf[,idxs[i]] >= myvals[i], ], # bad form, but will work
+#
+#             "<"     = ndf[ndf[,idxs[i]] < myvals[i], ],
+#             "<="    = ndf[ndf[,idxs[i]] <= myvals[i], ],
+#             "=<"    = ndf[ndf[,idxs[i]] <= myvals[i], ], # bad form, but will work
+#
+#            ndf[ndf[,idxs[i]] == myvals[i], ] # default case of switch
+#           );
+#       #ndf = ndf[ndf[,idxs[i]] == myvals[i], ];
+#       }
+#     }
 
-    if(verbose)
-      {
-      print( paste0( "Subsetting column [",mycols[i],"] ", my.comparison ," [",myvals[i],"]" ) );
-      }
-
-
-
-
-    ndf = switch(my.comparison,
-          "=="    = ndf[ndf[,idxs[i]] == myvals[i], ],
-          "="     = ndf[ndf[,idxs[i]] == myvals[i], ], # bad form, but will work
-
-          "~="    = ndf[isClose(ndf[,idxs[i]] , myvals[i]), ], # maybe jaro-winkler if a string
-          "=~"    = ndf[isClose(ndf[,idxs[i]] , myvals[i]), ], # approximate
-
-
-          ">"     = ndf[ndf[,idxs[i]] > myvals[i], ],
-          ">="    = ndf[ndf[,idxs[i]] >= myvals[i], ],
-          "=>"    = ndf[ndf[,idxs[i]] >= myvals[i], ], # bad form, but will work
-
-          "<"     = ndf[ndf[,idxs[i]] < myvals[i], ],
-          "<="    = ndf[ndf[,idxs[i]] <= myvals[i], ],
-          "=<"    = ndf[ndf[,idxs[i]] <= myvals[i], ], # bad form, but will work
-
-         ndf[ndf[,idxs[i]] == myvals[i], ] # default case of switch
-        );
-    #ndf = ndf[ndf[,idxs[i]] == myvals[i], ];
-    }
-  ndf;
+  ndf[final.idxs,];
   }
 
 
