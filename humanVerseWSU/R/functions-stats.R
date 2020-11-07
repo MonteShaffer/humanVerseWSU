@@ -33,6 +33,11 @@ doStatsSummary = function(x)
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);
 
+	# value from data
+	result$myMedian = as.numeric(stats::quantile(xx, prob=c(0.5), type=1));
+	  deviationFromMean = abs(xx-result$mean);
+	result$myMean = xx[ whichMin(deviationFromMean)[1] ];  # value from data
+
 	result$max = max(xx);
 	result$min = min(xx);
 	result$range = result$max - result$min;

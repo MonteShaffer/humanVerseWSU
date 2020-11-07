@@ -1,4 +1,11 @@
 library(stringr);
+# dump stringr and go to stringi
+# dump tidyverse altogether
+# review httr and build appropriate functions
+# use base whenever possible, then the best packages whenever possible
+# define best by "least associated with new grammar tactics"
+# new grammar is arbitrary and not c-based
+# human-readable functions with variadic inputs is not new grammar
 
 #' trimMe
 #'
@@ -231,12 +238,14 @@ strPadRight = function(str, final.str.len, padding="0")
 #' @examples
 #' strlen("3.1415926535897932384626");
 #' strlen( pi );
+#' strvec = c("hi","how","are","you"); strlen(strvec);
 strlen = function(str)
   {
   # history :: # https://en.cppreference.com/w/c/string/byte/strlen
   # http://www.cplusplus.com/reference/cstring/
   # https://en.wikipedia.org/wiki/C99
   # https://www.programiz.com/c-programming/library-function/string.h/strlen
+  # vectorized ... already
   nchar( as.character(str), type="chars");
   }
 

@@ -1,0 +1,367 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    toc: true
+    toc_depth: 3 
+    number_sections: true
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../latex-templates/report.tex
+  html_document:
+    df_print: paged
+    
+title: "A boring (academic) title or a clever title?"
+subtitle: "A secondary title"
+author: 
+- name: "YOUR NAME HERE"
+  affiliation: "Washington State University"
+keywords: |
+    multiple comparisons to control; multivariate chi-square distribution; nonlinear growth curves; Richard's curve; simulated critical points
+abstract: |
+  In this article we compare the \emph{empirical characteristic function} \citep{Tukey:1977, Becker:1988} to a \emph{moment-generating-functional form} to compute the proportion of hypotheses $m$ that are rejected under the null hypothesis. \vspace{0.25in}
+
+  \noindent Here is a second paragraph of the abstract (if necessary), and with the pipe notation it doesn't break. Notice it still needs to be indented. \vspace{0.25in}
+
+  \noindent Generally, we write this abstract last.  Often it is called the executive summary. It should succinctly summarize the entire document.  You can include references such as this one to the Appendices section \ref{sec:appendix} if necessary.
+sectionnumberdepth: 3
+titleEndnotes: "ENDNOTES"
+titleReferences: "REFERENCES"
+columnsReferences: 2
+titleTOC:  "TABLE OF CONTENTS"
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r,appendix-setup,message=FALSE}
+library(devtools);       # required for source_url
+
+path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
+source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
+
+```
+
+Below is the code to load the data and prepare it for analysis.
+
+```{r,appendix-secret,message=FALSE}
+
+path.project = "C:/_git_/WSU_STATS419_FALL2020/project-measure/";
+
+path.to.secret = "C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/_SECRET_/";
+
+measure.instructor = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, quote="", sep="|");
+
+
+
+
+getOne = c("hand.length", "hand.width", "hand.elbow", "elbow.armpit", "arm.reach", "foot.length", "floor.kneepit", "floor.hip", "floor.armpit");
+n.rows = nrow(measure.instructor);
+
+
+for(one in getOne)
+  {
+  measure.instructor[one] = NA;
+  }
+
+
+  
+for(i in 1:n.rows)
+  {  
+  measure.row = measure.instructor[i,];
+  for(one in getOne)
+    {
+    nidx = getIndexOfDataFrameColumns(measure.instructor, one);
+    
+    myleft = paste0(one,".left");
+      lidx = getIndexOfDataFrameColumns(measure.row, myleft);
+    myright = paste0(one,".right");
+      ridx = getIndexOfDataFrameColumns(measure.row, myleft);
+    
+      print(paste0(
+                  "left: ",myleft," --> ",lidx,
+                  " right: ",myright," --> ",ridx
+                  )
+            );
+      
+      row.m = mean(
+            c(as.numeric(unlist(measure.row[lidx])),
+            as.numeric(unlist(measure.row[ridx]))),
+            na.rm=TRUE);
+      
+    measure.instructor[i,nidx] =  row.m;
+    }
+  }
+
+
+
+
+#path.github = "https://raw.githubusercontent.com/this-IS-YOUR-PATH-TO-GITHUB/";
+#source_url( paste0(path.github,"master/functions/functions-project-measure.R") );
+
+# this is your function
+# put in the same "units"
+# merge left/right
+# build proportion data
+# and so on ... 
+# measure.df = prepareMeasureData(measure);
+
+```
+
+
+```{r}
+
+nrow = nrow(measure.instructor);
+ncol = ncol(measure.instructor);
+
+
+myUnits = tolower(measure.instructor$units);
+myUnits[myUnits=="inches"] = "in";
+myUnits[myUnits=="inch"] = "in";
+myUnits[myUnits=="\"in\""] = "in";
+
+measure.instructor$my.units = myUnits;
+
+myEthnicity = tolower(measure.instructor$ethnicity);
+myEthnicity[myEthnicity=="white"] = "w";
+myEthnicity[myEthnicity=="caucasian"] = "w";
+myEthnicity[myEthnicity=="caucasain"] = "w";
+myEthnicity[myEthnicity=="\"caucasian\""] = "w";
+myEthnicity[myEthnicity=="anglo"] = "w";
+myEthnicity[myEthnicity=="white non-hispanic"] = "w";
+myEthnicity[myEthnicity=="black"] = "b";
+myEthnicity[myEthnicity=="african american"] = "b";
+myEthnicity[myEthnicity=="hispanic"] = "h";
+myEthnicity[myEthnicity=="japanese"] = "j";
+myEthnicity[myEthnicity=="filipino"] = "f";
+myEthnicity[myEthnicity=="native american"] = "nat";
+myEthnicity[myEthnicity=="latin american"] = "l";
+myEthnicity[myEthnicity=="latino"] = "l";
+myEthnicity[myEthnicity=="\"asian/latino\""] = "al";
+myEthnicity[myEthnicity=="white-filipino"] = "wf";
+myEthnicity[myEthnicity=="asain"] = "a";
+myEthnicity[myEthnicity=="asian"] = "a";
+myEthnicity[myEthnicity=="\"asian\""] = "a";
+myEthnicity[myEthnicity=="chinese"] = "c";
+myEthnicity[myEthnicity=="laotian"] = "lao";
+myEthnicity[myEthnicity=="caucasian/asian"] = "ca";
+myEthnicity[myEthnicity=="white italian"] = "wi";
+myEthnicity[myEthnicity=="japanese italian"] = "ji";
+myEthnicity[myEthnicity=="pacific islander"] = "pi";
+myEthnicity[myEthnicity=="korean"] = "k";
+myEthnicity[myEthnicity=="indian"] = "i";
+
+measure.instructor$my.ethnicity = myEthnicity;
+
+myGender = tolower(measure.instructor$gender);
+myGender[myGender=="female"] = "f";
+myGender[myGender=="male"] = "m";
+myGender[myGender=="\"male\""] = "m";
+myGender[myGender=="\"female\""] = "f";
+myGender[myGender=="non-binary"] = "o";
+
+measure.instructor$my.gender = myGender;
+
+
+
+measure = measure.instructor;
+measure$new.units = "in";
+```
+
+
+```{r}
+
+skip = c("minutes", "age", "quality");
+## converting everything to inches
+for(r in 1:nrow)
+  {
+  row = measure[r,];
+  mynames = names(row);
+  if(row$my.units == "cm")
+    {
+    for(c in 1:ncol)
+      {
+      myname = mynames[c];
+      if(!is.element(myname, skip))
+        {
+        myval = unlist(row[c]);
+        print(paste0("r: ",r, " c: ", c," ... old: ",myval, "  ", is.numeric(myval), "   "));
+        if(is.numeric(myval))
+          {
+          newval = myval / 2.54; # 2.54 cm = 1 in
+          measure[r,c] = newval;
+  print(paste0(" --> ",newval));
+          }
+        }
+      }
+    }
+  }
+
+
+
+```
+
+
+```{r}
+
+#saveRDS(measure,"measure.rds");
+measure.short = measure[,c(1,2,4:6,17,24,27:50)];
+
+myNames = gsub(".NA","", colnames(measure.short), fixed=TRUE);
+colnames(measure.short) = myNames;
+colnames(measure.short)[11] = "eye.color";
+
+
+measure.df = removeDuplicatesFromDataFrameAllColumns(measure.short);
+
+#saveRDS(measure.df,"measure.df.rds");
+
+# 411f8b5c9500b7cc928c93dd1a0006b7
+# 7e6e6a69493f1d54a74ecdd4058ebadf 81a9f3915f64dc6edd329b89bea87d5e 182.88000
+# 	9eb3d5323b1a3c511c3b8c8038727737  "ee33e909372d935d190f4fcb2a92d542"  10.75000
+```
+
+
+```{r}
+
+final.df = measure.df;
+
+final.df = subsetDataFrame(final.df, "data_collector", "!=", "411f8b5c9500b7cc928c93dd1a0006b7");
+final.df = subsetDataFrame(final.df, "person_id", "!=", "81a9f3915f64dc6edd329b89bea87d5e");
+final.df = subsetDataFrame(final.df, "person_id", "!=", "\"ee33e909372d935d190f4fcb2a92d542\"");
+
+
+myEye = tolower(final.df$eye);
+myEye[myEye == "both"] = "b";
+myEye[myEye == "\"both\""] = "b";
+myEye[myEye == "equal"] = "b";
+myEye[myEye == "right"] = "r";
+myEye[myEye == "\"right\""] = "r";
+myEye[myEye == "left"] = "l";
+myEye[myEye == "\"left\""] = "r";
+myEye[myEye == "brown"] = NA;
+
+final.df$my.eye = factor(myEye);
+
+
+
+myWriting = tolower(final.df$writing);
+myWriting[myWriting == "right"] = "r";
+myWriting[myWriting == "\"right\""] = "r";
+myWriting[myWriting == "left"] = "l";
+myWriting[myWriting == "both"] = "b";
+
+
+final.df$my.writing = factor(myWriting);
+
+
+mySwinging = tolower(final.df$swinging);
+mySwinging[mySwinging == "right"] = "r";
+mySwinging[mySwinging == "rigth"] = "r";
+mySwinging[mySwinging == "\"right\""] = "r";
+mySwinging[mySwinging == "left"] = "l";
+mySwinging[mySwinging == "let"] = "l";
+mySwinging[mySwinging == "leftt"] = "l";
+mySwinging[mySwinging == "both"] = "b";
+
+final.df$my.swinging = factor(mySwinging);
+
+
+myEyeColor = tolower(final.df$eye.color);
+myEyeColor[myEyeColor == "brown"] = "br";
+myEyeColor[myEyeColor == "\"brown\""] = "br";
+myEyeColor[myEyeColor == "blue"] = "bl";
+myEyeColor[myEyeColor == "\"blue\""] = "bl";
+myEyeColor[myEyeColor == "green"] = "gr";
+myEyeColor[myEyeColor == "hazel"] = "ha";
+myEyeColor[myEyeColor == "grey"] = "g";
+myEyeColor[myEyeColor == "blue-green"] = "bl-gr";
+myEyeColor[myEyeColor == "blue/green"] = "bl-gr";
+myEyeColor[myEyeColor == "blue-grey"] = "bl-g";
+myEyeColor[myEyeColor == "grey-green"] = "gr-g";
+myEyeColor[myEyeColor == "black"] = "b";
+myEyeColor[myEyeColor == "left"] = NA;
+
+
+final.df$my.eye.color = factor(myEyeColor);
+
+
+final.df$my.gender = factor(final.df$my.gender);
+final.df$my.ethnicity = factor(final.df$my.ethnicity);
+
+# measure.nic = subsetDataFrame(measure.short, "data_collector", "==", "0185c7c2eed9d48197953305a817c8b1");
+# measure.nic2 = subsetDataFrame(measure.df, "data_collector", "==", "0185c7c2eed9d48197953305a817c8b1");
+
+# 411f8b5c9500b7cc928c93dd1a0006b7
+
+final.df$person_id = trimMe( gsub('"',"",final.df$person_id,fixed=TRUE) );
+
+
+
+
+saveRDS(final.df,"final.measure.rds");
+
+
+	utils::write.table(final.df, file="final.measure.txt", quote=FALSE, col.names=TRUE, row.names=FALSE, sep="|");
+
+
+
+cm.df = final.df;
+
+cols = c(3:7,19:27);
+
+for(col in cols)
+  {
+  cm.df[,col] = final.df[,col] * 2.54;
+  }
+
+cm.df$new.units = "cm";
+
+
+saveRDS(cm.df,"cm.final.measure.rds");
+
+
+	utils::write.table(cm.df, file="cm.final.measure.txt", quote=FALSE, col.names=TRUE, row.names=FALSE, sep="|");
+
+```
+
+
+# Cleanup NFL data
+```{r}
+
+convertHeightString = function(hstrvec)
+  {
+  res = c();
+  for(hstr in hstrvec)
+    {
+    tmp = strsplit(hstr, " ", fixed=TRUE)[[1]];
+    tmp1 = strsplit(tmp[1], "-", fixed=TRUE)[[1]];
+    inches = 0;
+    
+    inches = 12 * as.numeric(tmp1[1]);
+    if(!is.na(tmp1[2])) { inches = inches + as.numeric(tmp1 [2]); }
+    
+    if(!is.na(tmp[2]))
+      {
+      tmp2 = trimMe(tmp[2]);
+      myval = eval(parse(text=tmp2));
+      inches = inches + myval;
+      }
+    res = c(res,inches);
+    }
+  res;
+  }
+  
+convertHeightString("6-0 3/8");
+
+convertHeightString(c("6-0 3/8","6-4","6-5 1/4"));
+
+```
+
+
