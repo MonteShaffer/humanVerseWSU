@@ -10,6 +10,7 @@ buildLatexCorrelationTable = function(myData,
                                 myCaption = "Descriptive Statistics and Correlation Analysis",
                                 myNote = "Pearson pairwise correlations are reported; \\newline a two-side test was performed to report correlation significance.",
                                 myNames = colnames(myData),
+                                round.digits = c(1,2,2),  # M, SD, corr
                                 rotateTable=TRUE,
                                 rowDivider = TRUE,
                                 width.table = 0.99, # percent of textwidth
@@ -179,11 +180,11 @@ buildLatexCorrelationTable = function(myData,
   for(i in 1:ncol)
     {
     myR = paste0("\\textbf{",i,"} & \\textbf{",myNames[i],"} & ", 
-                 splitValue(myM[i],1), " &  & ",splitValue(mySD[i],2), " & ");
+                 splitValue(myM[i], round.digits[1]), " &  & ",splitValue(mySD[i], round.digits[2]), " & ");
     
     for(j in 1:(ncol-1))
       {
-      myR = paste0(myR, " & ", splitCorrelation(myCorr,i,j,2), " & ");
+      myR = paste0(myR, " & ", splitCorrelation(myCorr,i,j, round.digits[3]), " & ");
       }
     myR = paste0(myR, " & \\\\ ");
     writeLine(myR, myFile);
