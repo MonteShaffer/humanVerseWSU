@@ -94,6 +94,8 @@ sortMe.selection = function(vec, verbose=TRUE, timings=TRUE)
       {
       print(paste0("j -->", j, " i: ",i, " ... mymin: ",mymin, " [",min.idx,"]",
                           " ... mymax: ",mymax, " [",max.idx,"]" ));
+      #print(paste0("j -->", j, " i: ",i, " ... vec: ", paste0(vec, collapse=","), "\n",
+      #                                  " ... nvec: ", paste0(nvec, collapse=",") ) );
       }
     }
    # i loop
@@ -152,10 +154,6 @@ sortMe.insertion = function(vec, verbose=TRUE, timings=TRUE)
   # sorting laundry... everything out of basket onto bed in sorted "piles"
 
   nvec = c();
-
-
-
-
   for(i in 1:n)
     {
     myval = vec[i];
@@ -163,7 +161,7 @@ sortMe.insertion = function(vec, verbose=TRUE, timings=TRUE)
         {
 
         nvec = c(myval);
-         print(nvec);
+        # print(nvec);
 
         } else {
                 before = c();
@@ -174,17 +172,14 @@ sortMe.insertion = function(vec, verbose=TRUE, timings=TRUE)
                   cval = nvec[j]; # comparison val ... already in nvec ...
 
 ################
-          if(verbose)
-      {
-
-            myBefore = "";
-            if(length(before) > 0)
-            {
-              myBefore = paste0(before, collapse=",");
-            }
-
-
- }
+if(verbose)
+  {
+  myBefore = "";
+  if(length(before) > 0)
+    {
+    myBefore = paste0(before, collapse=",");
+    }
+  }
 ################
 
                 if(isFALSE(foundval))
@@ -207,7 +202,8 @@ sortMe.insertion = function(vec, verbose=TRUE, timings=TRUE)
                                               " . foundval: ", foundval,
                         " .. before: ", paste0(before, collapse=","),
                         " .. after: ", paste0(after, collapse=","),
-                        " ... nvec: ", paste0(nvec, collapse=",") ) ); #,
+                        " ... vec: ", paste0(vec, collapse=","),
+                        " ... nvec: ", paste0(nvec, collapse=",")     ) ); #,
                         # " ... vec: ", paste0(vec, collapse=",") ) );
 
    }
@@ -243,7 +239,6 @@ sortMe.insertion = function(vec, verbose=TRUE, timings=TRUE)
     {
     list("time" = elapse, "bigO" = bigO,  "bigO.a" = bigO.a, "sort" = nvec);
     } else { nvec; }
-
   }
 
 # set.seed(123); vec=sample(1:6);
