@@ -3,7 +3,7 @@ library(factoextra);
 library(ggplot2);
 library(psych);
 
-plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
+plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2), verbose=TRUE)
   {
   # Let's show cuts as plots
   # https://stackoverflow.com/questions/34948606/hclust-with-cutree-how-to-plot-the-cutree-cluster-in-single-hclust
@@ -24,7 +24,10 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
   dends = list();
   for(i in 1:k)
     {
+    if(verbose)
+    {
     print( paste0("Pruning ",i," of ",k) );
+    }
     keep.me <- dend.labels[i != groups];
     dends[[i]] = dendextend::prune(dend, keep.me);  # generics  #  dendextend
     }
@@ -42,7 +45,7 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2))
 
 
 perform.hclust = function(X, n.groups = 12, method = "ward.D2",
-          dist.method = "euclidean", dist.p = 2,
+          dist.method = "euclidean", dist.p = 2, verbose=TRUE,
           showPlots = TRUE, do.pvclust = FALSE, pvclust.parallel = FALSE )
   {
   times = c(); time.names = c();
@@ -81,7 +84,7 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
         time.names = c(time.names,"hclust-plot");
 
     time.start = Sys.time();
-    plot.hclust.sub(X.hclust, k=n.groups);
+    plot.hclust.sub(X.hclust, k=n.groups, verbose=verbose);
     time.end = Sys.time();
 
     elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
@@ -166,37 +169,50 @@ perform.kmeans = function(X, centers = 12, algorithm = "Hartigan-Wong",
 
 
 
-perform.EFA = function(X, n.factors=8, which="factanal",
+perform.EFA = function(X, n.factors=8, which="factanal", verbose=FALSE,
                           rotation = "varimax", scores = "regression",
                           fa.fm = "ml")
   {
   info = list();
 
   info$KMO = performKMOTest(X);
+  if(verbose)
+  {
   print( paste0(" KMO test has score: ",info$KMO$KMO," --> ",info$KMO$msg) );
+  }
 
   info$BST = performBartlettSphericityTest(X);
+  if(verbose)
+  {
   print( paste0(" Bartlett Test of Sphericity   --> ",info$BST$msg) );
+  }
 
   if(which == "factanal")
     {
+    X.factanal = stats::factanal(X, n.factors, rotation=rotation, scores=scores);
+
+    if(verbose)
+    {
     print(" Using stats::factanal ... ");
 
-    X.factanal = stats::factanal(X, n.factors, rotation=rotation, scores=scores);
+
     print(" Overview ");
     print(X.factanal);
 
 
     print(" Uniqueness as (1-$uniquenesses)");
+    }
       round(1 - X.factanal$uniquenesses, digits=2);
 
     #print(" Communalities");
     #  round(X.factanal$communalities, digits=2);
     # https://www.youtube.com/watch?v=C5RJvMaHJNo
 
-
+    if(verbose)
+    {
     print(" Loadings");
       print(X.factanal$loadings, digits=2, cutoff=0.25, sort=FALSE);
+    }
 
     graphics::plot(X.factanal$loadings[,1:2], type="n");
         graphics::text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
@@ -207,20 +223,27 @@ perform.EFA = function(X, n.factors=8, which="factanal",
       myScores = X.factanal.regression$scores;
       } else { myScores = X.factanal$scores; }
 
+    if(verbose)
+    {
     print(" Scores (Regression) ... saved ... ");
+    }
     X.factanal$scores = myScores;
     }
 
   if(which == "fa")
     {
-    print(" Using psych::fa ... ");
-
     X.factanal = psych::fa(X, n.factors, rotate=rotation, scores=scores, fm=fa.fm);
-    print(" Overview ");
+
+    if(verbose)
+    {
+      print(" Using psych::fa ... ");
+
+     print(" Overview ");
     print(X.factanal);
 
 
     print(" Uniqueness as (1-$uniquenesses)");
+    }
       round(1 - X.factanal$uniquenesses, digits=2);
 
     #print(" Communalities");
@@ -229,8 +252,11 @@ perform.EFA = function(X, n.factors=8, which="factanal",
     # factor1 = c(1,3,7,8,15);
     # psych::alpha( df[, factor1]);
 
+    if(verbose)
+    {
     print(" Loadings");
       print(X.factanal$loadings, digits=2, cutoff=0.25, sort=FALSE);
+    }
 
     graphics::plot(X.factanal$loadings[,1:2], type="n");
         graphics::text(X.factanal$loadings[,1:2],labels=names(X),cex=.7)
@@ -241,13 +267,18 @@ perform.EFA = function(X, n.factors=8, which="factanal",
       myScores = X.factanal.regression$scores;
       } else { myScores = X.factanal$scores; }
 
+    X.factanal$CFI = 1-((X.factanal$STATISTIC - X.factanal$dof)/(X.factanal$null.chisq - X.factanal$null.dof));
+
+    if(verbose)
+    {
     print(" Scores (Regression) ... saved ... ");
 
     print(" CFI ");
-    X.factanal$CFI = 1-((X.factanal$STATISTIC - X.factanal$dof)/(X.factanal$null.chisq - X.factanal$null.dof));
+
     print(X.factanal$CFI);
     print(" TLI ");
     print(X.factanal$TLI);
+    }
 
     X.factanal$scores = myScores;
     }
@@ -263,11 +294,15 @@ perform.EFA = function(X, n.factors=8, which="factanal",
 howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
                               eigen.cutoff = 1, alpha = 0.05, showPlots = TRUE,
                               fa.fm="minres", fa.fa="fa", fa.iter=50,
+                              verbose = TRUE,
                               fa.error.bars=FALSE, fa.se.bars=FALSE)
   {
   # for VSS, we will let the others run wild ...
   # eigen > 1 may have more than max.factors ...
+  if(verbose)
+  {
   print("  Paralell Analysis");
+  }
   fa = psych::fa.parallel(X, fm = fa.fm, fa = fa.fa, n.iter = fa.iter,
                         error.bars = fa.error.bars, se.bars=fa.se.bars);
 
@@ -277,8 +312,11 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
 
   choices = c();
 
+  if(verbose)
+  {
   print("=============================================");
   print("  VSS Analysis");
+  }
   myVSS = psych::vss(X, n = max.factors, rotate=rotate, plot=showPlots);
 
   myVSS.dataframe = as.data.frame(cbind(1:max.factors,myVSS$vss.stats[,c(1:3)]) );
@@ -297,14 +335,20 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
     }
 
   X.corr = stats::cor(X);
+  if(verbose)
+  {
   print("************************");
+  }
 
 
   X.corr.eigen = base::eigen(X.corr)$values;
   eigen.rule = X.corr.eigen[X.corr.eigen >= eigen.cutoff];
+  if(verbose)
+  {
   print( paste0("  Eigenvalues >= ",eigen.cutoff, "   ...  [ n = ",length(eigen.rule)," ]") );
   print(eigen.rule);
   print("************************");
+  }
 
   n.eigen = length(eigen.rule);
   if(n.eigen != 0)
@@ -343,12 +387,17 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
 
   votes = whichMaxFreq(choices);
 
+  if(verbose)
+  {
   for(i in 1:length(votes))
     {
     print( paste0("A ",votes[i], "-Factor solution has the most votes!") );
     }
   print("");
+  }
 
+  if(verbose)
+  {
   if(!isFALSE(strong))
     {
     print("Due to Optimal Coordinantes and Parallel Analysis Agreement,");
@@ -358,6 +407,7 @@ howManyFactorsToSelect = function(X, max.factors = 12, rotate = "varimax",
   print("  Final Analysis of VSS, Eigen, nFactors");
   print(myTable);
   print("");
+  }
 
   list("fa" = fa, "eigen" = eigen.rule, "table" = myTable, "votes" = votes , "strongly" = strong);
   }
