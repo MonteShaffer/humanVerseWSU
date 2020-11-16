@@ -32,6 +32,7 @@ get.sign = function(x, tol = sqrt(.Machine$double.eps))
 # 
 bitShiftR = function(x, bits, unsigned=FALSE)
   {
+  # as it gets to big, goes to "0" for positive, "-1" for negative: the signed bit
   if(!is.negative(x) | unsigned) { return( bitwShiftR(x,bits) ); }
 
   # if(!signed) { return( bitwShiftR(x,bits) ); }        # >>
@@ -62,19 +63,24 @@ bitShiftL = function(x, bits, unsigned=FALSE)
   { 
   # currently single bit, built-in functions could do vector
   # if at end, we stay at end ? what about postive?
-  if(abs(x) <= 2^31) { return( get.sign(x) * 2^31 ); }
+  # if(x <= -2^31) { return( -2^31 ); }
   if(!is.negative(x) | unsigned) 
     { 
     tmp = suppressWarnings( bitwShiftL(x,bits) );                # <<<
-    if(is.na(tmp)) { tmp = -1 * 2^31; } 
+    if(is.na(tmp)) { tmp = -2^31; }  # 0x80 << 24
     return( tmp ); 
     }
+  # bitShiftL( 0x80, (w %% 32))
   # if(!signed) { return( bitwShiftL(x,bits) ); }        # <<
   # if(is.positive(x)) { return( bitwShiftL(x,bits) ); }
   ## warning is OVERFLOW ... should return ... -2147483648
   ## -1 * 2^31
   tmp = suppressWarnings( -bitwShiftL(-x,bits) ); # - 1;                  # <<<
-  if(is.na(tmp)) { tmp = -1 * 2^31; } # overflowing ... shifted too far
+  if(is.na(tmp)) 
+    { 
+    tmp = 2^31; 
+    if(is.negative(x)) { tmp = -1 * tmp; }
+    } # overflowing ... shifted too far
   tmp;
   }
 # # bitShiftLs = function(x, bits)  # signed  # <<

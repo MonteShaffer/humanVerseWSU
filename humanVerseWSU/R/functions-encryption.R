@@ -81,7 +81,9 @@ charCodeAt = function(str,idx)
   idx = bitShiftR(w,5)+1;
   # x[w>>5] |= 0x80 << ((w)%32);
   # nx = bitwOr( x[idx], bitShiftL( 0x80, (w %% 32)) );
-  nx = bitOr( x[idx], bitShiftL( 0x80, (w %% 32)) );  # prevent some overflow
+  nx = bitOr( x[idx], bitShiftL( 0x80, (w %% 32), unsigned=TRUE) );  # prevent some overflow
+
+
   x[idx] = nx;
   x[L] = w;
 
