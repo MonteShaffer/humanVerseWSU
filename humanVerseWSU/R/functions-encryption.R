@@ -240,6 +240,7 @@ charCodeAt = function(str,idx)
 
 .md5_out = function(xb = c(-1652748130, -2101990601, 891148395, -702962622))
   {
+  hex = "0123456789abcdef";
   o = "";
   for(i in 0:15)
     {
