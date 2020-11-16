@@ -236,7 +236,18 @@ charCodeAt = function(str,idx)
   }
 
 
-
+.md5_out = function(xb = c(-1652748130, -2101990601, 891148395, -702962622))
+  {
+  o = "";
+  for(i in 0:15)
+    {
+    idx = 1 + bitwAnd( bitwShiftR( xb[ (bitwShiftR(i,2) + 1)] ,  ((i%%4)*8+4)), 0xF);
+      o = paste0(o, charAt(hex,idx) );
+    idx = 1 + bitwAnd( bitwShiftR( xb[ (bitwShiftR(i,2) + 1)] ,  ((i%%4)*8)), 0xF);
+      o = paste0(o, charAt(hex,idx) );
+    }
+  o;
+  }
 
 
 #' md5
