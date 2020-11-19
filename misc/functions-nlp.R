@@ -5,9 +5,9 @@ library(tm);
 # tm::stemDocument(c("computers", "computation", "complicated", "complication"));
 # map POS ... to element for LSA prep ...
 buildNgrams = function(str, n=5, 
-                    do.pos=TRUE,
-                    verbose = TRUE,
-                    do.stemming = FALSE, # tm::stemDocument ... not hard to ADD
+                    do.pos = TRUE,
+                    verbose = FALSE,
+                    do.stemming = TRUE, # tm::stemDocument ... not hard to ADD
                     do.variants = FALSE, # TODO
                     inflate = FALSE, # n-grams and modifiers
                                     # necessarily a 5 gram will have its children
@@ -18,8 +18,11 @@ buildNgrams = function(str, n=5,
 ########## start of function #######  
   
   # first 3 are required ...
-  gram.types = c("words", ".tags", "|simple", 
-                                    "words.tags", "words|simple");
+  gram.types = c("words", ".tags", "|simple",
+                        "words.tags", "words|simple",
+                "word+",
+                        "word+.tags", "word+|simple"
+                                    );
   # if POS exists, we can perform the variants by switching modifiers ...
   grams = initGrams(gram.types);
   ####  TODO ::: after walk 
@@ -27,12 +30,7 @@ buildNgrams = function(str, n=5,
   # what to do about contractions can't and quotations ?
 ### str = my.story;
   # str = "Can't you get anything right?";
-  str = gsub("^[^","'",str,fixed=TRUE);
-  str = gsub("^]^","'",str,fixed=TRUE);
-  str = gsub("^-^"," | ",str,fixed=TRUE);
-  str = gsub("-"," ",str,fixed=TRUE);  # should wood-cutter become wood cutter or woodcutter
-  str = gsub("\r\r\n"," | ",str,fixed=TRUE);
-  str = gsub("\r\n"," | ",str,fixed=TRUE);
+  str = prepStringGram(str);
   # if(do.pos)
     {
     my.pos = performPOS(str);
@@ -67,7 +65,7 @@ buildNgrams = function(str, n=5,
   mytags.s = list(); # simple "keys"  adj
   
 ########## start of sentences #######   
-  for(i in 58:n.sentences)
+  for(i in 1:n.sentences)
     {
     print(paste0("Sentence [",i,"] of ",n.sentences));
     
@@ -161,7 +159,7 @@ buildNgrams = function(str, n=5,
       
 if(verbose) 
 {
-print(paste0("[",w,"] ... word: [",s.word, "] r: [",r.word,"] --> f: [",f.word,"] p: [",p.word,"]"));
+print(paste0("[",w,"] ... word: [",s.word, "] r: [",r.word,"] --> f: [",f.word,"] p: [",p.word,"] ==> ", tm::stemDocument(r.word) ));
 }    
       if(is.element(my.feature, tags.info$skip ) || skip.me)  # skip this ...
         {
@@ -227,7 +225,8 @@ if(verbose)
                         # not the POS stacks
                         if(is.element(n.word, my.stopwords))
                             {
-                            for(gram.type in c("words","words.tags","words|simple"))
+                            for(gram.type in c("words","words.tags","words|simple",
+                                               "word+","word+.tags","word+|simple"))
                               {
                               ginfo = updateGrams(grams, my.stack, gram.type, tags.info, do.stemming);
                                 grams    = ginfo$grams;
@@ -240,6 +239,12 @@ if(verbose)
                                     my.stack[["words"]] = pushVector(n.word, my.stack[["words"]]$vec);
                                     my.stack[["words.tags"]] = pushVector(paste0(n.word,f.word), my.stack[["words.tags"]]$vec);
                                     my.stack[["words|simple"]] = pushVector(paste0(n.word,p.word), my.stack[["words|simple"]]$vec);
+                                    
+                                    t.word = tm::stemDocument(n.word);
+                                    # print(paste0("stemmed: ", t.word));
+                                    my.stack[["word+"]] = pushVector(t.word, my.stack[["word+"]]$vec);
+                                    my.stack[["word+.tags"]] = pushVector(paste0(t.word,f.word), my.stack[["word+.tags"]]$vec);
+                                    my.stack[["word+|simple"]] = pushVector(paste0(t.word,p.word), my.stack[["word+|simple"]]$vec);
                                     }
                         # gram.types[gram.types != "words"]
                         my.stack[[".tags"]] = pushVector(f.word, my.stack[[".tags"]]$vec);
@@ -322,10 +327,10 @@ truncateWordVector = function(words, cut = 3) # words is vector, in order
 library(tm);
 library(SentimentAnalysis);
 
-doSentimentAnalysis = function(str)
+doSentimentAnalysis = function(str, qdap=FALSE)
   {
   # https://opendatascience.com/sentiment-analysis-in-r-made-simple/
-  sentiment = analyzeSentiment(str);
+  sentiment = SentimentAnalysis::analyzeSentiment(str);
   
   
   # convertToBinaryResponse(sentiment)$SentimentGI 
@@ -338,8 +343,10 @@ doSentimentAnalysis = function(str)
   
   pos = 0;
   neg = 0;
-  keys = c("GI","HE","LM","QDAP");
+  
   keys = c("GI","HE","LM"); # ,"QDAP");  # "Can't you get anything right?"
+  if(qdap) { keys = c("GI","HE","LM","QDAP"); }
+  
   for(key in keys)
     {
     pos = pos + sentiment[[paste0("Positivity",key)]];
