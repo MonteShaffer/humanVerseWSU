@@ -23,8 +23,10 @@ subsetPOS = function(apos, sub=c(1))
   }
 
 
-simplifyPOS = function(my.table,tags,tags.keyed)
+simplifyPOS = function(my.table, tags.info)
   {
+  tags = tags.info$tags;
+  tags.keyed = tags.info$tags.keyed;
   keys = sort(names(tags));
   n.keys = length(keys)
   count.keys = list();
@@ -127,6 +129,7 @@ countPunctuation = function(sentence)
 removePunctuationFromString = function(str)
   {
   countMe = c(".",";",":",",","?","!","^[^","^]^");
+  cn = length(countMe);
   for(i in 1:cn)
     {
     str = gsub(countMe[i],"",str,fixed=TRUE);
@@ -242,75 +245,9 @@ buildCustomWordList = function(grimms = c("wolf/wolves", "bear/s", "fox/es", "bi
   }
 
 
-keyMyTags = function(tags)
+setupTags = function()
   {
-  nam = names(tags);
-  res = list();
-  for(na in nam)
-    {
-    ta = tags[[na]];
-    for(tag in ta)
-      {
-      res[[tag]] = na;
-      }
-    }
-  res;
-  }
-  
-  
-library(tm);
-# tm::stemDocument(c("computers", "computation", "complicated", "complication"));
-# map POS ... to element for LSA prep ...
-buildNgrams = function(str, n=5, 
-                    do.pos=TRUE,
-                    do.stemming = TRUE, 
-                    do.variants = FALSE,
-                    inflate = FALSE, # n-grams and modifiers
-                    my.stopwords = NULL # my.stopwords = stop.snowball
-                                      ) # preferably one sentence at a time, already with a stop break
-  {
-  # if POS exists, we can perform the variants by switching modifiers ...
-  grams = list();
-  for(i in 1:n) 
-    { 
-    grams[[i]] = list("disjoint" = list(), 
-                      "inflated" = list(),
-                      "variants" = list(),
-                      "pos" = list(), # replace with GENERIC if stop word
-                  );  # add stemmed? variants? inflation?
-    }
-  ####  TODO ::: after walk 
-  # if we run across punctuation, we treat as a stop ...
-  # what to do about contractions can't and quotations ?
-  str = my.story;
-  # str = "Can't you get anything right?";
-  str = gsub("^[^","'",str,fixed=TRUE);
-  str = gsub("^]^","'",str,fixed=TRUE);
-  str = gsub("^-^"," | ",str,fixed=TRUE);
-  str = gsub("-"," ",str,fixed=TRUE);  # should wood-cutter become wood cutter or woodcutter
-  str = gsub("\r\r\n"," | ",str,fixed=TRUE);
-  str = gsub("\r\n"," | ",str,fixed=TRUE);
-  # if(do.pos)
-    {
-    my.pos = performPOS(str);
-    }
-  
-  # test = "Monte's friend and son Alexander can't read well but he is not yet five years old.";
-  # t.pos = performPOS(test);
-  # substr(test, 6,7); ## drop POS from choices as a word
-  # https://stackoverflow.com/questions/28720174/negation-handling-in-nlp
-  # substr(test, 34,35);    ## ca   [MD] 
-  # substr(test, 36,38);    ## n't  [RB]
-  ##  CC is "and" and "but"
-  ##  RB is "not" and "n't" and "yet"
-  # substr(test, 60,62);    ## not  [RB]
-  # substr(test, 68,71);    ## five  [CD]
-  
-  
-  my.sentences   = my.pos$sentences;
-  my.words       = my.pos$words;
-  n.sentences    = length(my.sentences);
-# https://www.sketchengine.eu/penn-treebank-tagset/ 
+  # https://www.sketchengine.eu/penn-treebank-tagset/ 
 # https://stackoverflow.com/questions/1833252/java-stanford-nlp-part-of-speech-labels#1833718  
   
   # all.tags = NLP::Penn_Treebank_POS_tags;
@@ -318,6 +255,8 @@ buildNgrams = function(str, n=5,
   stop.tags = c(":", "."); # hard stops ... 
   # https://catalog.ldc.upenn.edu/docs/LDC95T7/cl93.html
   # ? NLP::Penn_Treebank_POS_tags
+  #   
+  # do I have all.tags?
   skip.tags = c(",", "``", "''","$","(",")","-","LS");
   # "," comma (e.g., Oxford comma) maybe is a pause ...
   # update classifier to separate intent? Or maybe it already is...
@@ -348,166 +287,26 @@ buildNgrams = function(str, n=5,
   
   tags.info = list("stop" = stop.tags, "skip" = skip.tags,
                     "tags" = tags, "tags.keyed" = tags.keyed);
-                    
-  # I could replace a stop-word with its generic POS
-  # list$pos
   
-  # do I have all.tags?
-  
-  
-  sentiment = NULL;
-  mytags = list();  # raw, we don't know if we have all the keys, and if they are unique
-  mytags.s = list(); # simple "keys"  adj
-  
-  option.stack = c("words", "tags", "simple", "words.tags", "words|simple");
-
-  for(i in 1:n.sentences)
-    {
-    my.stack = initStack(option.stack);
-    my.stack = c();   # words  ... we will STEM at last minute ...
-    my.stack.t = c(); # tags  ... NN
-    my.stack.ts = c(); # tags.simple  ... noun
-    my.sentence = as.data.frame(my.sentences[i]);
-    
-      my.id = my.sentence$id;
-      idx.start =  my.sentence$start;
-      idx.end   =  my.sentence$end;
-    s.sentence = substr(str, idx.start, idx.end);
-        sinfo = doSentimentAnalysis(s.sentence); # expensive
-    sentiment = rbind(sentiment, c(i, sinfo) );
-        my.words.idx = my.sentence$features[[1]]$constituents;
-    
-    mytags[[i]] = tabularizePOS(my.words,my.words.idx); # still in unique data format
-    mytags.s[[i]] = simplifyPOS(mytags[[i]],tags,tags.keyed);
-    
-    # words from POS may be different than actual words; e.g., "can't"
-    words.r = getRawWords(s.sentence); 
-    r = 1;
-    # we will use these to compare ...  
-    # no punctuation, lower case ... no knowledge of POS
-    
-    nw = length(my.words.idx);
-    w = 1;
-    #for(w in 1:nw)
-    # "Can't you get anything right?" ... 67% positive
-    while(w <= nw)
-      {
-      my.word.idx = my.words.idx[w];
-      my.word = as.data.frame( subset(my.words, id==my.word.idx) );
-        my.feature = my.word$features[[1]]$POS;
-      
-      
-      
-      
-      
-      if(is.element(my.feature, stop.tags))
-        {
-        # hard stop ... 
-        ginfo = updateGrams(grams, my.stack, "default", tags.info, do.stemming); #
-        grams = ginfo$grams; # my.stack = ginfo$stack; # emptied so irrelevant
-        my.stack = c();
-        ginfo = updateGrams(grams, my.stack.t, "tags", tags.info, do.stemming); # we replace stop words with TAGS
-        grams = ginfo$grams; # my.stack.t = ginfo$stack; # emptied so irrelevant
-        my.stack.t = c();
-        ginfo = updateGrams(grams, my.stack.t, "tags.simple", tags.info, do.stemming); # we replace stop words with TAGS
-        grams = ginfo$grams; # my.stack.t = ginfo$stack; # emptied so irrelevant
-        my.stack.ts = c();
-        } else {
-                feature.str = paste0(".",my.feature);
-                pos.str = paste0("|",tags.keyed[[my.feature]]);
-                
-                s.word = substr(s.sentence, my.word$start, my.word$end);
-                if(!is.element(my.feature, tags$proper)) { s.word = tolower(s.word); } # NNP are proper nouns # lower case ...
-                r.word = words.r[r];
-                n.word = s.word;
-                if(tolower(s.word) != tolower(r.word))
-                  {
-                  # "can't" is now "cant" [words.r] ... and linked to POS "ca" and "n't"
-                  # we skip one of the idx and update "cant" back to "can't"
-                
-                  w = 1 + w;
-                  next.word.idx = my.words.idx[w];
-                    next.word = as.data.frame( subset(my.words, id==next.word.idx) );
-                    next.feature = next.word$features[[1]]$POS;
-                  stop("monte");  
-                  # append -feautre to previous
-                  }
-                
-                
-                # let's try and keep "auto-pop" from happening
-                if(length(my.stack$vec) == n)
-                  {
-                  ginfo = updateGrams(grams, my.stack, "default", tags.info, do.stemming); #
-                  grams = ginfo$grams;
-                  pinfo = popVector(my.stack$vec);
-                  my.stack$vec = pinfo$vec; pval = pinfo$val;
-                  }
-                if(length(my.stack.t$vec) == n)
-                  {
-                  ginfo = updateGrams(grams, my.stack.t, "tags", tags.info, do.stemming); #
-                  grams = ginfo$grams;
-                  pinfo = popVector(my.stack.t$vec);
-                  my.stack.t$vec = pinfo$vec; pval = pinfo$val;
-                  }
-                if(length(my.stack.ts$vec) == n)
-                  {
-                  ginfo = updateGrams(grams, my.stack.ts, "tags.simple", tags.info, do.stemming); #
-                  grams = ginfo$grams;
-                  pinfo = popVector(my.stack.ts$vec);
-                  my.stack.ts$vec = pinfo$vec; pval = pinfo$val;
-                  }
-                
-                
-                # what if it is a stop word? ... 
-                # that will only update the regular stack
-                # not the POS stacks
-                if(is.element(n.word, my.stopwords))
-                    {
-                    ginfo = updateGrams(grams, my.stack, "default", tags.info, do.stemming); #
-                    grams = ginfo$grams; # my.stack = ginfo$stack; # emptied so irrelevant
-                    my.stack = c();
-                    } else {
-                            my.stack = pushVector(n.word, my.stack$vec);
-                            }
-                
-                my.stack.t = pushVector(feature.str, my.stack.t$vec);
-                my.stack.ts = pushVector(pos.str, my.stack.ts$vec);
-                # ... soft stop will update my.stack but not my tags
-                # use push/pop when > 5 ?
-                # https://stackoverflow.com/questions/28687806/a-better-way-to-push-and-pop-to-from-lists-in-r
-                # push/pop list vs vector ... just NULL and append to vecotr?
-                
-                ### stack full = update grams, otherwise just update stack ...
-                # is.stop = 
-          
-          
-          
-                }
-        w = 1 + w;
-        }
-    
-      }
-  
-  rownames(sentiment) = NULL:
-  colnames(sentiment) = c("sentence", "positive", "negative");
-  sentiment = as.data.frame(sentiment);
-  
-  # pause = c(".",";",":",",","?","!","^[^","^]^");  # Let's only do this if POS exists
-  # can I simplify POS, more basic?
-  
+  tags.info;
   }
 
-truncateWordVector = function(words, cut = 3) # words is vector, in order
+keyMyTags = function(tags)
   {
-  words.lower = tolower(words);
-  # bag of words, order doesn't matter
-  words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
-    colnames(words.table) = c("word","count");
-  
-  comparison = words.table$count > cut;  
-  new.table = words.table[comparison,]; 
-  new.table$word;  # just return the vector of words that meet criteria ...
+  nam = names(tags);
+  res = list();
+  for(na in nam)
+    {
+    ta = tags[[na]];
+    for(tag in ta)
+      {
+      res[[tag]] = na;
+      }
+    }
+  res;
   }
+  
+  
 
 summarizeGenderLanguage = function(words) # words is vector, in order
   {
@@ -727,15 +526,19 @@ countVowelsInString = function(str)
   n.vowels;
   }
 
-computeReadability = function(n.sentences, n.words, syllables=NULL)
+computeReadability = function(n.sentences, syllables=NULL)
   {
-  n = length(syllables);
+  n.words = length(syllables);
   n.syllables = 0;
-  for(i in 1:n)
+  for(i in 1:n.words)
     {
     my.syllable = syllables[[i]];
     n.syllables = my.syllable$syllables + n.syllables;
     }
+  
+  if(n.sentences == 0) { stop("zero sentences not allowed!"); }
+  if(n.words == 0) { stop("zero words not allowed!"); }
+  
   # Flesch Reading Ease (FRE):
   FRE = 206.835 - 1.015 * (n.words/n.sentences) - 84.6 * (n.syllables/n.words);
   # Flesh-Kincaid Grade Level (FKGL):
@@ -743,7 +546,7 @@ computeReadability = function(n.sentences, n.words, syllables=NULL)
   # FKGL = -0.384236 * FRE - 20.7164 * (n.syllables/n.words) + 63.88355;
   # FKGL = -0.13948  * FRE + 0.24843 * (n.words/n.sentences) + 13.25934;
   
-  list("FRE" = FRE, "FKGL" = FKGL); 
+  list("FRE" = FRE, "FKGL" = FKGL, "syllables" = n.syllables, "words" = n.words); 
   }
 
 
