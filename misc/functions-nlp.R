@@ -8,7 +8,10 @@ buildNgrams = function(str, n=5,
                     do.pos = TRUE,
                     verbose = FALSE,
                     do.stemming = TRUE, # tm::stemDocument ... not hard to ADD
-                    do.variants = FALSE, # TODO
+                    do.variants = FALSE, # TODO  
+                                      # final.rows = cbind(i, final.words, final.tags);
+                                      # above would allow for modifier inflation ...
+                                      # would have to look forward/backward to do
                     inflate = FALSE, # n-grams and modifiers
                                     # necessarily a 5 gram will have its children
                     my.stopwords = NULL # my.stopwords = stop.snowball
@@ -24,7 +27,7 @@ buildNgrams = function(str, n=5,
                         "word+.tags", "word+|simple"
                                     );
   # if POS exists, we can perform the variants by switching modifiers ...
-  grams = initGrams(gram.types);
+  grams = initGrams(n,gram.types);
   ####  TODO ::: after walk 
   # if we run across punctuation, we treat as a stop ...
   # what to do about contractions can't and quotations ?
@@ -68,6 +71,7 @@ buildNgrams = function(str, n=5,
   sentiment = NULL;
   mytags = list();  # raw, we don't know if we have all the keys, and if they are unique
   mytags.s = list(); # simple "keys"  adj
+  final = NULL;
   
 ########## start of sentences #######   
   for(i in 1:n.sentences)
@@ -101,11 +105,11 @@ buildNgrams = function(str, n=5,
     case = rbind(case, c(i, unlist(info.c)) );
         info.p = countPunctuation(s.sentence);
     punctuation = rbind(punctuation, c(i, unlist(info.p)) );
-        info.pp = summarizePersonalPronouns(words.r);
+        info.pp = countPersonalPronouns(words.r);
     PP = rbind(PP, cbind(i, rownames(info.pp), info.pp) );
-        info.ge = cbind(i, summarizeGenderLanguage(words.r));
+        info.ge = cbind(i, countGenderLanguage(words.r));
     GENDER = rbind(GENDER, info.ge );
-        info.gr = cbind(i, summarizeCustomWordList(words.r));
+        info.gr = cbind(i, countCustomWordList(words.r));
     GRIMM = rbind(GRIMM, info.gr );
 
     
@@ -118,6 +122,8 @@ buildNgrams = function(str, n=5,
     #for(w in 1:nw)
     # "Can't you get anything right?" ... 67% positive
     my.stack = initStack(gram.types);
+    final.words = c(); # full list, unstacked ... these would allow to later matching
+    final.tags = c();  # full list, unstacked
             # grams = initGrams(gram.types);       
     pos.stopped = TRUE;
     word.stopped = FALSE;
@@ -251,6 +257,7 @@ if(verbose)
                             word.stopped = TRUE;
                             } else {
                                     word.stopped = FALSE;
+                                    final.words = c(final.words, n.word);
                                     my.stack[["words"]] = pushVector(n.word, my.stack[["words"]]$vec);
                                     my.stack[["words.tags"]] = pushVector(paste0(n.word,f.word), my.stack[["words.tags"]]$vec);
                                     my.stack[["words|simple"]] = pushVector(paste0(n.word,p.word), my.stack[["words|simple"]]$vec);
@@ -262,6 +269,7 @@ if(verbose)
                                     my.stack[["word+|simple"]] = pushVector(paste0(t.word,p.word), my.stack[["word+|simple"]]$vec);
                                     }
                         # gram.types[gram.types != "words"]
+                        final.tags = c(final.tags, f.word);
                         my.stack[[".tags"]] = pushVector(f.word, my.stack[[".tags"]]$vec);
                         my.stack[["|simple"]] = pushVector(p.word, my.stack[["|simple"]]$vec);
                                     
@@ -293,10 +301,19 @@ if(verbose)
         grams = ginfo$grams;
       my.stack = initStack(gram.types);
       
+      final.rows = cbind(i, final.words, final.tags);
+      #print(final.rows);
+      #print(final.tags);
+      #print(final.words);
+      final = rbind(final, final.rows);
+      #stop("final");
     
       ### end of sentences ...
       }
   
+  final = as.data.frame(final);
+    rownames(final) = NULL;
+    colnames(final)[1] = c("sentence");
   
   sentiment = as.data.frame(sentiment);
     rownames(sentiment) = NULL;
@@ -339,7 +356,8 @@ if(verbose)
   # pause = c(".",";",":",",","?","!","^[^","^]^");  # Let's only do this if POS exists
   # can I simplify POS, more basic?
   
-  list("grams" = grams, "sentiment" = sentiment, "readability" = readability,
+  list("grams" = grams, "final" = final, 
+        "sentiment" = sentiment, "readability" = readability,
         "mytags" = mytags, "mytags.s" = mytags.s,
         "case" = case, "punctuation" = punctuation,  "PP" = PP,
         "GENDER" = GENDER, "GRIMM" = GRIMM

@@ -17,7 +17,7 @@ cleanupHTMLentities = function(str, find="fs", replace="rs")
 
 cleanupAndPerformReadability = function(str)
 {
- # Micro$oft
+ # Micro$oft 
   str = gsub("’","'",str,fixed=TRUE);
   str = gsub("”",'"',str,fixed=TRUE);
   str = gsub("“",'"',str,fixed=TRUE);

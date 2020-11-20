@@ -98,7 +98,7 @@ pushVector = function(val, vec, n.max=1+length(vec), method="FIFO")
   }
 
 
-initGrams = function(gram.types)
+initGrams = function(n,gram.types)
   {
   grams = list();
   
@@ -144,7 +144,7 @@ resetStackElement = function(my.stack, gram.type)
 # gvec = c("monte","says","hi","to","his","son","alex");
 # gramCombinations(gvec)
 gramCombinations = function(gvec, nv = length(gvec), sep="*")
-  {
+  { 
  # print(gvec);
   # return all permutations ... maintain order ... create as a list of each length
   result = list();
