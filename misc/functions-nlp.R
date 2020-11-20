@@ -58,6 +58,11 @@ buildNgrams = function(str, n=5,
   # list$pos
 
   
+  case = NULL;
+  punctuation = NULL;
+  PP = NULL;
+  GENDER = NULL;
+  GRIMM = NULL;
   
   readability = NULL;
   sentiment = NULL;
@@ -92,7 +97,17 @@ buildNgrams = function(str, n=5,
         rinfo = computeReadability(1,rinfo.s);
         # countSyllablesInWord words
     readability = rbind(readability, c(i, unlist(rinfo)) );
-    
+        info.c = countWordsInString(s.sentence);
+    case = rbind(case, c(i, unlist(info.c)) );
+        info.p = countPunctuation(s.sentence);
+    punctuation = rbind(punctuation, c(i, unlist(info.p)) );
+        info.pp = summarizePersonalPronouns(words.r);
+    PP = rbind(PP, cbind(i, rownames(info.pp), info.pp) );
+        info.ge = cbind(i, summarizeGenderLanguage(words.r));
+    GENDER = rbind(GENDER, info.ge );
+        info.gr = cbind(i, summarizeCustomWordList(words.r));
+    GRIMM = rbind(GRIMM, info.gr );
+
     
     r = 1;
     # we will use these to compare ...  
@@ -290,14 +305,46 @@ if(verbose)
     rownames(readability) = NULL;
     colnames(readability)[1] = c("sentence");
   
+  case = as.data.frame(case);
+    rownames(case) = NULL;
+    colnames(case)[1] = c("sentence");
+  
+  punctuation = as.data.frame(punctuation);
+    rownames(punctuation) = NULL;
+    colnames(punctuation)[1] = c("sentence");
+  
+  PP = as.data.frame(PP);
+    rownames(PP) = NULL;
+    colnames(PP)[1] = c("sentence");
+    colnames(PP)[2] = c("row.type");
+  
+  
+  GENDER = as.data.frame(GENDER);
+    rownames(GENDER) = NULL;
+    colnames(GENDER)[1] = c("sentence");
+  
+  GRIMM = as.data.frame(GRIMM);
+    rownames(GRIMM) = NULL;
+    colnames(GRIMM)[1] = c("sentence");
+  
+  
+  # case = NULL;
+  # punctuation = NULL;
+  # PP = NULL;
+  # GENDER = NULL;
+  # GRIMM = NULL;
+  
+  
+  
   # pause = c(".",";",":",",","?","!","^[^","^]^");  # Let's only do this if POS exists
   # can I simplify POS, more basic?
   
   list("grams" = grams, "sentiment" = sentiment, "readability" = readability,
-        "mytags" = mytags, "mytags.s" = mytags.s);
+        "mytags" = mytags, "mytags.s" = mytags.s,
+        "case" = case, "punctuation" = punctuation,  "PP" = PP,
+        "GENDER" = GENDER, "GRIMM" = GRIMM
+        );
   }
-
-
 
 
 

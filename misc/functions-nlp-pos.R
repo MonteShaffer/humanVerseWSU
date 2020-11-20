@@ -139,7 +139,7 @@ removePunctuationFromString = function(str)
   str;
   }
 
-countWordsInSentence = function(str)  # preferably a sentence, this is large ...
+countWordsInString = function(str)  # preferably a sentence, this is large ...
   {
   str = removePunctuationFromString(str);
   words = strsplit(str," ",fixed=TRUE)[[1]];
@@ -152,12 +152,12 @@ countWordsInSentence = function(str)  # preferably a sentence, this is large ...
                   "upper" = c(), 
                   "ucfirst" = c());
   
-  syllables = list();
+  ####syllables = list();
   
   for(i in 1:wc)
     {
     word = words[i];
-    syllables[[i]] = countSyllablesInWord(word);
+    ####syllables[[i]] = countSyllablesInWord(word);
     # https://en.wikipedia.org/wiki/Gunning_fog_index
     
     word.lower = tolower(word);
@@ -177,20 +177,27 @@ countWordsInSentence = function(str)  # preferably a sentence, this is large ...
                   }
     }
 
-  count.sentences = 1;
+  # count.sentences = 1;
   
-  list("words" = words, "details" = details, "syllables" = syllables,
-      "readability" = computeReadability(count.sentences, count.words, syllables),
-      "count.words" = count.words, "count.lower" = count.lower, 
-      "count.upper" = count.upper, "count.ucfirst" = count.ucfirst);
+  # list("words" = words, "details" = details, "syllables" = syllables,
+  #     "readability" = computeReadability(count.sentences, syllables),
+  #     "count.words" = count.words, "count.lower" = count.lower, 
+  #     "count.upper" = count.upper, "count.ucfirst" = count.ucfirst);
 
+  list("count.words" = count.words, "count.lower" = count.lower, 
+      "count.upper" = count.upper, "count.ucfirst" = count.ucfirst);
   }
 
 
 
 
-summarizeCustomWordList = function(all.words = buildCustomWordList())
+countCustomWordList = function(words, all.words = buildCustomWordList())
   {
+  words.lower = tolower(words);
+  # bag of words, order doesn't matter
+  words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+    colnames(words.table) = c("word","count");
+    
   my.grimm = NULL;
   for(a in 1:length(all.words))
     {
@@ -308,7 +315,7 @@ keyMyTags = function(tags)
   
   
 
-summarizeGenderLanguage = function(words) # words is vector, in order
+countGenderLanguage = function(words) # words is vector, in order
   {
   words.lower = tolower(words);
   # bag of words, order doesn't matter
@@ -384,7 +391,7 @@ summarizeGenderLanguage = function(words) # words is vector, in order
   my.gender;
   }
 
-summarizePersonalPronouns = function(words) # words is vector, in order
+countPersonalPronouns = function(words) # words is vector, in order
   {
   words.lower = tolower(words);
   # bag of words, order doesn't matter

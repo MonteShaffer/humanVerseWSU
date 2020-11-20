@@ -151,7 +151,8 @@ gramCombinations = function(gvec, nv = length(gvec), sep="*")
   result[[1]] = gvec;
   if(nv > 2)
     {
-    for(c in 2:(nv-1))
+    # for(c in 2:(nv-1))
+    for(c in 2:nv)
       {
       # nvec = combn(1:nv, c);  # numeric ... we will subset if they are not adjacent
       cvec = combn(gvec, c);  # loop over columns, store previous, if new, we add ...
@@ -159,13 +160,17 @@ gramCombinations = function(gvec, nv = length(gvec), sep="*")
       
       res = paste0(cvec[,1],collapse=sep);
       previous = cvec[1,1];
-      for(col in 2: ncol(cvec))
+      nc = ncol(cvec);
+      if(nc > 1)
         {
-        current = cvec[1,col];
-        if(current != previous)
+        for(col in 2: nc)
           {
-          res = c(res, paste0(cvec[,col],collapse=sep) );
-          previous = current;
+          current = cvec[1,col];
+          if(current != previous)
+            {
+            res = c(res, paste0(cvec[,col],collapse=sep) );
+            previous = current;
+            }
           }
         }
       #res;
@@ -175,7 +180,7 @@ gramCombinations = function(gvec, nv = length(gvec), sep="*")
       result[[c]] = res;
       }
     }
-    result[[nv]] = paste0(gvec,collapse=sep);
+    # result[[nv]] = paste0(gvec,collapse=sep);
     # print(result[[nv]]);
   result;
   }
