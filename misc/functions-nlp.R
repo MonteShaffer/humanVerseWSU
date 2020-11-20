@@ -77,6 +77,7 @@ timer.start = as.numeric(Sys.time());
   for(i in 1:n.sentences)
     {
     print(paste0("Sentence [",i,"] of ",n.sentences));
+    flush.console();
     
     my.sentence = as.data.frame(my.sentences[i]);
     
@@ -85,7 +86,8 @@ timer.start = as.numeric(Sys.time());
       idx.end   =  my.sentence$end;
     s.sentence = substr(str, idx.start, idx.end);
  
-  print(paste0("-----------------> ",s.sentence));         
+  print(paste0("-----------------> ",s.sentence)); 
+  flush.console();
     
         my.words.idx = my.sentence$features[[1]]$constituents;
     mytags[[i]] = tabularizePOS(my.words,my.words.idx); # still in unique data format
@@ -183,6 +185,7 @@ timer.start = as.numeric(Sys.time());
 if(verbose) 
 {
 print(paste0("[",w,"] ... word: [",s.word, "] r: [",r.word,"] --> f: [",f.word,"] p: [",p.word,"] ==> ", tm::stemDocument(r.word) ));
+flush.console();
 }    
       if(is.element(my.feature, tags.info$skip ) || skip.me)  # skip this ...
         {

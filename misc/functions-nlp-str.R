@@ -111,7 +111,10 @@ prepareOneStory = function(df.grimm, path.to.grimm,
       df.story = subsetDataFrame(df.grimm, "title", "==", title);
         chap.n = df.story$chap.n[1];
       out.txt = paste0(path.to.grimm, title.f, ".txt");
-      out.rds = paste0(path.to.grimm, title.f, ".rds"); # stats summary
+  stop.key = paste(my.stopwords, collapse="-");
+  # no stopwords, no md5 key, just a hyphen
+  stop.md5 = md5(stop.key);  if(stop.key == "") { stop.md5 = ""; }
+      out.rds = paste0(path.to.grimm, title.f, "-", stop.md5 , ".rds"); # stats summary
   
   if(!file.exists(out.rds))  
     {
@@ -161,8 +164,65 @@ prepareOneStory = function(df.grimm, path.to.grimm,
   }
 
 
+summarizeGENDER = function(GENDER)
+  {
+  # one-row dataframe
+  # CROSS-TABS
+  genders = c("male", "female");
+  numbers = c("singular","plural");
+  
+  keys = "ALL";
+  vals = sum(GENDER$count, na.rm=TRUE);
+  for(gender in genders)
+    {
+    sub = subsetDataFrame(GENDER, "gender", "==", gender);
+    keys = c(keys, gender);
+    vals = c(vals, sum(sub$count, na.rm=TRUE) );
+    }
+  for(number in numbers)
+    {
+    sub = subsetDataFrame(GENDER, "number", "==", number);
+    keys = c(keys, number);
+    vals = c(vals, sum(sub$count, na.rm=TRUE) );
+    }
+  
+  df = as.data.frame( rbind(NULL,vals));
+    rownames(df) = NULL;
+    colnames(df) = paste0("GENDER.",keys);
+  df;
+  }
 
-summarizeGeneral = function(which="ALL", df.grimm, path.to.grimm)
+summarizePP = function(PP)
+  {
+  # one-row dataframe
+  # CROSS-TABS
+  persons = c("first","second","third");
+  numbers = c("singular","plural");
+  
+  keys = "ALL";
+  vals = sum(PP$count, na.rm=TRUE);
+  for(person in persons)
+    {
+    sub = subsetDataFrame(PP, "person", "==", person);
+    keys = c(keys, person);
+    vals = c(vals, sum(sub$count, na.rm=TRUE) );
+    }
+  for(number in numbers)
+    {
+    sub = subsetDataFrame(PP, "number", "==", number);
+    keys = c(keys, number);
+    vals = c(vals, sum(sub$count, na.rm=TRUE) );
+    }
+  
+  df = as.data.frame( rbind(NULL,vals));
+    rownames(df) = NULL;
+    colnames(df) = paste0("PP.",keys);
+  df;
+  }
+
+summarizeGeneral = function(which="ALL", df.grimm, path.to.grimm,
+                            my.stopwords = NULL
+                              )
   {
   titles = unique(df.grimm$title);
   titles.f = cleanupTitles(titles);
@@ -181,20 +241,57 @@ summarizeGeneral = function(which="ALL", df.grimm, path.to.grimm)
               }
     } else { idx = which; } # numeric
     
+    ## idx = 20; # "HANSEL AND GRETEL";
   ni = length(idx);
   
   s.df = NULL;
-  cnames = NULL;
   for(i in 1:ni)
     {
+    my.idx = idx[i];
+    title = titles[my.idx];
+    title.f = titles.f[my.idx];
+  
+    one = prepareOneStory(df.grimm, path.to.grimm, 
+                          title, title.f,
+                          my.stopwords = my.stopwords
+                          );
     
+    # names(one$general);
     
+    count.sentences = nrow(one$sentences$sentiment);
+    
+
+      
+    my.sentiment = as.data.frame( rbind(NULL,one$general$sentiment));
+        rownames(my.sentiment) = NULL;
+    colnames(my.sentiment) = c("S.POS","S.NEG");
+      
+    
+    row = cbind(my.idx, title, 
+                    count.sentences,
+                    one$general$case,
+                    one$general$readability
+                  );
+    
+    # the other was from raw text, this is from "clean" text
+      clean.FK = unlist(computeFleshKincaid(row[3], row[4], row[10]));
+    new.FK = as.data.frame( rbind(NULL,  clean.FK ));
+        rownames(new.FK) = NULL;
+    colnames(new.FK) = c("FRE.N","FKGL.N");
+    
+    row = cbind(row, new.FK,
+                    one$general$punctuation,
+                    summarizePP(one$general$PP),
+                    summarizeGENDER(one$general$GENDER),
+                    my.sentiment);
+  
+    s.df = rbind(s.df, row);
     }
     
   s.df = as.data.frame(s.df);
-  colnames(s.df) = cnames;
   rownames(s.df) = NULL;
   
+  s.df;
   }
 
 

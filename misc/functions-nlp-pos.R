@@ -582,6 +582,13 @@ computeReadability = function(n.sentences, syllables=NULL)
   if(n.sentences == 0) { stop("zero sentences not allowed!"); }
   if(n.words == 0) { stop("zero words not allowed!"); }
   
+  fk = computeFleshKincaid(n.sentences, n.words, n.syllables);
+  
+  list("FRE" = fk$FRE, "FKGL" = fk$FKGL, "syllables" = n.syllables, "words" = n.words); 
+  }
+
+computeFleshKincaid = function(n.sentences, n.words, n.syllables)
+  {
   # Flesch Reading Ease (FRE):
   FRE = 206.835 - 1.015 * (n.words/n.sentences) - 84.6 * (n.syllables/n.words);
   # Flesh-Kincaid Grade Level (FKGL):
@@ -589,10 +596,8 @@ computeReadability = function(n.sentences, syllables=NULL)
   # FKGL = -0.384236 * FRE - 20.7164 * (n.syllables/n.words) + 63.88355;
   # FKGL = -0.13948  * FRE + 0.24843 * (n.words/n.sentences) + 13.25934;
   
-  list("FRE" = FRE, "FKGL" = FKGL, "syllables" = n.syllables, "words" = n.words); 
+  list("FRE" = FRE, "FKGL" = FKGL);
   }
-
-
 
 # https://en.wikipedia.org/wiki/Gunning_fog_index
 # THIS is a CLASSIFIER PROBLEM ...
