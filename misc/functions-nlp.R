@@ -33,7 +33,7 @@ buildNgrams = function(str, n=5,
   # what to do about contractions can't and quotations ?
 ### str = my.story;
   # str = "Can't you get anything right?";
-  str = prepStringGram(str);
+  str = prepStringGram(str, TRUE);
   # if(do.pos)
     {
     my.pos = performPOS(str);
@@ -244,6 +244,8 @@ if(verbose)
                         # what if it is a stop word? ... 
                         # that will only update the regular stack
                         # not the POS stacks
+                        final.words = c(final.words, n.word);
+                        
                         if(is.element(n.word, my.stopwords))
                             {
                             for(gram.type in c("words","words.tags","words|simple",
@@ -255,9 +257,9 @@ if(verbose)
                               my.stack = resetStackElement(my.stack, gram.type);
                               }
                             word.stopped = TRUE;
+                            
                             } else {
                                     word.stopped = FALSE;
-                                    final.words = c(final.words, n.word);
                                     my.stack[["words"]] = pushVector(n.word, my.stack[["words"]]$vec);
                                     my.stack[["words.tags"]] = pushVector(paste0(n.word,f.word), my.stack[["words.tags"]]$vec);
                                     my.stack[["words|simple"]] = pushVector(paste0(n.word,p.word), my.stack[["words|simple"]]$vec);

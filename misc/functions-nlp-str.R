@@ -51,6 +51,11 @@ prepStringGram = function(str, rm.pipe=FALSE, extra=NULL)
   str = gsub("\r\n"," | ",str,fixed=TRUE);
   str = gsub("\n"," | ",str,fixed=TRUE);
   
+  
+  str = gsub("’","'",str,fixed=TRUE);
+  str = gsub("”",'"',str,fixed=TRUE);
+  str = gsub("“",'"',str,fixed=TRUE);
+  
   ne = length(extra);
   if(ne > 0)
     {
@@ -67,3 +72,93 @@ prepStringGram = function(str, rm.pipe=FALSE, extra=NULL)
   str = removeWhiteSpace(str); 
   str;
   }
+
+
+
+
+
+cleanupTitles = function(strvec)
+  {
+  n = length(strvec);
+  res = c();
+  for(j in 1:n)
+    {
+    str = strvec[j];
+    
+    fi = c("-"," ",",");
+    for(f in fi)
+      {
+      str = gsub(f,".",str,fixed=TRUE);
+      }
+    for(i in 1:5)
+      {
+      str = gsub("..",".",str,fixed=TRUE);  
+      }
+      #str;
+    res = c(res,str);
+    }
+  res;
+  }
+
+
+
+prepareOneStory = function(df.grimm,path.to.grimm,title,title.f)
+  {
+  timer.start = as.numeric(Sys.time());
+      df.story = subsetDataFrame(df.grimm, "title", "==", title);
+        chap.n = df.story$chap.n[1];
+      out.txt = paste0(path.to.grimm, title.f, ".txt");
+      out.rds = paste0(path.to.grimm, title.f, ".rds"); # stats summary
+  
+  if(!file.exists(out.rds))
+    {
+      my.story = paste0(df.story$para.text, collapse=" \r\n ");
+      if(!file.exists(out.txt))
+        {
+        writeLine(my.story, out.txt, append=FALSE);
+        }
+  
+      words.r = getRawWords(my.story);
+  
+      timer.txt = as.numeric(Sys.time());
+      elapsed = round( (timer.txt - timer.start), 2);
+      print(paste0("story: ... ", title.f, " ... [txt] in ",elapsed," secs"));
+      
+      info.s = list();
+        info.s$general = list();
+        info.s$general$sentiment = doSentimentAnalysis(my.story); # expensive
+        info.s$general$readability = as.data.frame(t(unlist(cleanupAndPerformReadability(my.story))));
+        info.s$general$punctuation = countPunctuation(my.story);
+        info.s$general$case = as.data.frame(t(unlist(countWordsInString(my.story))));
+        info.s$general$PP = countPersonalPronouns(words.r);
+        info.s$general$GENDER = countGenderLanguage(words.r);
+        info.s$general$GRIM = countCustomWordList(words.r);
+      
+      timer.general = as.numeric(Sys.time());
+      elapsed = round( (timer.general - timer.txt), 2);
+      print(paste0("story: ... ", title.f, " ... [general] in ",elapsed," secs"));
+      
+        info.s$sentences = buildNgrams(my.story,5, my.stopwords = stop.snowball);
+      
+      timer.ngrams = as.numeric(Sys.time());
+      elapsed = round( (timer.ngrams - timer.general), 2);
+      print(paste0("story: ... ", title.f, " ... [ngrams] in ",elapsed," secs"));
+      
+      # save File
+      
+      my.result = info.s;
+        saveRDS(my.result, out.rds);
+      } else { my.result = readRDS(out.rds); }
+
+
+  timer.end = as.numeric(Sys.time());
+  elapsed = round( (timer.end - timer.start), 2);
+  print(paste0("story: ... ", title.f, " ... [--TOTAL--] in ",elapsed," secs"));
+  my.result;
+  }
+
+
+
+
+
+
