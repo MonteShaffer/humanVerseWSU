@@ -97,7 +97,7 @@ pushVector = function(val, vec, n.max=1+length(vec), method="FIFO")
   list("vec" = vec, "popped" = popped, "val"=val); 
   }
 
-
+ 
 initGrams = function(n,gram.types)
   {
   grams = list();

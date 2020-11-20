@@ -113,7 +113,7 @@ prepareOneStory = function(df.grimm, path.to.grimm,
       out.txt = paste0(path.to.grimm, title.f, ".txt");
       out.rds = paste0(path.to.grimm, title.f, ".rds"); # stats summary
   
-  if(!file.exists(out.rds))
+  if(!file.exists(out.rds))  
     {
       my.story = paste0(df.story$para.text, collapse=" \r\n ");
       if(!file.exists(out.txt))
@@ -162,6 +162,191 @@ prepareOneStory = function(df.grimm, path.to.grimm,
 
 
 
+summarizeGeneral = function(which="ALL", df.grimm, path.to.grimm)
+  {
+  titles = unique(df.grimm$title);
+  titles.f = cleanupTitles(titles);
+    nt = length(titles);
+    
+  if(is.character(which)) 
+    {
+    if(which == "ALL") 
+      { 
+      idx = 1:nt; 
+      } else { 
+              idx.t = which(titles == which);
+              idx.f = which(titles.f == which);
+              
+              idx = unique( c(idx.t, idx.f) )[1];
+              }
+    } else { idx = which; } # numeric
+    
+  ni = length(idx);
+  
+  s.df = NULL;
+  cnames = NULL;
+  for(i in 1:ni)
+    {
+    
+    
+    }
+    
+  s.df = as.data.frame(s.df);
+  colnames(s.df) = cnames;
+  rownames(s.df) = NULL;
+  
+  }
+
+
+
+element.exists <- function(var, element)
+{
+  tryCatch({
+    if(length(var[[element]]) > -1)
+      return(TRUE)
+  }, error = function(e) {
+    return(FALSE)
+  })
+}
+
+parseGutenberg.GRIMM = function(path.to.grimm,
+                        file.stem = "fairytales",
+                        txt.file.remote = "https://www.gutenberg.org/files/2591/2591-0.txt",
+                        html.file.remote = "https://www.gutenberg.org/files/2591/2591-h/2591-h.htm",
+                        my.local.path = path.to.gutenberg
+      )
+  {
+  if(!element.exists(local.data.path))
+    {
+    # must exist for current grabHTML to work
+    .GlobalEnv$local.data.path = my.local.path;
+    }
+  
+  txt.file.local = paste0(path.to.grimm, file.stem, ".txt");
+    my.txt = grabHTML(txt.file.local, txt.file.remote);
+  html.file.local = paste0(path.to.grimm, file.stem, ".html");
+    my.html = grabHTML(html.file.local, html.file.remote);
+  
+  cache.file.local = paste0(path.to.grimm, file.stem, ".rds");
+  
+  timer.start = as.numeric(Sys.time());
+
+
+if(!file.exists(cache.file.local))
+{
+  df.grimm = NULL;
+chap.n = 0;
+para.n = 1;
+title = "THE BROTHERS GRIMM FAIRY TALES";
+what  = "-INTRO-";
+
+### let's trim around gutenberg stuff
+start = "*** START OF THIS PROJECT GUTENBERG EBOOK GRIMMS' FAIRY TALES ***";
+end = "End of Project Gutenberg";
+
+tmp = strsplit(my.html, end, fixed=TRUE)[[1]];     # str(tmp);
+tmp1 = strsplit(tmp[1],  start, fixed=TRUE)[[1]];  # str(tmp1);
+
+n.html = tmp1[2];
+
+# there is one note ...  <div class="mynote">
+start = '<div class="mynote">';
+end = '</div>';
+
+tmp = strsplit(n.html, start, fixed=TRUE)[[1]];     # str(tmp);
+f.html = tmp[2];
+tmp1 = strsplit(tmp[3],  end, fixed=TRUE)[[1]];     # str(tmp1);
+
+
+
+
+
+note = cleanupHTMLentities(tmp1[1],replace="cs");
+note = strip_tags(note);
+# note = removeWhiteSpace(note);
+note = trimMe(note);
+type = "note";
+
+row = c(chap.n, what, title, para.n, type, note);
+df.grimm = rbind(df.grimm, row);
+  chap.n = 1+chap.n;
+  para.n = 1;
+
+
+### h2
+tmp = strsplit(f.html,"<h2>", fixed=TRUE)[[1]];
+idx.stories = 2:63
+
+for(i in idx.stories)
+  {
+  story = tmp[i];
+  what = paste0("STORY-",chap.n);
+    story = cleanupHTMLentities(story,replace="cs");
+    #story = removeWhiteSpace(story);
+    story = trimMe(story);
+  # story title
+  stmp = strsplit(story, "</h2>", fixed=TRUE)[[1]]; 
+  story.title = trimMe(stmp[1]);
+  
+  story = trimMe(stmp[2]);
+  # let's keep paragraphs for a minute ...  <p> and <pre>
+  # because of location of <pre>, I will explode on ending </p>
+  # we will count <pre> as a paragraph with a poem flag ... # NOT PERFECT: it doesn't allow for multiple poems within a paragraph, see JORINDA.
+  ptmp = strsplit(story, "</p>", fixed=TRUE)[[1]]; 
+  
+  # paragraphs = list();
+  n.p = length(ptmp);
+  k = 1;
+  for(j in 1:n.p)  # i = 3; j = 12
+    {
+    para = ptmp[j];
+    qtmp = strsplit(para, "<p>", fixed=TRUE)[[1]]; 
+      poem = trimMe(strip_tags(qtmp[1]));
+      if(is.na(poem)) { poem = ""; }
+      if(poem != "")
+        {
+        # pinfo = list("type" = "poem", "text" = poem);
+        # paragraphs[[k]] = pinfo;
+        row = c(chap.n, what, story.title, k, "poem", poem);
+        df.grimm = rbind(df.grimm, row);
+        k = 1 + k;
+        }
+      prose = trimMe(strip_tags(qtmp[2]));
+      if(is.na(prose)) { prose = ""; }
+      if(prose != "")
+        {
+        prose = removeWhiteSpace(prose); # poems will keep line breaks
+        # pinfo = list("type" = "prose", "text" = prose);
+        # paragraphs[[k]] = pinfo;
+        row = c(chap.n, what, story.title, k, "prose", prose);
+        df.grimm = rbind(df.grimm, row);
+        k = 1 + k;
+        }
+    ###
+    }
+  ### end of single story ... 
+  chap.n = 1+chap.n;
+  }
+
+
+df = as.data.frame(df.grimm);
+  colnames(df) = c("chap.n", "chap.type", "title", "para.n", "para.type", "para.text");
+  rownames(df) = paste0(df$chap.n,"-",df$para.n);
+df$chap.n = as.numeric(df$chap.n);
+df$para.n = as.numeric(df$para.n);
+
+df.grimm = df;
+saveRDS(df.grimm, cache.file.local);
+    } else { df.grimm = readRDS(cache.file.local); }
+
+timer.end = as.numeric(Sys.time());
+timer.elapse = timer.end-timer.start;
+print(paste0("Time elapsed: ", round(timer.elapse,2) ));
+  
+df.grimm;
+  
+  }
+## 
 
 
 

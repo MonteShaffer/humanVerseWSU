@@ -104,7 +104,7 @@ timer.start = as.numeric(Sys.time());
         # countSyllablesInWord words
     readability = rbind(readability, c(i, unlist(rinfo)) );
         info.c = countWordsInString(s.sentence);
-    case = rbind(case, c(i, unlist(info.c)) );
+    case = rbind(case, c(i, unlist(info.c)) ); 
         info.p = countPunctuation(s.sentence);
     punctuation = rbind(punctuation, c(i, unlist(info.p)) );
         info.pp = countPersonalPronouns(words.r);
@@ -219,18 +219,38 @@ if(verbose)
                           #w = 1 + w;
                             next.word.idx = my.words.idx[w+1];
                             next.word = as.data.frame( subset(my.words, id==next.word.idx) );
-                            next.feature = next.word$features[[1]]$POS;
-                              next.f.word = paste0(".",next.feature);
-                              next.p.word = paste0("|",tags.info$tags.keyed[[next.feature]]);
-                              next.s.word = substr(str, next.word$start, next.word$end);
-                          # "I'll" ...
-                          n.word = paste0(s.word,next.s.word);  
-                          
-                          f.word = paste0(f.word,"-",next.f.word);
-                          p.word = paste0(p.word,"-",next.p.word);
-                  ###stop("monte");  
-                          # append -feautre to previous
-                          w = 1 + w; # let's skip ... 
+                            if(nrow(next.word) == 0) 
+                              { 
+                              #if(verbose)
+                                {
+                                print(paste0("we are not finding a next word, using: ", n.word));
+                                }
+                              } else {
+                            
+                                          if(verbose)
+                                          {
+                                          #print("monte");
+                                          print(next.word); 
+                                          }
+                                      next.s.word = substr(str, next.word$start, next.word$end);
+                                          if(verbose)
+                                          {
+                                          print(paste0("====> ", s.word, " ... ", next.s.word, " *** ",  paste(next.word$features, collapse=" :: ")));
+                                          #print(element.exists(next.word$features[[1]]$POS));
+                                          }
+                                      next.feature = next.word$features[[1]]$POS;
+                                        next.f.word = paste0(".",next.feature);
+                                        next.p.word = paste0("|",tags.info$tags.keyed[[next.feature]]);
+                                        
+                                    # "I'll" ...
+                                    n.word = paste0(s.word,next.s.word);  
+                                    
+                                    f.word = paste0(f.word,"-",next.f.word);
+                                    p.word = paste0(p.word,"-",next.p.word);
+                            ###stop("monte");  
+                                    # append -feautre to previous
+                                    w = 1 + w; # let's skip ... 
+                                    }
                           }
                         
                         
@@ -305,11 +325,23 @@ if(verbose)
         grams = ginfo$grams;
       my.stack = initStack(gram.types);
       
+#       story = 30
+#       "Sentence [3] of 58"
+# [1] "-----------------> 'Kate!"
+      # print(final.tags);
+      # print(final.words);
+      
+      if(length(final.words) > 0)
+      {
+      if(length(final.words) == length(final.tags))
+      {
       final.rows = cbind(i, final.words, final.tags);
-      #print(final.rows);
-      #print(final.tags);
-      #print(final.words);
       final = rbind(final, final.rows);
+      }
+      }
+      # print(final.rows);
+      
+      
       #stop("final");
     
       ### end of sentences ...

@@ -65,8 +65,21 @@ tabularizePOS = function(apos,sub=NULL)
     apos = subsetPOS(apos,sub);
     }
   tags = sapply(apos$features, `[[`, "POS");
-  my.table = as.data.frame( sort(table(tags),decreasing = TRUE) );
+  # print(tags);
+  #my.table = as.data.frame( sort(table(tags),decreasing = TRUE) );
+    #colnames(my.table) = c("tags","count");
+  
+  tags.table = sort(table(tags),decreasing = TRUE); 
+  
+  if(length(tags.table) == 1)
+    {
+    my.table = as.data.frame( matrix(c(tags[1],as.numeric(tags.table[1])),nrow=1) );
+    } else {
+            my.table = as.data.frame( tags.table );
+            }
+    # print(my.table);
     colnames(my.table) = c("tags","count");
+    
     my.table$tags = as.character(my.table$tags);
   my.table;
   }
@@ -199,7 +212,7 @@ countCustomWordList = function(words, all.words = buildCustomWordList())
   # bag of words, order doesn't matter
   # words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
   #   colnames(words.table) = c("word","count");
-    
+     
   if(length(words) == 1)
     {
     words.table = as.data.frame( matrix(c(words[1],1),nrow=1) );
