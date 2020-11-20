@@ -17,7 +17,7 @@ buildNgrams = function(str, n=5,
                     my.stopwords = NULL # my.stopwords = stop.snowball
                                       ) # preferably one sentence at a time, already with a stop break
   {
-  
+timer.start = as.numeric(Sys.time());
 ########## start of function #######  
   
   # first 3 are required ...
@@ -84,7 +84,8 @@ buildNgrams = function(str, n=5,
       idx.start =  my.sentence$start;
       idx.end   =  my.sentence$end;
     s.sentence = substr(str, idx.start, idx.end);
-        
+ 
+  print(paste0("-----------------> ",s.sentence));         
     
         my.words.idx = my.sentence$features[[1]]$constituents;
     mytags[[i]] = tabularizePOS(my.words,my.words.idx); # still in unique data format
@@ -98,6 +99,7 @@ buildNgrams = function(str, n=5,
       sinfo = doSentimentAnalysis(s.sentence); # expensive
     sentiment = rbind(sentiment, c(i, sinfo) );
         rinfo.s = countSyllablesInWord(words.r);
+        # print(rinfo.s);
         rinfo = computeReadability(1,rinfo.s);
         # countSyllablesInWord words
     readability = rbind(readability, c(i, unlist(rinfo)) );
@@ -353,12 +355,14 @@ if(verbose)
   # GENDER = NULL;
   # GRIMM = NULL;
   
-  
-  
+   
+timer.end = as.numeric(Sys.time());
+elapsed = round( (timer.end - timer.start), 2);
+  #print(paste0("[-- EVERYTHING --] in ",elapsed," secs"));
   # pause = c(".",";",":",",","?","!","^[^","^]^");  # Let's only do this if POS exists
   # can I simplify POS, more basic?
   
-  list("grams" = grams, "final" = final, 
+  list("grams" = grams, "final" = final, "time" = elapsed,
         "sentiment" = sentiment, "readability" = readability,
         "mytags" = mytags, "mytags.s" = mytags.s,
         "case" = case, "punctuation" = punctuation,  "PP" = PP,

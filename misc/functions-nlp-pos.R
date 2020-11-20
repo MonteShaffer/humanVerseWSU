@@ -139,6 +139,8 @@ removePunctuationFromString = function(str)
   str;
   }
 
+
+
 countWordsInString = function(str)  # preferably a sentence, this is large ...
   {
   str = removePunctuationFromString(str);
@@ -195,7 +197,15 @@ countCustomWordList = function(words, all.words = buildCustomWordList())
   {
   words.lower = tolower(words);
   # bag of words, order doesn't matter
-  words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+  # words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+  #   colnames(words.table) = c("word","count");
+    
+  if(length(words) == 1)
+    {
+    words.table = as.data.frame( matrix(c(words[1],1),nrow=1) );
+    } else {
+            words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+            }
     colnames(words.table) = c("word","count");
     
   my.grimm = NULL;
@@ -319,8 +329,16 @@ countGenderLanguage = function(words) # words is vector, in order
   {
   words.lower = tolower(words);
   # bag of words, order doesn't matter
-  words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+  # words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+  #   colnames(words.table) = c("word","count");
+  if(length(words) == 1)
+    {
+    words.table = as.data.frame( matrix(c(words[1],1),nrow=1) );
+    } else {
+            words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+            }
     colnames(words.table) = c("word","count");
+    
   my.gender = NULL;
 
   g.person = "male";
@@ -395,7 +413,12 @@ countPersonalPronouns = function(words) # words is vector, in order
   {
   words.lower = tolower(words);
   # bag of words, order doesn't matter
-  words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+  if(length(words) == 1)
+    {
+    words.table = as.data.frame( matrix(c(words[1],1),nrow=1) );
+    } else {
+            words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+            }
     colnames(words.table) = c("word","count");
     
   my.pronouns = NULL;
@@ -564,11 +587,14 @@ computeReadability = function(n.sentences, syllables=NULL)
 countSyllablesInWord = function(words)
   {
   #word = "super";
-  n.words = length(words);
+  n.words = length(words); 
   result = list();
   for(j in 1:n.words)
     {
     word = words[j];
+    
+    word = gsub("[^[:alnum:] ]", "", word);
+    
     vowels = c("a","e","i","o","u","y");
     
     word.vec = strsplit(word,"")[[1]];
@@ -638,7 +664,8 @@ countSyllablesInWord = function(words)
       result[[j]] = list("syllables" = syllables, "vowels" = n.vowels, "word" = str);
       }
   
-  if(n.words == 1) { result[[1]]; } else { result; }
+  # if(n.words == 1) { result[[1]]; } else { result; }
+  result;
   }
 
 ################ hackathon #######

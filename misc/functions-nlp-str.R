@@ -102,7 +102,10 @@ cleanupTitles = function(strvec)
 
 
 
-prepareOneStory = function(df.grimm,path.to.grimm,title,title.f)
+prepareOneStory = function(df.grimm, path.to.grimm,
+                          title, title.f,
+                          my.stopwords = NULL
+                          )
   {
   timer.start = as.numeric(Sys.time());
       df.story = subsetDataFrame(df.grimm, "title", "==", title);
@@ -138,7 +141,7 @@ prepareOneStory = function(df.grimm,path.to.grimm,title,title.f)
       elapsed = round( (timer.general - timer.txt), 2);
       print(paste0("story: ... ", title.f, " ... [general] in ",elapsed," secs"));
       
-        info.s$sentences = buildNgrams(my.story,5, my.stopwords = stop.snowball);
+        info.s$sentences = buildNgrams(my.story,5, my.stopwords = my.stopwords);   
       
       timer.ngrams = as.numeric(Sys.time());
       elapsed = round( (timer.ngrams - timer.general), 2);
@@ -161,4 +164,77 @@ prepareOneStory = function(df.grimm,path.to.grimm,title,title.f)
 
 
 
+
+
+
+
+
+
+
+# 
+# 
+# 
+# <PRE>
+# 9  ... SENTENCE 17?
+# 35 ... 20
+# 36
+# 
+# [1] "-----------------> Dobbin!"
+# Error: $ operator is invalid for atomic vectors
+# > traceback()
+# 3: computeReadability(1, rinfo.s) at functions-nlp.R#102
+# 2: buildNgrams(my.story, 5, my.stopwords = stop.snowball) at file8b007e952fa7#141
+# 1: prepareOneStory(df.grimm, path.to.grimm, title, title.f)
+# 
+# "THE.DOG.AND.THE.SPARROW.txt"
+# 
+#  Error: $ operator is invalid for atomic vectors 
+# 3.
+# computeReadability(1, rinfo.s) at functions-nlp.R#101
+# 2.
+# buildNgrams(my.story, 5, my.stopwords = stop.snowball) at functions-nlp-str.R#141
+# 1.
+# prepareOneStory(df.grimm, path.to.grimm, title, title.f) 
+# </PRE>
+# 
+# 
+# <PRE>
+# 11  ... SENTENCE 17?
+#   
+# THE.FISHERMAN.AND.HIS.WIFE
+# 
+# Error in next.word$features[[1]] : subscript out of bounds
+# 
+# > traceback()
+# 2: buildNgrams(my.story, 5, my.stopwords = stop.snowball) at functions-nlp-str.R#141
+# 1: prepareOneStory(df.grimm, path.to.grimm, title, title.f)
+# 
+# </PRE>
+# 
+# <PRE>
+# 19 ...
+# 22 ...
+# 25 ...
+# 41 ...
+# 
+# Error in next.word$features[[1]] : subscript out of bounds
+# </PRE>
+# 
+# <PRE>
+# 30
+# 
+# [1] "Sentence [3] of 58"
+# [1] "-----------------> 'Kate!"
+#  Error in names(x) <- value : 
+#   'names' attribute [2] must be the same length as the vector [1] 
+# 4.
+# `colnames<-`(`*tmp*`, value = c("tags", "count")) at C:\Users\ALEXAN~1\AppData\Local\Temp\RtmpcjaDE6\filebba81bda29d6#69
+# 3.
+# tabularizePOS(my.words, my.words.idx) at functions-nlp.R#91
+# 2.
+# buildNgrams(my.story, 5, my.stopwords = stop.snowball) at functions-nlp-str.R#141
+# 1.
+# prepareOneStory(df.grimm, path.to.grimm, title, title.f) 
+# 
+# </PRE>
 
