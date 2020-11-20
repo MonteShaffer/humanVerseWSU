@@ -100,7 +100,7 @@ cleanupTitles = function(strvec)
   res;
   }
 
-
+ 
 
 prepareOneStory = function(df.grimm, path.to.grimm,
                           title, title.f,
@@ -115,9 +115,15 @@ prepareOneStory = function(df.grimm, path.to.grimm,
   # no stopwords, no md5 key, just a hyphen
   stop.md5 = md5(stop.key);  if(stop.key == "") { stop.md5 = ""; }
       out.rds = paste0(path.to.grimm, title.f, "-", stop.md5 , ".rds"); # stats summary
-  
+      out.start = gsub(".rds",".has-started", out.rds);
+      
   if(!file.exists(out.rds))  
     {
+    Sys.sleep(runif(1,0.2,1.3));
+    if(file.exists(out.start)) { return(FALSE); } # skip
+    print(out.start);
+    writeLine("hello there friend!", out.start, append=FALSE);
+    
       my.story = paste0(df.story$para.text, collapse=" \r\n ");
       if(!file.exists(out.txt))
         {
