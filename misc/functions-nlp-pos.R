@@ -382,6 +382,7 @@ countGenderLanguage = function(words) # words is vector, in order
   
   g.person = "female";
   g.number = "singular";
+  # witch ... 
   genders = c("she", "her", "herself", "woman", "girl", "queen", "princess", "daughter", "mother", "mom", "mommy", "motherhood", "sister", "godmother", "lady", "maid", "maiden", "bride");
   
   for(g in 1:length(genders))
