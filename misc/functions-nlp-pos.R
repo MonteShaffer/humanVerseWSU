@@ -557,25 +557,39 @@ countPersonalPronouns = function(words) # words is vector, in order
   }
   
 
-countVowelsInString = function(str)
+countVowelsInString = function(strs)
   {
-  vowels = c("a","e","i","o","u","y");
-  
-  str.vec = strsplit(str,"")[[1]];
-  str.vec;
-  
-  is.vowel = is.element(tolower(str.vec), vowels);
-  n.vowels = sum(is.vowel);
-  n.vowels;
+  res = c();
+  for(str in strs)
+    {
+    vowels = c("a","e","i","o","u","y");
+    
+    str.vec = strsplit(str,"")[[1]];
+    str.vec;
+    
+    is.vowel = is.element(tolower(str.vec), vowels);
+    n.vowels = sum(is.vowel);
+    n.vowels;
+    res = c(res, n.vowels);
+    }
+  res;
   }
 
 computeReadability = function(n.sentences, syllables=NULL)
   {
   n.words = length(syllables);
   n.syllables = 0;
+  isDataFrame = is.data.frame(syllables);
+  if(isDataFrame) { n.words = nrow(syllables); }
+  # dataframe is a list of a certain class
   for(i in 1:n.words)
     {
-    my.syllable = syllables[[i]];
+    if(isDataFrame) 
+      { 
+      my.syllable = syllables[i,];
+      } else {
+              my.syllable = syllables[[i]];
+              }
     n.syllables = my.syllable$syllables + n.syllables;
     }
   
@@ -599,10 +613,27 @@ computeFleshKincaid = function(n.sentences, n.words, n.syllables)
   list("FRE" = FRE, "FKGL" = FKGL);
   }
 
+ 
+countSyllablesInWord = function(words)
+  {
+  # quanteda::nsyllable ... uses CMU, no syllabification 
+  
+  my.syllables = quanteda::nsyllable(words);
+  my.vowels = countVowelsInString(words);
+  
+  res = as.data.frame(cbind(words,my.syllables, my.vowels));    
+    colnames(res) = c("words","syllables","vowels");
+    rownames(res) = NULL;
+  res$syllables = as.numeric(res$syllables);
+  res$vowels = as.numeric(res$vowels);
+  
+  res;
+  }
+
 # https://en.wikipedia.org/wiki/Gunning_fog_index
 # THIS is a CLASSIFIER PROBLEM ...
 # https://stackoverflow.com/questions/405161/detecting-syllables-in-a-word
-countSyllablesInWord = function(words)
+countSyllablesInWordMonte = function(words)
   {
   #word = "super";
   n.words = length(words); 
