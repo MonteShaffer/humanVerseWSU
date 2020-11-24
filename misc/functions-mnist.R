@@ -177,7 +177,84 @@ im.getMatrixFromImage = function(img, dims=2, scale=255)
 
 
 #### mnist helper functions
+  
+# matr = img.matrix.c;
+mnist.countMineSweepMoves = function(matr) # nice idea harrison
+  {
+  mineSweep = function(matr, r_=1, c_=1)
+    {
+    nrow = nrow(matr);
+    ncol = ncol(matr);
+    matr[r_,c_] = NA; 
 
+    i = 1;
+    adjs = list();
+    adjs[[i]] = c(r_,c_);
+    # let's replace all nearest neighbors "0" with "Inf", 
+    #  get their r,c indexes
+    # add to adjs list
+    # replace Inf with NA
+    while( (n=length(adjs)) > 0)
+      {
+      for(j in 1:n)
+        {
+        if(!is.null(adjs[[j]])) { break; }  # find a remaining "j"
+        }
+      r = adjs[[j]][1];
+      c = adjs[[j]][2];
+        matr[r,c] = NA; 
+        adjs[[j]] = NULL;
+      
+      rows = c(r - 1, r, r + 1);
+      cols = c(c - 1, c, c + 1);
+      
+      for(row in rows)
+        {
+        if(row > 0 && row <= nrow)
+          {
+          for(col in cols)
+            {
+            if(col > 0 && col <= ncol)
+              {
+              # print(paste0("row: ", row, " -> col: ", col,  "  ==> val: ", val));
+              val = matr[row,col];
+              
+              if(!is.na(val))
+                {
+                if(val == 0) 
+                  { 
+                  matr[row,col] = NA; 
+                  i = length(adjs) + 1;
+                  #print(paste0("row: ", row, " -> col: ", col,  "  ==> i: ", i, " ... j: ",j));
+                  adjs[[i]] = c(row,col);
+                  }
+                }
+              # stop("monte");
+              }
+            }
+          }
+        }
+      #
+      }
+    matr;
+    }
+  my.count = 0;
+  nrow = nrow(matr);
+  ncol = ncol(matr);
+  # which runs "by cols" ... down, then across
+  while(length( which(matr == 0) > 0))
+    {
+    idx = which(matr == 0)[1];  # first one ... 
+    d = idx / nrow; # division
+    c = ceiling(d); # which column
+    r = round( (1-(c - d))*nrow, 0); # remainder is row [+1 ?]
+    if(r > nrow) { r = nrow; }
+    
+    matr = mineSweep(matr,r=r,c=c);
+    my.count = 1 + my.count;
+    }
+  my.count;
+  }
 mnist.zeroFillMatrix = function(img.matrix.t, fdim=c(24,24), priority="top-left")
   {
   tmp = strsplit(tolower(priority),"-",fixed=TRUE)[[1]];
