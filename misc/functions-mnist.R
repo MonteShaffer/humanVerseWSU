@@ -129,7 +129,7 @@ im.printImageMatrix = function(matr, split=1, raw=FALSE, raw.r="X")
     info = floor( 10 * round(as.matrix(matr), 1) );
     info[info == 10] = raw.r;
     }
-
+ info[is.na(info)] = ".";
   
   i = 1;
   for(r in 1:rs)
@@ -253,7 +253,9 @@ mnist.countMineSweepMoves = function(matr) # nice idea harrison
     matr = mineSweep(matr,r=r,c=c);
     my.count = 1 + my.count;
     }
-  my.count;
+  
+  
+  list("count" = my.count, "matrix" = matr);
   }
 mnist.zeroFillMatrix = function(img.matrix.t, fdim=c(24,24), priority="top-left")
   {
