@@ -58,20 +58,29 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, lo
   n = nrow(df);
   n.cols = length(mycols);
   n.com = length(comparison);
+  n.vals = length(myvals);
+
+  n.max = max(n.com, n.cols, n.vals);
+
   # check and see if column is factor and do "as.character" to it
   # check and see if myval is a column and do a column > column comparison
   if(n.com == 1)
     {
-    comparisons = rep(comparison, times=n.cols);
+    comparisons = rep(comparison, times=n.max);
     n.com = length(comparisons);
     } else { comparisons = comparison; }
 
-  n.vals = length(myvals);
   if(n.vals == 1)
     {
-    myvals = rep(myvals, times=n.cols);
+    myvals = rep(myvals, times=n.max);
     n.vals = length(myvals);
     }
+  if(n.cols == 1)
+    {
+    mycols = rep(mycols, times=n.max);
+    n.cols = length(mycols);
+    }
+
 
   if(n.cols != n.vals)  # if n.vals = 1, can I not just do a rep(myvals, times=n.cols)...
     {
@@ -85,20 +94,16 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, lo
     }
 
   idxs = getIndexOfDataFrameColumns(df,mycols);
-  if(anyNA(idxs))
-    {
-    warning("One or more columns of mycols is not found!");
-    return (df[NULL,]);  # example won't run if I put "stop" when devtools::check();
-    }
+  idx.vals = getIndexOfDataFrameColumns(df,myvals);  # compare two columns
+
+  # if(anyNA(idxs))
+  #   {
+  #   warning("One or more columns of mycols is not found!");
+  #   return (df[NULL,]);  # example won't run if I put "stop" when devtools::check();
+  #   }
+  #
   ndf = df;
 
-  idxs = getIndexOfDataFrameColumns(df,mycols);
-  if(anyNA(idxs))
-    {
-    warning("One or more columns of mycols is not found!");
-    return (df[NULL,]);  # example won't run if I put "stop" when devtools::check();
-    }
-  ndf = df;
 
     #myTruth = list();
     myTruth = matrix(FALSE, nrow=n, ncol=n.cols);
@@ -119,32 +124,57 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, lo
         print( paste0( "Logic [",logic,"] --> column [",mycols[i],"] ", my.comparison ," [",myvals[i],"]" ) );
         }
 
+  # print(mycols); print(comparisons); print(myvals);
+  # print(idxs); print(idx.vals);
+      myidx = idxs[i];
+      myclass = class(ndf[,myidx]);
+      #print(myidx);
+      #print(myclass);  # character, integer
+
+  #stop("monte");
+
+    myidx = idxs[i];
+      myclass = class(ndf[,myidx]);
+    my.val = myvals[i];
+      # transform to myclass "value"
+    #my.val = as.numeric(my.val);  # TODO::
+
+      ## TODO, deal with as.numeric ... AND ... col to col comparison
+
+      ## if they are both columns we need a different switch
+      ## if one is column and the other is a number, gtg
+      ## may need to "switch"?
+
+
+
       myTruth[,i] = switch(my.comparison,
-            "!="    = ndf[,idxs[i]] != myvals[i],
+            "!="    = ndf[,myidx] != my.val,
 
-            "=="    = ndf[,idxs[i]] == myvals[i],
-            "="     = ndf[,idxs[i]] == myvals[i], # bad form, but will work
+            "=="    = ndf[,myidx] == my.val,
+            "="     = ndf[,myidx] == my.val, # bad form, but will work
 
-            "~="    = isClose(ndf[,idxs[i]] , myvals[i]), # maybe jaro-winkler if a string
-            "=~"    = isClose(ndf[,idxs[i]] , myvals[i]), # approximate
-            "~"    = isClose(ndf[,idxs[i]] , myvals[i]), # approximate
-            "!~="    = !isClose(ndf[,idxs[i]] , myvals[i]), # maybe jaro-winkler if a string
-            "!=~"    = !isClose(ndf[,idxs[i]] , myvals[i]), # approximate
-            "!~"    = !isClose(ndf[,idxs[i]] , myvals[i]), # approximate
+            "~="    = isClose(ndf[,myidx] , my.val), # maybe jaro-winkler if a string
+            "=~"    = isClose(ndf[,myidx] , my.val), # approximate
+            "~"    = isClose(ndf[,myidx] , my.val), # approximate
+            "!~="    = !isClose(ndf[,myidx] , my.val), # maybe jaro-winkler if a string
+            "!=~"    = !isClose(ndf[,myidx] , my.val), # approximate
+            "!~"    = !isClose(ndf[,myidx] , my.val), # approximate
 
-            ">"     = ndf[,idxs[i]] > myvals[i],
-            ">="    = ndf[,idxs[i]] >= myvals[i],
-            "=>"    = ndf[,idxs[i]] >= myvals[i], # bad form, but will work
+            ">"     = ndf[,myidx] > my.val,
+            ">="    = ndf[,myidx] >= my.val,
+            "=>"    = ndf[,myidx] >= my.val, # bad form, but will work
 
-            "<"     = ndf[,idxs[i]] < myvals[i],
-            "<="    = ndf[,idxs[i]] <= myvals[i],
-            "=<"    = ndf[,idxs[i]] <= myvals[i], # bad form, but will work
+            "<"     = ndf[,myidx] < my.val,
+            "<="    = ndf[,myidx] <= my.val,
+            "=<"    = ndf[,myidx] <= my.val, # bad form, but will work
 
-           ndf[,idxs[i]] != myvals[i] # default case of switch
+           ndf[,myidx] != my.val # default case of switch
           );
       }
 
   truth.rows = rowSums(myTruth);
+
+  # print(myTruth); stop("monte");
 # AND is default
   if(logic=="OR")
     {

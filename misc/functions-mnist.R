@@ -241,10 +241,12 @@ mnist.countMineSweepMoves = function(matr) # nice idea harrison
   my.count = 0;
   nrow = nrow(matr);
   ncol = ncol(matr);
+  firsts = c();
   # which runs "by cols" ... down, then across
   while(length( which(matr == 0) > 0))
     {
     idx = which(matr == 0)[1];  # first one ... 
+    firsts = c(firsts, idx);
     d = idx / nrow; # division
     c = ceiling(d); # which column
     r = round( (1-(c - d))*nrow, 0); # remainder is row [+1 ?]
@@ -255,7 +257,7 @@ mnist.countMineSweepMoves = function(matr) # nice idea harrison
     }
   
   
-  list("count" = my.count, "matrix" = matr);
+  list("count" = my.count, "elements" = firsts, "matrix" = matr);
   }
 mnist.zeroFillMatrix = function(img.matrix.t, fdim=c(24,24), priority="top-left")
   {
