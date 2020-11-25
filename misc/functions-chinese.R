@@ -1,7 +1,7 @@
 
 library(readr);
 
-prepareBibleDataFrame = function(path.to.obible, versions, langs)
+prepareBibleDataFrame = function(path.to.obible, versions, langs, skip.me = 1)
   {
   # let's store each data.frame separately, and return the full.df as well
 
@@ -54,8 +54,12 @@ prepareBibleDataFrame = function(path.to.obible, versions, langs)
 
     for(nl in 1:nls)
       {
-      line = lines[nl];
-      if(nl > 1)  #skip the first line
+      line = trimMe( lines[nl] );
+      if(line != "")
+      {
+      line = gsub("\t", " ", line, fixed=TRUE);
+      # print(line);
+      if(nl > skip.me)  #skip the first line
         {
         tmp = strsplit(line, " ")[[1]];
         nt = length(tmp);
@@ -117,6 +121,7 @@ print(paste0("bn: ",nb,"     ", "book.name: ",book.name, " --> last.book.name: "
         v.df = rbind(v.df, row);
           # version .. lang .. book.name .. chap.n ... para.n (verse) ... para.text (verse)
         last.book.name = book.name;
+        }
         }
       nl = 1 + nl;
       }
