@@ -63,10 +63,23 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
       # pass in a custom distance form, such as cosine-similarity
       if(is.matrix(dist.method))
         {
-        X.d = dist.method;
+        X.d = stats::dist(X,
+                                  method="euclidean", p=2,
+                                  diag=TRUE, upper=TRUE);
+
+
+        X.c.lower = lower.tri(dist.method);
+        X.c = dist.method[X.c.lower];
+        # build a default distance class, change the values and method ...
+        X.d[1:length(X.d)] = X.c[1:length(X.c)];
+          attr(X.d,"method") = dist.p;
+
         } else {
-                X.d = stats::dist(X, method=dist.method, p=dist.p);
+                X.d = stats::dist(X,
+                                  method=dist.method, p=dist.p,
+                                  diag=TRUE, upper=TRUE);
                 }
+      # print(X.d);stop("monte");
   time.end = Sys.time();
 
   elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
