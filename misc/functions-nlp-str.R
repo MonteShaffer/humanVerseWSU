@@ -233,7 +233,7 @@ summarizePP = function(PP)
     colnames(df) = paste0("PP.",keys);
   df;
   }
-
+ 
 summarizeGeneral = function(which="ALL", df.grimm, path.to.grimm,
                             my.stopwords = NULL
                               )

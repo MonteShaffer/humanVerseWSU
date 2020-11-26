@@ -229,7 +229,7 @@ updateGramsIfMax = function(n, grams, my.stack, which="ALL", tags.info, do.stemm
   if(which != "ALL") { gram.types = gram.types[[which]];}
   for(gram.type in gram.types)
     {
-    # do something here ... 
+    # do  something here ... 
     my.vec = my.stack[[gram.type]]$vec;
     if(length(my.vec) == n) # can't be greater than?
       {

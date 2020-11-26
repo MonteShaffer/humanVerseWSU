@@ -113,7 +113,7 @@ getRawWords = function(str, lower=TRUE)
   str = removeWhiteSpace(str);
   strsplit(str," ",fixed=TRUE)[[1]];
   }
-  
+   
   
 countPunctuation = function(sentence)
   {

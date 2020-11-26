@@ -58,7 +58,13 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
   time.start = Sys.time();
       X = as.matrix(X);
       X.t = transposeMatrix(X);
-      X.d = stats::dist(X, method=dist.method, p=dist.p);
+      # pass in a custom distance form, such as cosine-similarity
+      if(is.matrix(dist.method))
+        {
+        X.d = dist.method;
+        } else {
+                X.d = stats::dist(X, method=dist.method, p=dist.p);
+                }
   time.end = Sys.time();
 
   elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
@@ -67,6 +73,11 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
 
   time.start = Sys.time();
   X.hclust = stats::hclust( X.d, method=method);
+  # https://stackoverflow.com/questions/6518133/clustering-list-for-hclust-function
+    membership = as.data.frame( matrix( cutree(X.hclust, k=n.groups), ncol=1)); ;
+      rownames(membership) = row.names(X);
+      colnames(membership) = c("branch");
+
   time.end = Sys.time();
 
   elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
@@ -129,7 +140,7 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
     colnames(timer) = c("names", "times");
   timer$times = as.numeric(timer$times);
 
-  list("dist" = X.d, "hclust" = X.hclust, "pvclust" = X.pvclust, "timer" = timer);
+  list("dist" = X.d, "hclust" = X.hclust, "membership" = membership, "pvclust" = X.pvclust, "timer" = timer);
   }
 
 

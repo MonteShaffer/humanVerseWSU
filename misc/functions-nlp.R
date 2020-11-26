@@ -1,4 +1,4 @@
- 
+  
 # ngrams = buildNgrams(my.story, my.stopwords=stop.snowball);
 
 library(tm);
