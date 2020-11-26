@@ -17,7 +17,14 @@ cleanupHTMLentities = function(str, find="fs", replace="rs")
 
 cleanupAndPerformReadability = function(str)
 {
- # Micro$oft 
+ 
+  #str = gsub("{``}",'"',str,fixed=TRUE);
+  #str = gsub("``",'"',str,fixed=TRUE);
+  #str = gsub("`","'",str,fixed=TRUE);
+  str = gsub("—"," -- ",str,fixed=TRUE);
+  # \u0097
+  
+  # Micro$oft 
   str = gsub("’","'",str,fixed=TRUE);
   str = gsub("”",'"',str,fixed=TRUE);
   str = gsub("“",'"',str,fixed=TRUE);

@@ -591,6 +591,7 @@ computeReadability = function(n.sentences, syllables=NULL)
       } else {
               my.syllable = syllables[[i]];
               }
+    if(is.na(my.syllable$syllables)) { my.syllable$syllables = 0;}
     n.syllables = my.syllable$syllables + n.syllables;
     }
   

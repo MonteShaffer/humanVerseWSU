@@ -115,6 +115,7 @@ print(paste0("bn: ",nb,"     ", "book.name: ",book.name, " --> last.book.name: "
 
           }
 
+        
         row = c(version, lang, nb, book.name, chap.n, para.n, line.text);
         # row = c(version, lang, nb, bnames[nb], chap.n, para.n, line.text);
 
