@@ -45,8 +45,10 @@ plot.hclust.sub = function(X.hclust, k=12, mfrow = c(2,2), verbose=TRUE)
 
 
 perform.hclust = function(X, n.groups = 12, method = "ward.D2",
-          dist.method = "euclidean", dist.p = 2, verbose=TRUE,
-          showPlots = TRUE, do.pvclust = FALSE, pvclust.parallel = FALSE )
+          dist.method = "euclidean", dist.p = 2,
+
+          verbose=TRUE, showPlots = TRUE, plot.grid = 2,
+          do.pvclust = FALSE, pvclust.parallel = FALSE )
   {
   times = c(); time.names = c();
   n.cols = ncol(X);
@@ -95,7 +97,8 @@ perform.hclust = function(X, n.groups = 12, method = "ward.D2",
         time.names = c(time.names,"hclust-plot");
 
     time.start = Sys.time();
-    plot.hclust.sub(X.hclust, k=n.groups, verbose=verbose);
+    mfrow = c(plot.grid, plot.grid);
+    plot.hclust.sub(X.hclust, k=n.groups, mfrow = mfrow, verbose=verbose);
     time.end = Sys.time();
 
     elapse = sprintf("%.3f", as.numeric(time.end) - as.numeric(time.start));
