@@ -233,6 +233,129 @@ summarizePP = function(PP)
     colnames(df) = paste0("PP.",keys);
   df;
   }
+
+
+
+
+summarizeMatrix.POS = function(which="ALL", df.grimm,
+					path.to.grimm, my.stopwords = NULL, 
+					nfeature=".tags", ngrams=5
+                              )
+  {
+  titles = unique(df.grimm$title);
+  titles.f = cleanupTitles(titles);
+    nt = length(titles);
+    
+  if(is.character(which)) 
+    {
+    if(which == "ALL") 
+      { 
+      idx = 1:nt; 
+      } else { 
+              idx.t = which(titles == which);
+              idx.f = which(titles.f == which);
+              
+              idx = unique( c(idx.t, idx.f) )[1];
+              }
+    } else { idx = which; } # numeric
+    
+    ## idx = 20; # "HANSEL AND GRETEL";
+  ni = length(idx);
+  
+  all.features = c();
+  s.list = list();
+  for(i in 1:ni)
+    {
+	# single story, we don't need to loop over sentences?  
+    my.idx = idx[i];
+    title = titles[my.idx];
+    title.f = titles.f[my.idx];
+  
+    one = prepareOneStory(df.grimm, path.to.grimm, 
+                          title, title.f,
+                          my.stopwords = my.stopwords
+                          );
+    
+    # names(one$general);
+    myfeatures = one$sentences$grams[[nfeature]][[ngrams]];
+	all.features = unique(c(all.features,myfeatures));
+	
+    s.list[[i]] = myfeatures;	
+	}
+## this will be slow
+  s.df = NULL;
+  naf = length(all.features);
+  for(i in 1:ni)
+    {
+	print(titles[i]);
+	myfeatures = s.list[[i]];
+	row = numeric(naf);
+	
+	nf = length(myfeatures);
+	for(j in 1:nf)
+		{
+		idx = which(myfeatures[j] == all.features);
+		row[idx] = 1 + row[idx];
+		}  
+    s.df = rbind(s.df, row);
+    }
+    
+  s.df = as.data.frame(s.df);
+	colnames(s.df) = all.features;
+	rownames(s.df) = titles;
+  
+  s.df;
+  }
+
+
+
+summarizeCustom = function(which="ALL", df.grimm)
+  {
+  titles = unique(df.grimm$title);
+  titles.f = cleanupTitles(titles);
+    nt = length(titles);
+    
+  if(is.character(which)) 
+    {
+    if(which == "ALL") 
+      { 
+      idx = 1:nt; 
+      } else { 
+              idx.t = which(titles == which);
+              idx.f = which(titles.f == which);
+              
+              idx = unique( c(idx.t, idx.f) )[1];
+              }
+    } else { idx = which; } # numeric
+    
+    ## idx = 20; # "HANSEL AND GRETEL";
+  ni = length(idx);
+  
+  s.df = NULL;
+  for(i in 1:ni)
+    {
+    my.idx = idx[i];
+    title = titles[my.idx];
+    title.f = titles.f[my.idx];
+	
+	df.story = subsetDataFrame(df.grimm, "title", "==", title);
+	my.story = paste0(df.story$para.text, collapse=" \r\n ");
+	words.r = getRawWords(my.story);
+	words.c = countCustomWordList(words.r);
+	
+	my.count = as.numeric(words.c$count);
+	my.words = words.c$word;
+	
+	s.df = rbind(s.df, my.count);
+    }
+    
+  s.df = as.data.frame(s.df);
+	rownames(s.df) = titles[idx];
+	colnames(s.df) = my.words;
+  
+  s.df;
+  }
+
  
 summarizeGeneral = function(which="ALL", df.grimm, path.to.grimm,
                             my.stopwords = NULL
