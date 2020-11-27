@@ -1,11 +1,76 @@
-library(stringr);
-# dump stringr and go to stringi
-# dump tidyverse altogether
-# review httr and build appropriate functions
-# use base whenever possible, then the best packages whenever possible
-# define best by "least associated with new grammar tactics"
-# new grammar is arbitrary and not c-based
-# human-readable functions with variadic inputs is not new grammar
+
+
+#' charAt
+#'
+#' Get the character of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' charAt("Alex", 2);
+#' charAt(c("Hello","there","Alex"), 2);
+#' charAt("Alex", 8);
+#' charAt("Alexander", 8);
+#'
+charAt = function(str,idx)
+  {
+  substr(str,idx,idx);
+  }
+
+
+#' charCodeAt
+#'
+#' Get the ASCII character code of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' charCodeAt("Alex", 2);
+#' charCodeAt(c("Hello","there","Alex"), 2);
+#' charCodeAt("Alex", 8);
+#' charCodeAt("Alexander", 8);
+#'
+charCodeAt = function(str,idx)
+  {
+  charCode ( charAt(str,idx) ); #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
+  }
+
+
+#' charCode
+#'
+#' @param svec A vector of characters
+#'
+#' @return ASCII character code for each character
+#' @export
+#'
+#' @examples
+#'
+#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+#' charCode(svec);
+#'
+charCode = function(svec)
+  {
+  # s = "monte";
+  # svec = strsplit(s,"",fixed=TRUE)[[1]];
+  r = c();
+  for(s in svec)
+    {
+    r = c(r, as.numeric( iconv( s, from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] ) );
+    }
+  r;
+  }
+
+# library(stringr);
 
 #' trimMe
 #'
@@ -15,11 +80,40 @@ library(stringr);
 #' @export
 #'
 #' @examples
+#'
+#' trimMe( c(" Monte", " is ", "Alexander's ", "  daddy!") );
+#'
 #' trimMe("    four   scores    and  seven      years     ");
+#' trimMe("    four   scores    and  seven      years     ", "left");
+#' trimMe("    four   scores    and  seven      years     ", "riGht");
+#' trimMe("    four   scores    and  seven      years     ", "both");
+#' trimMe("    four   scores    and  seven      years     ", "albjdskj")
+#'
 #' trimMe("\r\n    four   scores    and  seven      years   \t\t  ");
-trimMe = function(str)
+#'
+trimMe = function(str, side="both")
   {
-  stringr::str_trim(str);
+  sides = c("both", "left", "right")
+  side = tolower(side);
+  # stringr::str_trim(str);
+  # if(!is.element(side,sides)) { stop("option for 'side' must be one of:  both, left, right"); }
+  # set default to both
+
+  # dump stringr and go to stringi
+  # dump tidyverse altogether
+  # review httr and build appropriate functions
+  # use base whenever possible, then the best packages whenever possible
+  # define best by "least associated with new grammar tactics"
+  # new grammar is arbitrary and not c-based
+  # human-readable functions with variadic inputs is not new grammar
+
+
+  switch(side,
+        "left"  = stringi::stri_trim_left(str),
+        "right" = stringi::stri_trim_right(str),
+        "both"  = stringi::stri_trim_both(str),
+        stringi::stri_trim_both(str)
+        );
   }
 
 
@@ -400,5 +494,35 @@ stringifyLibrary = function(str)
   str = gsub("-","",str, fixed=TRUE);
   str = gsub(".","",str, fixed=TRUE);
   str;
+  }
+
+
+#' listToString
+#'
+#' Often paramaters for options can be collapsed to form a folder name or a md5 hash
+#'
+#'
+#' @param mylist list to stringify, NOT RECURSIVE (one level)
+#' @param sep1 "-"
+#' @param sep2 "_"
+#'
+#' @return string
+#' @export
+#'
+#' @examples
+#'
+#' my.list = list("A" = 3, "L" = ".", "E" = 1, "X" = 4);
+#'     listToString(my.list);
+#'
+listToString = function(mylist,sep1="-",sep2="_")
+  {
+  str = c();
+  mynames = names(mylist);
+  for(myname in mynames)
+    {
+    val = mylist[[myname]];
+    str = c(str, paste0(myname,sep1,val));
+    }
+  paste0(str,collapse=sep2);
   }
 

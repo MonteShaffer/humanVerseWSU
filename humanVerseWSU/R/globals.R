@@ -6,3 +6,5 @@ utils::globalVariables(c("imdb.data"));
 
 utils::globalVariables(c("mysql.memory"));
 
+utils::globalVariables(c("colors.indexed.by"));
+

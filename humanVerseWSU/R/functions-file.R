@@ -1,5 +1,31 @@
 
 
+
+
+
+getDirectoryOfThisFile <- function() {
+  # library(base);
+  # library(rstudioapi);
+  # https://stackoverflow.com/questions/49196697/
+  # https://stackoverflow.com/questions/1815606/
+  args <- commandArgs(trailingOnly = FALSE)
+  file <- "--file="
+  rstudio <- "RStudio"
+
+  match <- grep(rstudio, args)
+  if (length(match) > 0) {
+    return(paste0( dirname(rstudioapi::getSourceEditorContext()$path),"/") )
+  } else {
+    match <- grep(file, args)
+    if (length(match) > 0) {
+      return(paste0( dirname(normalizePath(sub(file, "", args[match]))),"/") )
+    } else {
+      return(paste0( dirname(normalizePath(sys.frames()[[1]]$ofile)),"/") )
+    }
+  }
+}
+
+
 # dump httr, stringr, etc.
 # use network analysis to map the tidyverse ...
 

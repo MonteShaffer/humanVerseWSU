@@ -194,13 +194,73 @@ rad2deg = function(radians)
   }
 
 
+#' fahrenheit2celsius
+#'
+#' @param fahrenheit Temperature in fahrenheit
+#'
+#' @return Temperature in celsius
+#' @export
+#'
+#' @examples
+#'
+#' fahrenheit2celsius(104);
+#'
 fahrenheit2celsius = function(fahrenheit)
   {
   5/9 * ( fahrenheit - 32);
   }
 
+#' celsius2fahrenheit
+#'
+#' @param celsius Temperature in celsius
+#'
+#' @return Temperature in fahrenheit
+#' @export
+#'
+#' @examples
+#'
+#' celsius2fahrenheit(40);
+#'
 celsius2fahrenheit = function(celsius)
   {
   32 + celsius * 9/5;
   }
+
+
+#' differentSigns
+#'
+#'
+#' Tolerance around zero is not included herein ...
+#'
+#' @family Maths
+#'
+#' @param a single numeric value
+#' @param b single numeric value
+#'
+#' @return FALSE if they have the same sign, TRUE otherwise
+#' @export
+#'
+#' @examples
+#'
+#' differentSigns(1,-1);
+#' differentSigns(-1,-1);
+#' differentSigns(-1,1);
+#' differentSigns(0,0);
+#' differentSigns(1-2i,-3-4i);
+#' differentSigns(1-2i,-3-4i, part="Im");
+#'
+differentSigns = function(a,b, tol = sqrt(.Machine$double.eps), part="Re")
+  {
+  # functions-number.R
+  a.part = Re(a); if(part=="Im") { a.part = Im(a); }
+  a.sign = get.sign(a.part,0);  # if both are zero, NA == NA
+  b.part = Re(b); if(part=="Im") { b.part = Im(b); }
+  b.sign = get.sign(b.part,0);  # therefore same sign
+  if(a.sign == b.sign) { return(FALSE); }
+  return(TRUE);
+  # if(Re(a) > 0 && Re(b) < 0) { return(TRUE); }
+  # if(Re(a) < 0 && Re(b) > 0) { return(TRUE); }
+  # return(FALSE);
+  }
+
 

@@ -87,8 +87,10 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 		{
 		mydollar = dollars[i];
 		myyear = years[i];
+		nd = NA;
+		if(!is.na(mydollar)) { nd = adjustDollarForInflation(mydollar,myyear,anchor.year,idf=inflation.df); }
 
-		newdollars[i] = adjustDollarForInflation(mydollar,myyear,anchor.year,idf=inflation.df);
+		newdollars[i] = nd;
 		}
 
 	df[dollar.out] = newdollars;
