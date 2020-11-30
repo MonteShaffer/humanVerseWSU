@@ -104,7 +104,7 @@ performPOS = function(str)  # preferably on a single sentence ...
   #   my.table$tags = as.character(my.table$tags);
     
   list("table" = my.table, "words" = words.apos, "sentences" = sentences.apos);
-  }
+  } 
 
 getRawWords = function(str, lower=TRUE)
   {
@@ -511,7 +511,7 @@ countPersonalPronouns = function(words) # words is vector, in order
     }
   pr.person = "third";
   pr.number = "singular";
-  pronouns = c("it", "it", "its", NA, "itself");
+  pronouns = c("it", "it", "its", "-NA-", "itself");
   for(p in 1:length(pronouns))
     {
     lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
@@ -521,7 +521,7 @@ countPersonalPronouns = function(words) # words is vector, in order
     my.pronouns = rbind(my.pronouns,row);
     }
   
-  pr.person = "third";
+  pr.person = "third"; 
   pr.number = "plural";
   pronouns = c("they", "them", "their", "theirs", "themself", "themselves");
   for(p in 1:length(pronouns))
@@ -549,8 +549,9 @@ countPersonalPronouns = function(words) # words is vector, in order
   cnames = c("person","number","word","count");
   
   my.pronouns = as.data.frame(my.pronouns);
-    rownames(my.pronouns) = rnames.all;
-    colnames(my.pronouns) = cnames;
+    # rownames(my.pronouns) = rnames.all;
+    rownames(my.pronouns) = NULL;
+    colnames(my.pronouns) = cnames; 
   
   my.pronouns$count = as.numeric(my.pronouns$count);
   

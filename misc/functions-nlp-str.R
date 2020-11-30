@@ -441,8 +441,8 @@ element.exists <- function(var, element)
   }, error = function(e) {
     return(FALSE)
   })
-}
-
+} 
+ 
 parseGutenberg.GRIMM = function(path.to.grimm,
                         file.stem = "fairytales",
                         txt.file.remote = "https://www.gutenberg.org/files/2591/2591-0.txt",

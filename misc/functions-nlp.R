@@ -1,6 +1,6 @@
   
 # ngrams = buildNgrams(my.story, my.stopwords=stop.snowball);
-
+  
 library(tm);
 # tm::stemDocument(c("computers", "computation", "complicated", "complication"));
 # map POS ... to element for LSA prep ...
